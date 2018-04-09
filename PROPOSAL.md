@@ -2,7 +2,7 @@
 ## Brief Overview
 I will create a cartoonifier application that takes a picture of a face and draws a cartoon/painting from it, which can be saved as a .jpeg image file. 
 
-## (Antipicated) Steps
+## (Anticipated) Steps
 ### Inputting Data
 I will allow the user to choose how he/she will input the picture used to draw the cartoon. Below are the options: 
 * via webcam - I will adapt OpenFramework's video grabber example (https://github.com/openframeworks/openFrameworks/tree/master/examples/video/videoGrabberExample) to take a picture of the user.
