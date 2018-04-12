@@ -14,6 +14,7 @@ private:
     ofxButton photo_taking_button_;
     void photoButtonPressed(); // listener
     
+    ofVideoGrabber webcam;
 public:
     void setup();
     void update();
