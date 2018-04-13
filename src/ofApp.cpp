@@ -6,6 +6,8 @@ void ofApp::setup(){
     
     setupWebcamPanel();
     webcam_.setup(2000, 2000); // set up the webcam separately from the panel
+    
+    string_font_.loadFont("/Users/elizabeth/Downloads/of_v0.9.8_osx_release/examples/addons/networkTcpServerExample/bin/data/type/mono.ttf", 32, true, false, true, 0.1);
 }
 
 //--------------------------------------------------------------
@@ -19,8 +21,9 @@ void ofApp::setupWebcamPanel() { // sets up the intro panel - adds the button
 //--------------------------------------------------------------
 void ofApp::photoButtonPressed() { // listener - takes picture when button is pressed
 
-    photo_taken_.setFromPixels(webcam_.getPixels());
-    show_webcam_ = false; // display the image
+    photo_taken_.setFromPixels(webcam_.getPixels()); // take the picture
+    show_webcam_ = false; // stop displaying the webcam
+    show_photo_ = true; // display the photo
 }
 
 //--------------------------------------------------------------
@@ -44,9 +47,12 @@ void ofApp::draw(){
         webcam_panel_.draw();
         webcam_.draw(ofGetWidth() - ofGetWidth()/1.1, ofGetHeight() - ofGetHeight()/1.1, ofGetWidth()/1.1, ofGetHeight()/1.1);
         
-    } else if (show_picture_){ // draws out the picture
+    } else if (show_photo_){ // draws out the picture
         photo_taken_.draw(10, 10, 10);
-        //ofDrawBox(500, 500, 500, 500, 500, 500); // test if this can be drawn
+        string photo_description = "This is the picture you took.";
+        
+        //ofSetColor(100, 10, 10); // make ths the string red
+        string_font_.drawStringAsShapes(photo_description, 100, 100); // using ofTrueTypeFont to be able to change font/color
     }
 }
 

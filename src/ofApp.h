@@ -17,7 +17,10 @@ private:
     ofImage photo_taken_; // stores the photo taken 
     bool show_webcam_ = true; // to show the webcam 
     
-    bool show_picture_ = true; // to show the picture after being taken
+    bool show_photo_ = true; // to show the picture after being taken
+    
+    ofTrueTypeFont string_font_; // sets font, used to print strings with colors/sizes/fonts other than the default
+
 public:
     void setup();
     void update();
