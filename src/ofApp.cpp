@@ -4,13 +4,12 @@
 void ofApp::setup(){
     ofSetVerticalSync(true);
     
-    // note: not creating a panel for the introduction b/c I don't like how labels look and because it's really simple
     setupWebcamPanel();
-    webcam.setup(2000, 2000); // set up the webcam
+    webcam_.setup(2000, 2000); // set up the webcam separately from the panel
 }
 
 //--------------------------------------------------------------
-void ofApp::setupWebcamPanel() { // sets up the intro panel
+void ofApp::setupWebcamPanel() { // sets up the intro panel - adds the button
     photo_taking_button_.addListener(this,&ofApp::photoButtonPressed);
 
     webcam_panel_.setup("webcam panel");
@@ -18,41 +17,46 @@ void ofApp::setupWebcamPanel() { // sets up the intro panel
 }
 
 //--------------------------------------------------------------
-void ofApp::photoButtonPressed() { // listener for button - know that this is working
-    ofxButton p;
-    ofxPanel test_panel;
-    test_panel.setup();
-    test_panel.add(p.setup("BUTTON WAS PRESSED"));
-    test_panel.draw();
+void ofApp::photoButtonPressed() { // listener - takes picture when button is pressed
+
+    photo_taken_.setFromPixels(webcam_.getPixels());
+    show_webcam_ = false; // display the image
 }
 
 //--------------------------------------------------------------
-void ofApp::exit(){
+void ofApp::exit(){ // cleanup
     photo_taking_button_.removeListener(this, &ofApp::photoButtonPressed);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    webcam.update();
+    webcam_.update(); // updates webcam - is a moving image
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    if (draw_intro_panel_) {
+    if (show_intro_) { // first time the app is opened - print an introduction
         ofSetBackgroundColor(0, 0, 0);
         ofDrawBitmapString("CARTOONIFIER\n\nEnter 'c' to continue.", 100, 100);
-    } else {
+        
+    } else if (show_webcam_){ // all other times - show the webcam
         ofClear(0);
         webcam_panel_.draw();
-        webcam.draw(ofGetWidth() - ofGetWidth()/1.1, ofGetHeight() - ofGetHeight()/1.1, ofGetWidth()/1.1, ofGetHeight()/1.1);
+        webcam_.draw(ofGetWidth() - ofGetWidth()/1.1, ofGetHeight() - ofGetHeight()/1.1, ofGetWidth()/1.1, ofGetHeight()/1.1);
+        
+    } else if (show_picture_){ // draws out the picture
+        photo_taken_.draw(10, 10, 10);
+        //ofDrawBox(500, 500, 500, 500, 500, 500); // test if this can be drawn
     }
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-    if (key == 'c') {
-        draw_intro_panel_ = false;
+    if (key == 'c') { // to continue past the introduction
+        show_intro_ = false; // to stop showing the intro
     } else if (key == 'd') {
+        //show_webcam_ = false;
+        //photoButtonPressed();
     }
 }
 
@@ -73,7 +77,7 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-    photoButtonPressed();
+
 }
 
 //--------------------------------------------------------------
