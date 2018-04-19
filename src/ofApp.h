@@ -5,22 +5,14 @@
 
 class ofApp : public ofBaseApp{
 private:
-    void setupWebcamPanel();
-    
-    ofxPanel webcam_panel_; // panel for showing webcam and taking the photo
+    // FOR INTRODUCTION PANEL
+    ofxPanel intro_panel_; // introductionary panel
     bool show_intro_ = true; // to show the introduction once
-
-    ofxButton photo_taking_button_; // button to press to take the photo
-    void photoButtonPressed(); // listener - called when the button is pressed
-        
-    ofVideoGrabber webcam_; // turns on webcam and gets webcam video feed
-    ofImage photo_taken_; // stores the photo taken 
-    bool show_webcam_ = true; // to show the webcam 
-    
-    bool show_photo_ = true; // to show the picture after being taken
+    ofSoundPlayer intro_music_; // plays music
     
     ofTrueTypeFont string_font_; // sets font, used to print strings with colors/sizes/fonts other than the default
 
+    
 public:
     void setup();
     void update();
