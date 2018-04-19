@@ -1,42 +1,36 @@
 # Project Proposal
 ## Brief Overview
-I will create a cartoonifier application that takes a picture of a face and draws a cartoon/painting from it, which can be saved as a .jpeg image file. 
+I plan on creating an enhanced version of the Pacman game - I'll start by writing the game from scratch and will add extra features. 
 
 ## (Anticipated) Steps
-### Inputting Data
-I will allow the user to choose how he/she will input the picture used to draw the cartoon. Below are the options: 
-* via webcam - I will adapt OpenFramework's video grabber example (https://github.com/openframeworks/openFrameworks/tree/master/examples/video/videoGrabberExample) to take a picture of the user.
+### Basic Game
+I plan to start by creating a basic version of Pacman (with ghosts, food objects, and the Pacman). Below are the rough steps I plan to follow.
+1. Create classes for Pacman and Pacman's food objecets. 
+2. Set up the game board.
+3. Write code for Pacman to be able to eat the food objects. Keep track of the score.
+4. Create a class for the ghosts.
+5. Add the ghosts to the game - the logic behind the ghosts should probably be relatively similar to that behind the Pacman. 
+I'll consider having both the Pacman and the ghosts be subclasses of another class (Predator), but I'm not sure whether this is the best design choice.
+
+
+### Extra Features
+#### Sound
+I'll add an introduction panel that plays music. I'll play some sort of music while the game is in progress and will add additional sound effects when something happens - when the Pacman eats something or when the ghost eats the Pacman.
+
+#### Images
+Instead of using simple spheres to represent the ghosts or the Pacman, I'll allow the user to be able to input images of his/her choice. There will be a panel after the intro panel that prompts the user to take a selfie using the webcam. Next, the user will have the option of retaking the photo or assigning the face in the photo as an avatar representing either a ghost or the Pacman.
+
+I will adapt OpenFramework's video grabber example (https://github.com/openframeworks/openFrameworks/tree/master/examples/video/videoGrabberExample) to access the webcam and take a picture of the user. I plan to use the OpenCV image recognition library (https://opencv.org/) and, in particular, its facial detection algorithm (Cascade Classifier) to detect whether a face even exists in the given image before proceeding to the next steps. If a face is not found, a textbox will prompt the user to input another image.
+
+
+## Possible New Features  
+Below are the features I may or may not implement. Note that because I'm not sure how long the steps above will take nor how difficult they'll be, I can't guarantee that I'll have time to implement any of the features below.
+
+### Other input options
+I'll add to my UI to allow the user to choose from multiple different image input methods. Below are the other 2 (besides the webcam):
 * via image upload - I'll create a simple interface to allow the user to choose to upload an image from his/her file system. If I have time, I'll add an option to crop the picture or zoom in/out as the user sees fit.
 * via internet - I'll create a simple interface to allow the user to paste an image address from the web (ex: of a celebrity) if time permits.
-In all three cases, I plan to use the OpenCV image recognition library (https://opencv.org/) and, in particular, its facial detection algorithm (Cascade Classifier) to detect whether a face even exists in the given image before proceeding to the next steps. If a face is not found, a textbox will prompt the user to input another image.
 
-Note that if multiple faces appear, the app will ask the user to select one face to cartoonify.
-
-### Cartoonifying the Image
-I'll use Cascade Classifier to carve out a square enclosing the face. Next, I'll average together blocks of pixels (possibly squares of 10x10 pixels) to blur the face and make it seem more airbrushed. I'll also enhance edges and redraw them in black and blur flatter regions, which I'll detect by analyzing changes in color between regions, to make the face appear more cartoonish. 
-
-I'll use a data set of normal faces to calculate the average size of facial features (eyes, nose, lips, eyebrows, etc) and use these averages to modify the image as specified below:
-* If the size of a feature is bigger than the average size of that facial feature, it will be stretched by a factor proportional to how much bigger it is than the average size.
-* If the size of a feature is smaller than the average size of that facial feature, it will be shrunken by a factor proportional to how much smaller it is than the average size.
-
-After cartoonifying the face, I'll paste it back into the original image.
-
-There will be an option to save the image as a .jpeg file.
-
-
-## Extra Features
-Below are the extra features I may or may not implement. Note that because I'm not sure how long the steps above will take nor how difficult they'll be, I can't guarantee that I'll have time to implement any of the features below.
-
-### Multiple Modes
-If time permits, I'll create multiple modes for cartoonifying the face. Below are the modes:
-* default mode - This mode just cartoonifies the face as specified above.
-* caricature mode - This mode creates a caricature from the user's face. Note that this is probably the hardest mode and the one I doubt I'll finish.
-* evil mode - This mode is very similar to the default mode but modifies the image so the face will look more "evil."
-
-Note that each mode only accepts an unadulterated image, so a caricature cannot be created from, say, a cartoon image and vica versa.
-
-### Social Media
-I'll use OpenFrameworks to create a pop-up window prompting the user to share the created image on Twitter, Facebook, or Instagram.
 
 
 ## Libraries Used
