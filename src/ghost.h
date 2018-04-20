@@ -1,17 +1,11 @@
 #pragma once
 #include <random>
+
+#include "direction.h"
 #include "ofMain.h"
 
 class Ghost {
 private:
-    typedef enum { // all possible directions
-        UP = 0,
-        DOWN,
-        RIGHT,
-        LEFT,
-        STARTING // dummy direction - to start off with
-    } Direction;
-
     // Next 5 lines adapted from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
 	ofVec2f window_dims_;
 	std::mt19937 generator_; // pseudorandom number generation
@@ -22,16 +16,11 @@ private:
 	static const float kFoodModifier; // proportions
 	ofColor color_; // The color of the food rectangle
     
-    //ofVec2f body_size_; // size of wanderer - replaces rectangle
-    //ofVec2f position_; // position of wanderer
-    
-    // why did I separate the size from the position?
-    
     const int kNumRealDirections_ = 4; // number of real directions, to exclude dummy direction
-    Direction current_direction_ = STARTING; // starts at a dummy direction
+    RawDirection current_direction_ = RIGHT; // starts off going right
     
     bool is_valid_position(ofVec2f& position); // checks if new position is valid
-    ofVec2f& calculate_new_position(Direction direction); // calculates the new position and returns a pair represententing the position
+    ofVec2f& calculate_new_position(RawDirection direction); // calculates the new position and returns a pair represententing the position
     
     int num_steps_taken_ = 0; // keeps track of the number of steps taken in the current direction (so that the direction can be changed once every kNumStepsBeforeDirectionChange_ steps)
     
@@ -42,13 +31,12 @@ private:
 public:
     const int kNumStepsBeforeDirectionChange_ = 20; // number of steps to take in the new  direction before changing direction. Note that this is used in ofApp so each step can be drawn out (else the ghost would jump around). No point in hiding this - will need a getter anyways
 
+    const int kPointsWorth_ = 10; // worth 10 points (b/c it's riskier to eat a ghost since the ghost can turn around and eat you)
+
 	Ghost(); // Default constructor, sets up generator devices and rarndomly places food at a valid location
 	void rebase(); // Called once the snake has successfully eaten food, replaces the foods color and location
 	void resize(int w, int h); // Called by application resize, resizes food rect to new window dimensions
-    
-    //ofVec2f& get_body_size(); // get size of body
-    //ofVec2f& get_position(); // get current position
-    
+        
 	ofRectangle& get_image_frame(); // Gets the rectangle that represents the food object
 	ofColor& get_color(); // Gets the color of the current food object
     ofImage& get_food_image(); // gets image
@@ -56,6 +44,7 @@ public:
     int get_num_steps_taken(); // gets the number of steps taken
     void incr_num_steps_taken(); // increments the number of steps taken
     
+    RawDirection& get_direction(); // gets the current direction - needed to check whether the ghost is eating the pacman or if the pacman is eating the ghost
     void choose_random_direction(); // chooses a random direction
     void move_in_new_direction(); // moves in that random direction - note that this method is called more than choose_random_direction so the ghost can actually move before changing directions (will look like it's jumping around otherwise)
 };

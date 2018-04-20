@@ -6,7 +6,7 @@
 //
 
 #include <stdlib.h>
-#include "food.hpp"
+#include "food.h"
 
 const float Food::kfood_modifier_ = 0.1;
 

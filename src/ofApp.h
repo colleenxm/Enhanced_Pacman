@@ -6,7 +6,7 @@
 #include "ofMain.h"
 #include "pacman.h"
 #include "ghost.h"
-#include "food.hpp"
+#include "food.h"
 
 // LOOSELY adapted from OF-SNAKE MP: https://github.com/uiuc-sp18-cs126/of-snake-ElizWang (mostly just structural stuff)
 
@@ -32,6 +32,8 @@ private:
     Food/***/ game_food_;
     
     bool should_update_ = true;     // A flag boolean used in the update() function.
+    
+    void interact_pacman_with_ghost(); // interactions between the pacman and the ghost (rename method later - weird grammar)
     
     // Private helper methods to render various aspects of the game on screen.
     void draw_ghosts();

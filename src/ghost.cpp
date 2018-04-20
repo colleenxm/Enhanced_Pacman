@@ -81,40 +81,48 @@ void Ghost::incr_num_steps_taken() { // increments the number of steps taken
     num_steps_taken_++;
 }
 
+RawDirection& Ghost::get_direction() { // gets the current direction - needed to check whether the ghost is eating the pacman or if the pacman is eating the ghost
+    return current_direction_;
+}
+
 bool Ghost::is_valid_position(ofVec2f& position) {// checks if new position is valid
     return (position.x >= 0 && position.y >= 0 && position.x <= window_dims_.x && position.y <= window_dims_.y);
 }
 
-ofVec2f& Ghost::calculate_new_position(Direction direction) { // calculates the new position and returns a pair represententing the position
+ofVec2f& Ghost::calculate_new_position(RawDirection direction) { // calculates the new position and returns a pair represententing the position
     ofVec2f new_position;
     
+    int x = image_frame_.getX();
+    int y = image_frame_.getY();
+    int width = image_frame_.getWidth();
+    int height = image_frame_.getHeight();
     switch (direction) {
         case UP:
             //new_position.x =  image_.x;
             //new_position.y = position_.y - body_size_.y;
-            new_position.x =  image_frame_.getX();
-            new_position.y = image_frame_.getY() - image_frame_.getHeight();
+            new_position.x =  x;
+            new_position.y = y - height;
             break;
             
         case DOWN:
             //new_position.x = position_.x;
             //new_position.y = position_.y + body_size_.y;
-            new_position.x =  image_frame_.getX();
-            new_position.y = image_frame_.getY() + image_frame_.getHeight();
+            new_position.x =  x;
+            new_position.y = y + height;
             break;
             
         case LEFT:
             //new_position.x = position_.x - body_size_.x;
             //new_position.y = position_.y;
-            new_position.x = image_frame_.getX() - image_frame_.getWidth();
-            new_position.y = image_frame_.getY();
+            new_position.x = x - width;
+            new_position.y = y;
             break;
             
         case RIGHT:
             //new_position.x = position_.x + body_size_.x;
             //new_position.y = position_.y;
-            new_position.x = image_frame_.getX() + image_frame_.getWidth();
-            new_position.y = image_frame_.getY();
+            new_position.x = x + width;
+            new_position.y = y;
             break;
     }
     return new_position;
@@ -122,12 +130,12 @@ ofVec2f& Ghost::calculate_new_position(Direction direction) { // calculates the 
 
 void Ghost::choose_random_direction() { // valid position - can take at least 1 step in that direction
     
-    Direction random_direction;
+    RawDirection random_direction;
     ofVec2f new_location;
     new_location.set(-1, -1);
     
     while (!is_valid_position(new_location)) { // while position isn't valid
-        random_direction = static_cast<Direction>(rand() % kNumRealDirections_); // 1 of the 4 real direction
+        random_direction = static_cast<RawDirection>(rand() % kNumRealDirections_); // 1 of the 4 real direction
         new_location = calculate_new_position(random_direction);
     }
     current_direction_ = random_direction;

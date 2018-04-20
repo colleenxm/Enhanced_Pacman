@@ -20,6 +20,10 @@ ofRectangle& Pacman::get_image_frame() {
     return image_frame_;
 }
 
+ofImage& Pacman::get_pacman_image() { // gets image
+    return pacman_image_;
+}
+
 Pacman::Pacman() {
 	int width = ofGetWindowWidth();
 	int height = ofGetWindowHeight();
@@ -29,10 +33,13 @@ Pacman::Pacman() {
     image_frame_.setSize(body_d, body_d);
 	//body_size_.set(body_d, body_d);
 
-	current_direction_ = RIGHT; // Snake starts out moving right
+	current_direction_ = RIGHT; // starts out moving right
     image_frame_.setPosition(0, 2 * body_d);
     //position_.set(0, 2 * body_d);
     color_ = ofColor(0, 100, 0);
+    
+    pacman_image_.load("/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/image_files/pacman.png");
+    // pacman_image_.rotate90(1); // figure out rotations later
 }
 
 void Pacman::update() {
@@ -74,8 +81,8 @@ bool Pacman::isDead() const { // dead if pacman goes off the screen
     return (x < 0 || y < 0 || x > screen_dims_.x - width || y > screen_dims_.y - height);
 }
 
-void Pacman::eatFood() {
-    num_points_++;
+void Pacman::eat_food_or_ghost(int points_gained) { // gains points after eating food and ghost objects
+    num_points_ += points_gained;
 }
 
 // Resize the pacman based on the ratio of old to new position
@@ -102,10 +109,10 @@ int Pacman::getNumPoints() const {
     return num_points_;
 }
 
-Pacman::Direction Pacman::getDirection() const {
+RawDirection Pacman::get_direction() const {
 	return current_direction_;
 }
 
-void Pacman::setDirection(Direction newDirection) {
+void Pacman::setDirection(RawDirection newDirection) {
 	current_direction_ = newDirection;
 }
