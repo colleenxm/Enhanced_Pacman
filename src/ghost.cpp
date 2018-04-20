@@ -9,7 +9,8 @@ Ghost::Ghost() {
     int window_height = ofGetWindowHeight();
     window_dims_.set(window_width, window_height);
     float size_d = kFoodModifier * window_width;
-    body_size_.set(size_d, size_d);
+    //body_size_.set(size_d, size_d);
+    image_frame_.setSize(size_d, size_d);
     
     generator_ = std::mt19937(rand());
     dist_x_ = std::uniform_int_distribution<>(0, window_width - size_d);
@@ -21,11 +22,16 @@ Ghost::Ghost() {
 // Method adapted and modified from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
 void Ghost::resize(int w, int h) {
     float size_d = kFoodModifier * w;
-    body_size_.set(size_d, size_d);
+    image_frame_.setSize(size_d, size_d);
+    //body_size_.set(size_d, size_d);
     
-    float new_x = ((body_size_.x / window_dims_.x) * w);
-    float new_y = ((body_size_.y / window_dims_.y) * h);
-    position_.set(new_x, new_y);
+    //float new_x = ((body_size_.x / window_dims_.x) * w);
+    //float new_y = ((body_size_.y / window_dims_.y) * h);
+    float new_x = ((image_frame_.getWidth() / window_dims_.x) * w);
+    float new_y = ((image_frame_.getHeight() / window_dims_.y) * h);
+    
+    //position_.set(new_x, new_y);
+    image_frame_.setPosition(new_x, new_y);
     
     dist_x_ = std::uniform_int_distribution<>(0, w - size_d);
     dist_y_ = std::uniform_int_distribution<>(0, h - size_d);
@@ -37,8 +43,8 @@ void Ghost::rebase() {
     auto x = dist_x_(generator_);
     auto y = dist_y_(generator_);
     
-    position_.set(x, y);
-    position_.set(position_.x, position_.y);
+    //position_.set(x, y);
+    image_frame_.setPosition(x, y);
     
     color_.r = dist_color_(generator_);
     color_.g = dist_color_(generator_);
@@ -49,13 +55,17 @@ ofColor& Ghost::get_color() {
     return color_;
 }
 
-ofVec2f& Ghost::get_body_size() { // size of the wanderer
+ofRectangle& Ghost::get_image_frame() {
+    return image_frame_;
+}
+
+/*ofVec2f& Ghost::get_body_size() { // size of the wanderer
     return body_size_;
 }
 
 ofVec2f& Ghost::get_position() {
     return position_;
-}
+}*/
 
 int Ghost::get_num_steps_taken() { // gets the number of steps taken
     return num_steps_taken_;
@@ -74,23 +84,31 @@ ofVec2f& Ghost::calculate_new_position(Direction direction) { // calculates the 
     
     switch (direction) {
         case UP:
-            new_position.x =  position_.x;
-            new_position.y = position_.y - body_size_.y;
+            //new_position.x =  image_.x;
+            //new_position.y = position_.y - body_size_.y;
+            new_position.x =  image_frame_.getX();
+            new_position.y = image_frame_.getY() - image_frame_.getHeight();
             break;
             
         case DOWN:
-            new_position.x = position_.x;
-            new_position.y = position_.y + body_size_.y;
+            //new_position.x = position_.x;
+            //new_position.y = position_.y + body_size_.y;
+            new_position.x =  image_frame_.getX();
+            new_position.y = image_frame_.getY() + image_frame_.getHeight();
             break;
             
         case LEFT:
-            new_position.x = position_.x - body_size_.x;
-            new_position.y = position_.y;
+            //new_position.x = position_.x - body_size_.x;
+            //new_position.y = position_.y;
+            new_position.x = image_frame_.getX() - image_frame_.getWidth();
+            new_position.y = image_frame_.getY();
             break;
             
         case RIGHT:
-            new_position.x = position_.x + body_size_.x;
-            new_position.y = position_.y;
+            //new_position.x = position_.x + body_size_.x;
+            //new_position.y = position_.y;
+            new_position.x = image_frame_.getX() + image_frame_.getWidth();
+            new_position.y = image_frame_.getY();
             break;
     }
     return new_position;
@@ -113,6 +131,7 @@ void Ghost::move_in_new_direction() { // need to figure out what to do if the gh
     ofVec2f new_position = calculate_new_position(current_direction_);
     
     if (is_valid_position(new_position)) {
-        position_.set(new_position.x, new_position.y);
+        //position_.set(new_position.x, new_position.y);
+        image_frame_.setPosition(new_position.x, new_position.y);
     }
 }

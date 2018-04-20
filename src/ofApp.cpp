@@ -32,13 +32,14 @@ void PacmanGame::update() {
             ofVec2f head_pos = game_pacman_.getPosition();
             ofRectangle pacman_rect(head_pos.x, head_pos.y, pacman_size.x, pacman_size.y);
             
-            ofVec2f ghost_size = ghost_1_.get_body_size();
-            ofVec2f ghost_pos = ghost_1_.get_position();
-            ofRectangle ghost_rect(ghost_pos.x, ghost_pos.y, ghost_size.x, ghost_size.y);
-
+            //ofVec2f ghost_size = ghost_1_.get_body_size();
+            //ofVec2f ghost_pos = ghost_1_.get_position();
+            //ofRectangle ghost_rect(ghost_pos.x, ghost_pos.y, ghost_size.x, ghost_size.y);
+            ofRectangle ghost_rect = ghost_1_.get_image_frame();
+            
             // need to add code for pacman and ghost interactions
             
-            if (pacman_rect.intersects(game_food_.getFoodRect())) {
+            if (pacman_rect.intersects(game_food_.get_image_frame())) {
                 game_pacman_.eatFood(); // change this
                 game_food_.rebase(); //delete game_food_;
             }
@@ -177,10 +178,11 @@ void PacmanGame::windowResized(int w, int h){
 }
 
 void PacmanGame::draw_ghosts() {
-    ofVec2f ghost_body_size = ghost_1_.get_body_size();
-    ofVec2f position = ghost_1_.get_position();
+    //ofVec2f ghost_body_size = ghost_1_.get_body_size();
+    //ofVec2f position = ghost_1_.get_position();
     ofSetColor(ghost_1_.get_color());
-    ofDrawRectangle(position.x, position.y, ghost_body_size.x, ghost_body_size.y);
+    //ofDrawRectangle(position.x, position.y, ghost_body_size.x, ghost_body_size.y);
+    ofDrawRectangle(ghost_1_.get_image_frame());
 }
 
 void PacmanGame::draw_pacman() {
@@ -193,8 +195,8 @@ void PacmanGame::draw_pacman() {
 void PacmanGame::draw_food() {
     ofSetColor(100, 100, 100);
     //ofDrawRectangle(game_food_.getFoodRect());
-    ofRectangle food_frame = game_food_.getFoodRect();
-    game_food_.getFoodImage().draw(food_frame.getX(), food_frame.getY(), food_frame.getWidth(), food_frame.getHeight());
+    ofRectangle food_frame = game_food_.get_image_frame();
+    game_food_.get_food_image().draw(food_frame.getX(), food_frame.getY(), food_frame.getWidth(), food_frame.getHeight());
 }
 
 void PacmanGame::drawGameOver() {

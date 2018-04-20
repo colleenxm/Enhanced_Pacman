@@ -22,7 +22,7 @@ private:
     std::uniform_int_distribution<> dist_color_; // Generates valid rgb values
     
     static const float kfood_modifier_; // What proportion of the window width the food square should be in size
-    ofRectangle food_rect_; // rectangle that frames out the food object
+    ofRectangle image_frame_; // rectangle that frames the food picture, provides dimensions and position
     
     ofImage food_image_; // image that correpsonds with a food object
 
@@ -31,8 +31,8 @@ public:
     void resize(int w, int h); // Called by application resize, resizes food rect to new window dimensions
     void rebase();
     
-    ofRectangle& getFoodRect(); // Gets the rectangle that frames out the food object
-    ofImage& getFoodImage(); // gets image
+    ofRectangle& get_image_frame(); // Gets the rectangle that frames out the food object
+    ofImage& get_food_image(); // gets image
 };
 #endif /* food_hpp */
 
