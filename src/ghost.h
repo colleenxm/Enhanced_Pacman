@@ -17,10 +17,10 @@ private:
 	ofColor color_; // The color of the food rectangle
     
     const int kNumRealDirections_ = 4; // number of real directions, to exclude dummy direction
-    RawDirection current_direction_ = RIGHT; // starts off going right
+    Direction current_direction_ = RIGHT; // starts off going right
     
     bool is_valid_position(ofVec2f& position); // checks if new position is valid
-    ofVec2f& calculate_new_position(RawDirection direction); // calculates the new position and returns a pair represententing the position
+    ofVec2f& calculate_new_position(Direction direction); // calculates the new position and returns a pair represententing the position
     
     int num_steps_taken_ = 0; // keeps track of the number of steps taken in the current direction (so that the direction can be changed once every kNumStepsBeforeDirectionChange_ steps)
     
@@ -44,7 +44,7 @@ public:
     int get_num_steps_taken(); // gets the number of steps taken
     void incr_num_steps_taken(); // increments the number of steps taken
     
-    RawDirection& get_direction(); // gets the current direction - needed to check whether the ghost is eating the pacman or if the pacman is eating the ghost
+    Direction& get_direction(); // gets the current direction - needed to check whether the ghost is eating the pacman or if the pacman is eating the ghost
     void choose_random_direction(); // chooses a random direction
     void move_in_new_direction(); // moves in that random direction - note that this method is called more than choose_random_direction so the ghost can actually move before changing directions (will look like it's jumping around otherwise)
 };

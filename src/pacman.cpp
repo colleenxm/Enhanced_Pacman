@@ -70,14 +70,21 @@ void Pacman::update() {
 	}
 }
 
-bool Pacman::isDead() const { // dead if pacman goes off the screen
+bool Pacman::is_dead() { // either offscreen or eaten
+    return is_eaten_ || is_offscreen();
+}
+
+void Pacman::gets_eaten() { // pacman is eaten
+    is_eaten_ = true;
+}
+
+bool Pacman::is_offscreen() const { // dead if pacman goes off the screen
     int x = image_frame_.getX();
     int y = image_frame_.getY();
     
     int width = image_frame_.getWidth();
     int height = image_frame_.getHeight();
 
-    /*return (position_.x < 0 || position_.y < 0 || position_.x > screen_dims_.x - body_size_.x || position_.y > screen_dims_.y - body_size_.y);*/
     return (x < 0 || y < 0 || x > screen_dims_.x - width || y > screen_dims_.y - height);
 }
 
@@ -109,10 +116,10 @@ int Pacman::getNumPoints() const {
     return num_points_;
 }
 
-RawDirection Pacman::get_direction() const {
+Direction Pacman::get_direction() const {
 	return current_direction_;
 }
 
-void Pacman::setDirection(RawDirection newDirection) {
+void Pacman::setDirection(Direction newDirection) {
 	current_direction_ = newDirection;
 }

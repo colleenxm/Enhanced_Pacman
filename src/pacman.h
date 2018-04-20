@@ -7,7 +7,7 @@
 
 class Pacman {
 private:
-	RawDirection current_direction_; // current direction
+	Direction current_direction_; // current direction
 	ofVec2f screen_dims_; // The current screen dimensions (needed to calculate values on resize()
 	static const float kbody_size_modifier_; // The proportion of the screen width a body square is
     
@@ -20,20 +20,25 @@ private:
     int num_points_; // corresponds to the food eaten
    
     ofImage pacman_image_; // image that correpsonds with the pacman 
+    bool is_eaten_ = false; // dies if eaten
     
+    bool is_offscreen() const; // checks if pacman is offscreen
+
 public:
     // Methods to use adapted from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
     //ofVec2f getPosition() const;
     ofColor& get_color() const;
     ofRectangle& get_image_frame();
     ofImage& get_pacman_image(); // gets image
-    RawDirection get_direction() const; // Gets the current direction
-    void setDirection(RawDirection new_direction); // Sets the current direction
+    Direction get_direction() const; // Gets the current direction
+    void setDirection(Direction new_direction); // Sets the current direction
 
 	Pacman(); // Default constructor, initializes and places length 1 snake
     
-	bool isDead() const; // if the pacman is dead
-	void update(); // updates the pacman in the current direction
+    bool is_dead();
+    void gets_eaten(); // pacman is eaten
+	
+    void update(); // updates the pacman in the current direction
     
 	void eat_food_or_ghost(int points_gained); // gains points by eating objects - note that only the number of points gained is passed in rather than a reference to the object itself (so this method can work for both food and ghost objects)
     

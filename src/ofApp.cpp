@@ -54,7 +54,7 @@ void PacmanGame::update() {
             ghost_1_.move_in_new_direction();
             ghost_1_.incr_num_steps_taken();
             
-            if (game_pacman_.isDead()) {
+            if (game_pacman_.is_dead()) {
                 current_state_ = FINISHED;
             }
         }
@@ -63,15 +63,29 @@ void PacmanGame::update() {
 }
 
 void PacmanGame::interact_pacman_with_ghost() { // responsible for all pacman-ghost iteractions
-    RawDirection pacman_direction = game_pacman_.get_direction();
-    RawDirection ghost_direction = ghost_1_.get_direction();
+    Direction pacman_direction = game_pacman_.get_direction(); // note: coords for 2d = 0, 0 is on the upper lhs
+    Direction ghost_direction = ghost_1_.get_direction();
     
-    if (pacman_direction == ghost_direction) {
-        // either the pacman's x coordinate is BIGGER than the ghost's x coordinate or it's y coordinate is BIGGER than the ghost's y coordinate - need to figure out how coordinates work
+    ofRectangle pacman_rect = game_pacman_.get_image_frame();
+    ofRectangle ghost_rect = ghost_1_.get_image_frame();
+
+    if (pacman_direction == ghost_direction) { // pacman eats the ghost if both objects are pointing in the same direction and the pacman is behind the ghost
+        if (pacman_rect.getX() >= ghost_rect.getX() || pacman_rect.getY() >= ghost_rect.getY()) { // aka if pacman's x or y coord is bigger than the ghost's x y cords
+            game_pacman_.eat_food_or_ghost(ghost_1_.kPointsWorth_);
+            // need to do something to the ghost
+        } else { // ghost eats the pacman if both objects are pointing in the same direction and the ghost is behind the pacman
+            // game over - pacman needs to die
+            game_pacman_.gets_eaten();
+            current_state_ = FINISHED;
+        }
+    } else { // ghost eats the pacman if the objects are pointing in different directions
+        if ((pacman_direction == UP && ghost_direction == DOWN) || (pacman_direction == DOWN && ghost_direction == UP)
+            || (pacman_direction == LEFT && ghost_direction == RIGHT) || (pacman_direction == RIGHT && ghost_direction == LEFT)) {
+            // game over - pacman needs to die
+            game_pacman_.gets_eaten();
+            current_state_ = FINISHED;
+        }
     }
-    // pacman eats the ghost if both objects are pointing in the same direction and the pacman is behind the ghost
-    // ghost eats the pacman if both objects are pointing in the same direction and the ghost is behind the pacman
-    // ghost eats the pacman if the objects are pointing in different directions
 }
 
 /*
@@ -136,7 +150,7 @@ void PacmanGame::keyPressed(int key){
     }
     else if (current_state_ == IN_PROGRESS)
     {
-        RawDirection current_direction = game_pacman_.get_direction();
+        Direction current_direction = game_pacman_.get_direction();
         
         // If current direction has changed to a valid new one, force an immediate update and skip the next frame update
         if (upper_key == 'W' && current_direction != DOWN && current_direction != UP) {
@@ -195,10 +209,6 @@ void PacmanGame::draw_ghosts() {
 }
 
 void PacmanGame::draw_pacman() {
-    //ofVec2f snake_body_size = game_pacman_.getPacmanSize();
-    //ofVec2f head_pos = game_pacman_.getPosition();
-    //ofSetColor(game_pacman_.getColor());
-    //ofDrawRectangle(game_pacman_.get_image_frame());
     ofRectangle pacman_frame = game_pacman_.get_image_frame();
     game_pacman_.get_pacman_image().draw(pacman_frame.getX(), pacman_frame.getY(), pacman_frame.getWidth(), pacman_frame.getHeight());
 }
@@ -209,7 +219,9 @@ void PacmanGame::draw_food() {
 }
 
 void PacmanGame::drawGameOver() {
-    // draw another screen here
+    ofSetBackgroundColor(0, 0, 0); // set background as black
+    
+    string_font_.drawString("YOU LOST!", ofGetWidth()/6, ofGetHeight()/6);
 }
 
 void PacmanGame::drawGamePaused() {

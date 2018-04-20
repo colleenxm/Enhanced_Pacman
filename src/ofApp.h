@@ -47,11 +47,6 @@ private:
     void reset();
         
 public:
-    /*PacmanGame() : game_food_ (new Food()){}
-    
-    ~PacmanGame() {
-        delete game_food_;
-    }*/
     // Function used for one time setup
     void setup();
     

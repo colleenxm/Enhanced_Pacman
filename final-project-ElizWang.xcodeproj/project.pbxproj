@@ -62,7 +62,7 @@
 		51E6B94C4D93A27EAC81479F /* ofxGuiGroup.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxGuiGroup.cpp; path = ../../Downloads/of_v0.9.8_osx_release/addons/ofxGui/src/ofxGuiGroup.cpp; sourceTree = SOURCE_ROOT; };
 		55BBC67C20899B2D00BE6408 /* food.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = food.cpp; sourceTree = "<group>"; };
 		55BBC67D20899B2D00BE6408 /* food.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = food.h; sourceTree = "<group>"; };
-		55BBC68B208A542A00BE6408 /* location.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = location.h; sourceTree = "<group>"; };
+		55BBC68B208A542A00BE6408 /* direction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = direction.h; sourceTree = "<group>"; };
 		55BBC68C208A579000BE6408 /* location.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = location.cpp; sourceTree = "<group>"; };
 		582C469D99F2E18B398DB3C5 /* ofxSlider.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxSlider.cpp; path = ../../Downloads/of_v0.9.8_osx_release/addons/ofxGui/src/ofxSlider.cpp; sourceTree = SOURCE_ROOT; };
 		6045705A1780F00FC6576D99 /* ofxToggle.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxToggle.h; path = ../../Downloads/of_v0.9.8_osx_release/addons/ofxGui/src/ofxToggle.h; sourceTree = SOURCE_ROOT; };
@@ -181,7 +181,7 @@
 				B434C81FEA90B888FF023E6A /* ghost.cpp */,
 				55BBC67C20899B2D00BE6408 /* food.cpp */,
 				55BBC67D20899B2D00BE6408 /* food.h */,
-				55BBC68B208A542A00BE6408 /* location.h */,
+				55BBC68B208A542A00BE6408 /* direction.h */,
 				55BBC68C208A579000BE6408 /* location.cpp */,
 			);
 			path = src;

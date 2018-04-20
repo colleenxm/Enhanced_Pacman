@@ -81,7 +81,7 @@ void Ghost::incr_num_steps_taken() { // increments the number of steps taken
     num_steps_taken_++;
 }
 
-RawDirection& Ghost::get_direction() { // gets the current direction - needed to check whether the ghost is eating the pacman or if the pacman is eating the ghost
+Direction& Ghost::get_direction() { // gets the current direction - needed to check whether the ghost is eating the pacman or if the pacman is eating the ghost
     return current_direction_;
 }
 
@@ -89,7 +89,7 @@ bool Ghost::is_valid_position(ofVec2f& position) {// checks if new position is v
     return (position.x >= 0 && position.y >= 0 && position.x <= window_dims_.x && position.y <= window_dims_.y);
 }
 
-ofVec2f& Ghost::calculate_new_position(RawDirection direction) { // calculates the new position and returns a pair represententing the position
+ofVec2f& Ghost::calculate_new_position(Direction direction) { // calculates the new position and returns a pair represententing the position
     ofVec2f new_position;
     
     int x = image_frame_.getX();
@@ -130,12 +130,12 @@ ofVec2f& Ghost::calculate_new_position(RawDirection direction) { // calculates t
 
 void Ghost::choose_random_direction() { // valid position - can take at least 1 step in that direction
     
-    RawDirection random_direction;
+    Direction random_direction;
     ofVec2f new_location;
     new_location.set(-1, -1);
     
     while (!is_valid_position(new_location)) { // while position isn't valid
-        random_direction = static_cast<RawDirection>(rand() % kNumRealDirections_); // 1 of the 4 real direction
+        random_direction = static_cast<Direction>(rand() % kNumRealDirections_); // 1 of the 4 real direction
         new_location = calculate_new_position(random_direction);
     }
     current_direction_ = random_direction;
