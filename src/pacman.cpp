@@ -4,17 +4,21 @@ const float Pacman::kbody_size_modifier_ = 0.03; // bigger than ghosts
 
 // Adapted from OF-SNAKE MP (Snake class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang 
 
-ofVec2f Pacman::getPosition() const {
+/*ofVec2f Pacman::getPosition() const {
 	return position_;
 };
 
-ofColor Pacman::getColor() const {
+ofColor Pacman::get_color() const {
     return color_;
 };
 
 ofVec2f Pacman::getPacmanSize() const {
 	return body_size_;
-};
+};*/
+
+ofRectangle& Pacman::get_image_frame() {
+    return image_frame_;
+}
 
 Pacman::Pacman() {
 	int width = ofGetWindowWidth();
@@ -22,35 +26,52 @@ Pacman::Pacman() {
 	screen_dims_.set(width, height);
 
 	float body_d = kbody_size_modifier_ * width;
-	body_size_.set(body_d, body_d);
+    image_frame_.setSize(body_d, body_d);
+	//body_size_.set(body_d, body_d);
 
 	current_direction_ = RIGHT; // Snake starts out moving right
-
-    position_.set(0, 2 * body_d);
+    image_frame_.setPosition(0, 2 * body_d);
+    //position_.set(0, 2 * body_d);
     color_ = ofColor(0, 100, 0);
 }
 
 void Pacman::update() {
 	// Move the head one body square in the direction the snake is moving
+    int x = image_frame_.getX();
+    int y = image_frame_.getY();
+    
+    int width = image_frame_.getWidth();
+    int height = image_frame_.getHeight();
+    
 	switch (current_direction_) {
 		case UP:
-			position_.set(position_.x, position_.y - body_size_.y);
+            image_frame_.setPosition(x, y - height);
+			//position_.set(position_.x, position_.y - body_size_.y);
 			break;
 		case DOWN:
-			position_.set(position_.x, position_.y + body_size_.y);
+            image_frame_.setPosition(x, y + height);
+			//position_.set(position_.x, position_.y + body_size_.y);
 			break;
 		case LEFT:
-			position_.set(position_.x - body_size_.x, position_.y);
+            image_frame_.setPosition(x - width, y);
+			//position_.set(position_.x - body_size_.x, position_.y);
 			break;
 		case RIGHT:
-			position_.set(position_.x + body_size_.x, position_.y);
+            image_frame_.setPosition(x + width, y);
+			//position_.set(position_.x + body_size_.x, position_.y);
 			break;
 	}
 }
 
 bool Pacman::isDead() const { // dead if pacman goes off the screen
-    return (position_.x < 0 || position_.y < 0 || position_.x > screen_dims_.x - body_size_.x
-            || position_.y > screen_dims_.y - body_size_.y);
+    int x = image_frame_.getX();
+    int y = image_frame_.getY();
+    
+    int width = image_frame_.getWidth();
+    int height = image_frame_.getHeight();
+
+    /*return (position_.x < 0 || position_.y < 0 || position_.x > screen_dims_.x - body_size_.x || position_.y > screen_dims_.y - body_size_.y);*/
+    return (x < 0 || y < 0 || x > screen_dims_.x - width || y > screen_dims_.y - height);
 }
 
 void Pacman::eatFood() {
@@ -62,14 +83,19 @@ void Pacman::resize(int w, int h) {
 	int width = ofGetWindowWidth();
 	int height = ofGetWindowHeight();
 
-    float new_x = ((position_.x / screen_dims_.x) * w);
-    float new_y = ((position_.y / screen_dims_.y) * h);
-    position_.set(new_x, new_y);
+    //float new_x = ((position_.x / screen_dims_.x) * w);
+    //float new_y = ((position_.y / screen_dims_.y) * h);
+    //position_.set(new_x, new_y);
+
+    float new_x = ((image_frame_.getX() / screen_dims_.x) * w);
+    float new_y = ((image_frame_.getY() / screen_dims_.y) * h);
+    image_frame_.setPosition(new_x, new_y);
 
     screen_dims_.set(width, height);
 
 	float body_d = kbody_size_modifier_ * width;
-	body_size_.set(body_d, body_d);
+	//body_size_.set(body_d, body_d);
+    image_frame_.setSize(body_d, body_d);
 }
 
 int Pacman::getNumPoints() const {

@@ -28,9 +28,10 @@ void PacmanGame::setup(){
 void PacmanGame::update() {
     if (should_update_) {
         if (current_state_ == IN_PROGRESS) {
-            ofVec2f pacman_size = game_pacman_.getPacmanSize();
-            ofVec2f head_pos = game_pacman_.getPosition();
-            ofRectangle pacman_rect(head_pos.x, head_pos.y, pacman_size.x, pacman_size.y);
+            //ofVec2f pacman_size = game_pacman_.getPacmanSize();
+            //ofVec2f head_pos = game_pacman_.getPosition();
+            //ofRectangle pacman_rect(head_pos.x, head_pos.y, pacman_size.x, pacman_size.y);
+            ofRectangle pacman_rect = game_pacman_.get_image_frame();
             
             //ofVec2f ghost_size = ghost_1_.get_body_size();
             //ofVec2f ghost_pos = ghost_1_.get_position();
@@ -183,10 +184,10 @@ void PacmanGame::draw_ghosts() {
 }
 
 void PacmanGame::draw_pacman() {
-    ofVec2f snake_body_size = game_pacman_.getPacmanSize();
-    ofVec2f head_pos = game_pacman_.getPosition();
+    //ofVec2f snake_body_size = game_pacman_.getPacmanSize();
+    //ofVec2f head_pos = game_pacman_.getPosition();
     //ofSetColor(game_pacman_.getColor());
-    ofDrawRectangle(head_pos.x, head_pos.y, snake_body_size.x, snake_body_size.y);
+    ofDrawRectangle(game_pacman_.get_image_frame());
 }
 
 void PacmanGame::draw_food() {
