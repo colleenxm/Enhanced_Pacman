@@ -3,8 +3,6 @@
 #include <algorithm>
 #include <iostream>
 
-using namespace snakelinkedlist;
-
 // Setup method
 void snakeGame::setup(){
     ofSetWindowTitle("ENHANCED PACMAN");
@@ -25,11 +23,11 @@ void snakeGame::setup(){
 void snakeGame::update() {
     if (should_update_) {
         if (current_state_ == IN_PROGRESS) {
-            ofVec2f snake_body_size = game_snake_.getBodySize();
+            ofVec2f pacman_size = game_snake_.getPacmanSize();
             ofVec2f head_pos = game_snake_.getHead()->position;
-            ofRectangle snake_rect(head_pos.x, head_pos.y, snake_body_size.x, snake_body_size.y);
+            ofRectangle pacman_rect(head_pos.x, head_pos.y, pacman_size.x, pacman_size.y);
             
-            if (snake_rect.intersects(game_food_.getFoodRect())) {
+            if (pacman_rect.intersects(game_food_.getFoodRect())) {
                 game_snake_.eatFood(game_food_.getColor());
                 game_food_.rebase();
             }
@@ -138,16 +136,10 @@ void snakeGame::drawFood() {
 }
 
 void snakeGame::drawSnake() {
-    ofVec2f snake_body_size = game_snake_.getBodySize();
+    ofVec2f snake_body_size = game_snake_.getPacmanSize();
     ofVec2f head_pos = game_snake_.getHead()->position;
     ofSetColor(game_snake_.getHead()->color);
     ofDrawRectangle(head_pos.x, head_pos.y, snake_body_size.x, snake_body_size.y);
-    
-    for (SnakeBody* curr = game_snake_.getHead(); curr != NULL; curr = curr->next) {
-        ofVec2f currPos = curr->position;
-        ofSetColor(curr->color);
-        ofDrawRectangle(currPos.x, currPos.y, snake_body_size.x, snake_body_size.y);
-    }
 }
 
 void snakeGame::drawGameOver() {
