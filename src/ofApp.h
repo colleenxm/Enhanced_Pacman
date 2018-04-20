@@ -4,26 +4,26 @@
 #include <utility>
 
 #include "ofMain.h"
-#include "snake.h"
-#include "SnakeFood.h"
+#include "pacman.h"
+#include "wanderer.h"
 
-// Enum to represent the current state of the game
-enum GameState {
-    NOT_STARTED = 0,
-    IN_PROGRESS,
-    PAUSED,
-    FINISHED
-};
-
-class snakeGame : public ofBaseApp {
+class PacmanGame : public ofBaseApp {
 private:
+    // Enum to represent the current state of the game
+    enum GameState {
+        NOT_STARTED = 0,
+        IN_PROGRESS,
+        PAUSED,
+        FINISHED
+    };
+    
     // FOR INTRODUCTION PANEL
     ofSoundPlayer intro_music_; // plays music
     ofTrueTypeFont string_font_; // sets font, used to print strings with colors/sizes/fonts other than the default
     
     GameState current_state_ = NOT_STARTED; // The current state of the game, used to determine possible actions
-    Snake game_snake_; // The object that represents the user controlled snake
-    SnakeFood game_food_; // The object that represents the food pellet the user is attempting to eat with the snake
+    Pacman game_pacman_; // The object that represents the user controlled snake
+    Wanderer game_food_; // The object that represents the food pellet the user is attempting to eat with the snake
     
     bool should_update_ = true;     // A flag boolean used in the update() function. Due to the frame dependent animation we've
     // written, and the relatively low framerate, a bug exists where users can prefire direction
@@ -32,7 +32,7 @@ private:
     
     // Private helper methods to render various aspects of the game on screen.
     void drawFood();
-    void drawSnake();
+    void drawPacman();
     void drawGameOver();
     void drawGamePaused();
     

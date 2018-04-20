@@ -4,7 +4,7 @@
 #include <iostream>
 
 // Setup method
-void snakeGame::setup(){
+void PacmanGame::setup(){
     ofSetWindowTitle("ENHANCED PACMAN");
     
     srand(static_cast<unsigned>(time(0))); // Seed random with current time
@@ -23,20 +23,25 @@ void snakeGame::setup(){
  3. Update the snake in the current direction it is moving
  4. Check to see if the snakes new position has resulted in its death and the end of the game
  */
-void snakeGame::update() {
+void PacmanGame::update() {
     if (should_update_) {
         if (current_state_ == IN_PROGRESS) {
-            ofVec2f pacman_size = game_snake_.getPacmanSize();
-            ofVec2f head_pos = game_snake_.getPosition();
+            ofVec2f pacman_size = game_pacman_.getPacmanSize();
+            ofVec2f head_pos = game_pacman_.getPosition();
             ofRectangle pacman_rect(head_pos.x, head_pos.y, pacman_size.x, pacman_size.y);
             
-            if (pacman_rect.intersects(game_food_.getFoodRect())) {
-                game_snake_.eatFood(game_food_.getColor());
+            ofVec2f food_size = game_food_.getBodySize();
+            ofVec2f food_pos = game_food_.getPosition();
+            ofRectangle food_rect(food_pos.x, food_pos.y, food_size.x, food_size.y);
+
+            if (pacman_rect.intersects(food_rect)) {
+                game_pacman_.eatFood(game_food_.getColor());
                 game_food_.rebase();
             }
-            game_snake_.update();
+            game_pacman_.update();
+            game_food_.update();
             
-            if (game_snake_.isDead()) {
+            if (game_pacman_.isDead()) {
                 current_state_ = FINISHED;
             }
         }
@@ -50,7 +55,7 @@ void snakeGame::update() {
  2. If the game is finished draw the game over screen and final score
  3. Draw the current position of the food and of the snake
  */
-void snakeGame::draw(){ // is called over and over again
+void PacmanGame::draw(){ // is called over and over again
     if (current_state_ == NOT_STARTED) {
         ofSetBackgroundColor(0, 0, 0); // set background as black
 
@@ -62,11 +67,11 @@ void snakeGame::draw(){ // is called over and over again
         
     } else if (current_state_ == IN_PROGRESS) {
         drawFood();
-        drawSnake();
+        drawPacman();
 
     } else if(current_state_ == PAUSED) {
         drawFood();
-        drawSnake();
+        drawPacman();
         drawGamePaused();
         
     } else if(current_state_ == FINISHED) {
@@ -87,7 +92,7 @@ void snakeGame::draw(){ // is called over and over again
  and current_direction is not opposite of dir (Prevents the snake turning and eating itself)
  Update direction of snake and force a game update (see ofApp.h for why)
  */
-void snakeGame::keyPressed(int key){
+void PacmanGame::keyPressed(int key){
     if (key == OF_KEY_F12) {
         ofToggleFullscreen();
         return;
@@ -101,28 +106,28 @@ void snakeGame::keyPressed(int key){
     }
     else if (current_state_ == IN_PROGRESS)
     {
-        Direction current_direction = game_snake_.getDirection();
+        Pacman::Direction current_direction = game_pacman_.getDirection(); // figure out why it's making me do this
         
         // If current direction has changed to a valid new one, force an immediate update and skip the next frame update
-        if (upper_key == 'W' && current_direction != DOWN && current_direction != UP) {
-            game_snake_.setDirection(UP);
+        if (upper_key == 'W' && current_direction != Pacman::DOWN && current_direction != Pacman::UP) {
+            game_pacman_.setDirection(Pacman::UP);
             update();
             should_update_ = false;
         }
         
-        else if (upper_key == 'A' && current_direction != RIGHT && current_direction != LEFT) {
-            game_snake_.setDirection(LEFT);
+        else if (upper_key == 'A' && current_direction != Pacman::RIGHT && current_direction != Pacman::LEFT) {
+            game_pacman_.setDirection(Pacman::LEFT);
             update();
             should_update_ = false;
         }
         
-        else if ((upper_key == 'S') && current_direction != UP && current_direction != DOWN) {
-            game_snake_.setDirection(DOWN);
+        else if ((upper_key == 'S') && current_direction != Pacman::UP && current_direction != Pacman::DOWN) {
+            game_pacman_.setDirection(Pacman::DOWN);
             update();
             should_update_ = false;
         }
-        else if (upper_key == 'D' && current_direction != LEFT && current_direction != RIGHT) {
-            game_snake_.setDirection(RIGHT);
+        else if (upper_key == 'D' && current_direction != Pacman::LEFT && current_direction != Pacman::RIGHT) {
+            game_pacman_.setDirection(Pacman::RIGHT);
             update();
             should_update_ = false;
             
@@ -135,39 +140,45 @@ void snakeGame::keyPressed(int key){
     }
 }
 
-void snakeGame::mousePressed(int x, int y, int button){
+void PacmanGame::mousePressed(int x, int y, int button){
     if (current_state_ == NOT_STARTED) {
         current_state_ = IN_PROGRESS;
     }
 }
 
-void snakeGame::reset() {
-    game_snake_ = Snake();
+void PacmanGame::reset() {
+    game_pacman_ = Pacman();
     game_food_.rebase();
     current_state_ = IN_PROGRESS;
 }
 
-void snakeGame::windowResized(int w, int h){
+void PacmanGame::windowResized(int w, int h){
     game_food_.resize(w, h);
-    game_snake_.resize(w, h);
+    game_pacman_.resize(w, h);
 }
 
-void snakeGame::drawFood() {
+void PacmanGame::drawFood() {
+    ofVec2f food_body_size = game_food_.getBodySize();
+    ofVec2f position = game_food_.getPosition();
     ofSetColor(game_food_.getColor());
-    ofDrawRectangle(game_food_.getFoodRect());
+    ofDrawRectangle(position.x, position.y, food_body_size.x, food_body_size.y);
+
+    //ofSetColor(game_food_.getColor());
+    //ofDrawRectangle(game_food_.getFoodRect());
 }
 
-void snakeGame::drawSnake() {
-    ofVec2f snake_body_size = game_snake_.getPacmanSize();
-    ofVec2f head_pos = game_snake_.getPosition();
-    ofSetColor(game_snake_.getColor());
+void PacmanGame::drawPacman() {
+    ofVec2f snake_body_size = game_pacman_.getPacmanSize();
+    ofVec2f head_pos = game_pacman_.getPosition();
+    ofSetColor(game_pacman_.getColor());
     ofDrawRectangle(head_pos.x, head_pos.y, snake_body_size.x, snake_body_size.y);
 }
 
-void snakeGame::drawGameOver() {
+void PacmanGame::drawGameOver() {
+    // draw another screen here
 }
 
-void snakeGame::drawGamePaused() {
+void PacmanGame::drawGamePaused() {
     string pause_message = "P to Unpause!";
     ofSetColor(0, 0, 0);
     ofDrawBitmapString(pause_message, ofGetWindowWidth() / 1.5, ofGetWindowHeight() / 1.5);
