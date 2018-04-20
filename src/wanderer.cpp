@@ -43,24 +43,27 @@ void Wanderer::rebase() {
 }
 
 /*ofRectangle Wanderer::getFoodRect() {
-    return food_rect_;
-}*/
+ return food_rect_;
+ }*/
 
-ofColor Wanderer::getColor() {
+ofColor& Wanderer::get_color() {
     return color_;
 }
 
-ofVec2f Wanderer::getBodySize() { // size of the wanderer
+ofVec2f& Wanderer::get_body_size() { // size of the wanderer
     return body_size_;
 }
 
-ofVec2f Wanderer::getPosition() {
+ofVec2f& Wanderer::get_position() {
     return position_;
 }
 
-void Wanderer::update() {
-    choose_random_direction();
-    move_in_new_direction(); // new direction is set as current direction
+int Wanderer::get_num_steps_taken() { // gets the number of steps taken
+    return num_steps_taken_;
+}
+
+void Wanderer::incr_num_steps_taken() { // increments the number of steps taken
+    num_steps_taken_++;
 }
 
 bool Wanderer::is_valid_position(ofVec2f& position) {// checks if new position is valid
@@ -95,26 +98,22 @@ ofVec2f& Wanderer::calculate_new_position(Direction direction) { // calculates t
 }
 
 void Wanderer::choose_random_direction() { // valid position - can take at least 1 step in that direction
-
+    
     Direction random_direction;
     ofVec2f new_location;
     new_location.set(-1, -1);
     
     while (!is_valid_position(new_location)) { // while position isn't valid
-        random_direction = static_cast<Direction>(rand() % kNumRealDirections); // 1 of the 4 real direction
+        random_direction = static_cast<Direction>(rand() % kNumRealDirections_); // 1 of the 4 real direction
         new_location = calculate_new_position(random_direction);
     }
     current_direction_ = random_direction;
 }
 
-void Wanderer::move_in_new_direction() { // need to slow this down
-    for (int steps = 0; steps < 4; steps++) {
-        ofVec2f new_position = calculate_new_position(current_direction_);
-        
-        if (!is_valid_position(new_position)) { // stop moving if it's not a valid position anymore
-            break;
-        } else {
-            position_.set(new_position.x, new_position.y);
-        }
+void Wanderer::move_in_new_direction() { // need to figure out what to do if the ghost becomes stuck
+    ofVec2f new_position = calculate_new_position(current_direction_);
+    
+    if (is_valid_position(new_position)) {
+        position_.set(new_position.x, new_position.y);
     }
 }

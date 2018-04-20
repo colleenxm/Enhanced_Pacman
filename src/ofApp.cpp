@@ -30,16 +30,29 @@ void PacmanGame::update() {
             ofVec2f head_pos = game_pacman_.getPosition();
             ofRectangle pacman_rect(head_pos.x, head_pos.y, pacman_size.x, pacman_size.y);
             
-            ofVec2f food_size = game_food_.getBodySize();
-            ofVec2f food_pos = game_food_.getPosition();
+            ofVec2f food_size = game_food_.get_body_size();
+            ofVec2f food_pos = game_food_.get_position();
             ofRectangle food_rect(food_pos.x, food_pos.y, food_size.x, food_size.y);
 
             if (pacman_rect.intersects(food_rect)) {
-                game_pacman_.eatFood(game_food_.getColor());
+                game_pacman_.eatFood(game_food_.get_color());
                 game_food_.rebase();
             }
-            game_pacman_.update();
-            game_food_.update();
+            game_pacman_.update(); // gets new location for the pacman and draws in the next tick
+            
+            // Explanation: We want the ghost to take a number of steps in its current
+            // direction before changing directions so it won't look like it's just going in
+            // a circle. However, we also need to make sure that each step the ghost takes
+            // is clearly drawn out so it won't look like it's jumping around. So, I'm keeping
+            // track of the number of steps the ghost moves in a direction before changing the
+            // direction (which happens every CONST number of steps). Note that everything to
+            // do with the ghost is in the ghost class for the sake of OOP (and because the
+            // Pacman game has >1 ghosts ...)
+            if (game_food_.get_num_steps_taken() % game_food_.kNumStepsBeforeDirectionChange_) {
+                game_food_.choose_random_direction();
+            }
+            game_food_.move_in_new_direction();
+            game_food_.incr_num_steps_taken();
             
             if (game_pacman_.isDead()) {
                 current_state_ = FINISHED;
@@ -158,9 +171,9 @@ void PacmanGame::windowResized(int w, int h){
 }
 
 void PacmanGame::drawFood() {
-    ofVec2f food_body_size = game_food_.getBodySize();
-    ofVec2f position = game_food_.getPosition();
-    ofSetColor(game_food_.getColor());
+    ofVec2f food_body_size = game_food_.get_body_size();
+    ofVec2f position = game_food_.get_position();
+    ofSetColor(game_food_.get_color());
     ofDrawRectangle(position.x, position.y, food_body_size.x, food_body_size.y);
 
     //ofSetColor(game_food_.getColor());

@@ -25,23 +25,29 @@ private:
     ofVec2f body_size_; // size of wanderer - replaces rectangle
     ofVec2f position_; // position of wanderer
     
-    const int kNumRealDirections = 4; // number of real directions, to exclude dummy direction
+    const int kNumRealDirections_ = 4; // number of real directions, to exclude dummy direction
     Direction current_direction_ = STARTING; // starts at a dummy direction
     
-    void choose_random_direction(); // chooses a random direction - called in update
-    void move_in_new_direction(); // moves in that random direction - called in update
     bool is_valid_position(ofVec2f& position); // checks if new position is valid
     ofVec2f& calculate_new_position(Direction direction); // calculates the new position and returns a pair represententing the position
     
+    int num_steps_taken_ = 0; // keeps track of the number of steps taken in the current direction (so that the direction can be changed once every kNumStepsBeforeDirectionChange_ steps)
+    
 public:
+    const int kNumStepsBeforeDirectionChange_ = 20; // number of steps to take in the new  direction before changing direction. Note that this is used in ofApp so each step can be drawn out (else the ghost would jump around). No point in hiding this - will need a getter anyways
+
 	Wanderer(); // Default constructor, sets up generator devices and rarndomly places food at a valid location
 	void rebase(); // Called once the snake has successfully eaten food, replaces the foods color and location
 	void resize(int w, int h); // Called by application resize, resizes food rect to new window dimensions
     
-    ofVec2f getBodySize(); // get size of body
-    ofVec2f getPosition(); // get current position
+    ofVec2f& get_body_size(); // get size of body
+    ofVec2f& get_position(); // get current position
 	//ofRectangle getFoodRect(); // Gets the rectangle that represents the food object
-	ofColor getColor(); // Gets the color of the current food object
+	ofColor& get_color(); // Gets the color of the current food object
     
-    void update(); // moves in a random direction for 4 units
+    int get_num_steps_taken(); // gets the number of steps taken
+    void incr_num_steps_taken(); // increments the number of steps taken
+    
+    void choose_random_direction(); // chooses a random direction
+    void move_in_new_direction(); // moves in that random direction - note that this method is called more than choose_random_direction so the ghost can actually move before changing directions (will look like it's jumping around otherwise)
 };
