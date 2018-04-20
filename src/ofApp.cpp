@@ -46,20 +46,20 @@ void EnhancedPacman::update() {
  */
 void EnhancedPacman::draw(){ // is called over and over again
     if (current_state_ == NOT_STARTED) {
-        intro_music_.play();
-        
         ofSetBackgroundColor(0, 0, 0); // black
         ofSetColor(0, 90, 60); // dark green
         ofFill();
         
         ofDrawBitmapString("Click anywhere to continue. ", ofGetWidth()/6, ofGetHeight()/6);
         string_font_.drawString("WELCOME TO THE PACMAN GAME", ofGetWidth()/6, ofGetWidth()/6);
+  
+    } else if (current_state_ == IN_PROGRESS){
+        drawFood();
+        
     } else if(current_state_ == PAUSED) {
         drawGamePaused();
     } else if(current_state_ == FINISHED) {
         drawGameOver();
-    } else {
-        drawFood();
     }
 }
 
@@ -90,51 +90,13 @@ void EnhancedPacman::keyPressed(int key){
     }
     else if (current_state_ == IN_PROGRESS)
     {
-        /*SnakeDirection current_direction = game_snake_.getDirection();
-        
-        // If current direction has changed to a valid new one, force an immediate update and skip the next frame update
-        if (upper_key == 'W' && current_direction != DOWN && current_direction != UP) {
-            game_snake_.setDirection(UP);
-            update();
-            should_update_ = false;
-            should_display_top_scores_ = false;
-            should_update_highest_scores_ = true;
-        }
-        
-        else if (upper_key == 'A' && current_direction != RIGHT && current_direction != LEFT) {
-            game_snake_.setDirection(LEFT);
-            update();
-            should_update_ = false;
-            should_display_top_scores_ = false;
-            should_update_highest_scores_ = true;
-        }
-        
-        else if ((upper_key == 'S') && current_direction != UP && current_direction != DOWN) {
-            game_snake_.setDirection(DOWN);
-            update();
-            should_update_ = false;
-            should_display_top_scores_ = false;
-            should_update_highest_scores_ = true;
-        }
-        else if (upper_key == 'D' && current_direction != LEFT && current_direction != RIGHT) {
-            game_snake_.setDirection(RIGHT);
-            update();
-            should_update_ = false;
-            should_display_top_scores_ = false;
-            should_update_highest_scores_ = true;
-            
-        } else if (upper_key == 'H') { // pauses the game and prints the highest scores
-            should_display_top_scores_ = true;
-            current_state_ = PAUSED;
-            should_update_highest_scores_ = true;
-        }*/
     } else if (upper_key == 'R' && current_state_ == FINISHED) {
         reset();
     }
 }
 
 void EnhancedPacman::reset() {
-    game_food_.rebase();
+    // create more food objects (??)
     current_state_ = IN_PROGRESS;
 }
 

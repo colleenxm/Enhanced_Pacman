@@ -20,15 +20,11 @@ private:
     ofSoundPlayer intro_music_; // plays music
     ofTrueTypeFont string_font_; // sets font, used to print strings with colors/sizes/fonts other than the default
 
-    
     GameState current_state_ = NOT_STARTED; // should start at the introduction
 
-    Wanderer game_food_; // The object that represents the food pellet the user is attempting to eat with the snake
+    Wanderer game_food_; // test wanderer
     
-    bool should_update_ = true;     // A flag boolean used in the update() function. Due to the frame dependent animation we've
-    // written, and the relatively low framerate, a bug exists where users can prefire direction
-    // changes faster than a frame update. Our solution is to force a call to update on direction
-    // changes and then not update on the next frame to prevent the snake from skipping across the screen.
+    bool should_update_ = true; // derived from ofsnake MP
     
     // Private helper methods to render various aspects of the game on screen.
     void drawFood();

@@ -11,14 +11,11 @@ Wanderer::Wanderer() {
     float size_d = kfood_modifier_ * window_width;
     food_rect_.setSize(size_d, size_d);
     
-    generator_ = std::mt19937(rand());
-    dist_x_ = std::uniform_int_distribution<>(0, window_width - size_d);
-    dist_y_ = std::uniform_int_distribution<>(0, window_height - size_d);
-    dist_color_ = std::uniform_int_distribution<>(0, 255);
-    rebase();
+    location.first = rand() % window_width;
+    location.second = rand() % window_height;
 }
 
-void Wanderer::resize(int w, int h) {
+void Wanderer::resize(int w, int h) { // to resize the food along with the window. Derived from ofsnake MP.
     float size_d = kfood_modifier_ * w;
     food_rect_.setSize(size_d, size_d);
     
@@ -26,19 +23,20 @@ void Wanderer::resize(int w, int h) {
     float new_y = ((food_rect_.getY() / window_dims_.y) * h);
     food_rect_.setPosition(new_x, new_y);
     
-    dist_x_ = std::uniform_int_distribution<>(0, w - size_d);
-    dist_y_ = std::uniform_int_distribution<>(0, h - size_d);
     window_dims_.set(w, h);
 }
 
-void Wanderer::rebase() {
-    auto x = dist_x_(generator_);
-    auto y = dist_y_(generator_);
-    food_rect_.setPosition(x, y);
+void Wanderer::update() { // chooses one random direction to go in and goes in that direction
+    // chooses one random direction to go in - must be valid
+    bool is_valid_dir = false;
+    int rand_direction_index;
     
-    color_.r = dist_color_(generator_);
-    color_.g = dist_color_(generator_);
-    color_.b = dist_color_(generator_);
+    while (!is_valid_dir) {
+        rand_direction_index = rand() % kNumValidDirections; // 4 random indices
+    }
+    
+    // check if it can go in that direction
+    current_direction_ = (Direction) rand_direction_index; // set direction
 }
 
 ofRectangle Wanderer::getFoodRect() {
