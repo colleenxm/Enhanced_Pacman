@@ -9,14 +9,19 @@
 
 // Enum to represent the current state of the game
 enum GameState {
-    IN_PROGRESS = 0,
+    NOT_STARTED = 0,
+    IN_PROGRESS,
     PAUSED,
     FINISHED
 };
 
 class snakeGame : public ofBaseApp {
 private:
-    GameState current_state_ = IN_PROGRESS; // The current state of the game, used to determine possible actions
+    // FOR INTRODUCTION PANEL
+    ofSoundPlayer intro_music_; // plays music
+    ofTrueTypeFont string_font_; // sets font, used to print strings with colors/sizes/fonts other than the default
+    
+    GameState current_state_ = NOT_STARTED; // The current state of the game, used to determine possible actions
     Snake game_snake_; // The object that represents the user controlled snake
     SnakeFood game_food_; // The object that represents the food pellet the user is attempting to eat with the snake
     
@@ -45,5 +50,6 @@ public:
     // Event driven functions, called on appropriate user action
     void keyPressed(int key);
     void windowResized(int w, int h);
+    void mousePressed(int x, int y, int button);
 };
 

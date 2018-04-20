@@ -8,6 +8,9 @@ void snakeGame::setup(){
     ofSetWindowTitle("ENHANCED PACMAN");
     
     srand(static_cast<unsigned>(time(0))); // Seed random with current time
+    
+    string_font_.load("/Users/elizabeth/Downloads/of_v0.9.8_osx_release/examples/addons/networkTcpServerExample/bin/data/type/verdana.ttf", 32, true, false, true, 0.1);
+    intro_music_.load("/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/sound_files/intro_music.mp3");
 }
 
 /*
@@ -24,7 +27,7 @@ void snakeGame::update() {
     if (should_update_) {
         if (current_state_ == IN_PROGRESS) {
             ofVec2f pacman_size = game_snake_.getPacmanSize();
-            ofVec2f head_pos = game_snake_.getHead()->position;
+            ofVec2f head_pos = game_snake_.getPosition();
             ofRectangle pacman_rect(head_pos.x, head_pos.y, pacman_size.x, pacman_size.y);
             
             if (pacman_rect.intersects(game_food_.getFoodRect())) {
@@ -48,14 +51,27 @@ void snakeGame::update() {
  3. Draw the current position of the food and of the snake
  */
 void snakeGame::draw(){ // is called over and over again
-    if(current_state_ == PAUSED) {
+    if (current_state_ == NOT_STARTED) {
+        ofSetBackgroundColor(0, 0, 0); // set background as black
+
+        intro_music_.setLoop(true); // plays over and over again
+        intro_music_.play();
+        
+        string_font_.drawString("WELCOME TO PACMAN!", ofGetWidth()/1.5, ofGetHeight()/1.5);
+        ofDrawBitmapString("Click anywhere to continue", ofGetWidth()/6, ofGetHeight()/6);
+        
+    } else if (current_state_ == IN_PROGRESS) {
+        drawFood();
+        drawSnake();
+
+    } else if(current_state_ == PAUSED) {
+        drawFood();
+        drawSnake();
         drawGamePaused();
+        
+    } else if(current_state_ == FINISHED) {
+        drawGameOver(); // draw another panel later
     }
-    else if(current_state_ == FINISHED) {
-        drawGameOver();
-    }
-    drawFood();
-    drawSnake();
 }
 
 /*
@@ -85,7 +101,7 @@ void snakeGame::keyPressed(int key){
     }
     else if (current_state_ == IN_PROGRESS)
     {
-        SnakeDirection current_direction = game_snake_.getDirection();
+        Direction current_direction = game_snake_.getDirection();
         
         // If current direction has changed to a valid new one, force an immediate update and skip the next frame update
         if (upper_key == 'W' && current_direction != DOWN && current_direction != UP) {
@@ -109,13 +125,19 @@ void snakeGame::keyPressed(int key){
             game_snake_.setDirection(RIGHT);
             update();
             should_update_ = false;
-
+            
         } else if (upper_key == 'H') { // pauses the game and prints the highest scores
             current_state_ = PAUSED;
         }
     } else if (upper_key == 'R' && current_state_ == FINISHED) {
         //updateHighestScores(game_snake_.getFoodEaten()); // "works" if updating here, problem is that I'll be one game behind
         reset();
+    }
+}
+
+void snakeGame::mousePressed(int x, int y, int button){
+    if (current_state_ == NOT_STARTED) {
+        current_state_ = IN_PROGRESS;
     }
 }
 
@@ -137,8 +159,8 @@ void snakeGame::drawFood() {
 
 void snakeGame::drawSnake() {
     ofVec2f snake_body_size = game_snake_.getPacmanSize();
-    ofVec2f head_pos = game_snake_.getHead()->position;
-    ofSetColor(game_snake_.getHead()->color);
+    ofVec2f head_pos = game_snake_.getPosition();
+    ofSetColor(game_snake_.getColor());
     ofDrawRectangle(head_pos.x, head_pos.y, snake_body_size.x, snake_body_size.y);
 }
 
@@ -150,3 +172,5 @@ void snakeGame::drawGamePaused() {
     ofSetColor(0, 0, 0);
     ofDrawBitmapString(pause_message, ofGetWindowWidth() / 1.5, ofGetWindowHeight() / 1.5);
 }
+
+
