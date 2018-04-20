@@ -5,7 +5,10 @@
 
 #include "ofMain.h"
 #include "pacman.h"
-#include "wanderer.h"
+#include "ghost.h"
+#include "food.hpp"
+
+// LOOSELY adapted from OF-SNAKE MP: https://github.com/uiuc-sp18-cs126/of-snake-ElizWang (mostly just structural stuff)
 
 class PacmanGame : public ofBaseApp {
 private:
@@ -22,17 +25,19 @@ private:
     ofTrueTypeFont string_font_; // sets font, used to print strings with colors/sizes/fonts other than the default
     
     GameState current_state_ = NOT_STARTED; // The current state of the game, used to determine possible actions
-    Pacman game_pacman_; // The object that represents the user controlled snake
-    Wanderer game_food_; // The object that represents the food pellet the user is attempting to eat with the snake
     
-    bool should_update_ = true;     // A flag boolean used in the update() function. Due to the frame dependent animation we've
-    // written, and the relatively low framerate, a bug exists where users can prefire direction
-    // changes faster than a frame update. Our solution is to force a call to update on direction
-    // changes and then not update on the next frame to prevent the snake from skipping across the screen.
+    // Note: Dynamically allocationg all eatable objects (except for the pacman) so I can delete them later
+    Pacman game_pacman_; // The object that represents the user controlled snake
+    Ghost ghost_1_; // represents a ghost, note that ghosts can eat the pacman (which would end the game) but the pacman can also eat ghosts (which would drastically increase its num of points)
+    Food/***/ game_food_;
+    
+    bool should_update_ = true;     // A flag boolean used in the update() function.
     
     // Private helper methods to render various aspects of the game on screen.
-    void drawFood();
-    void drawPacman();
+    void draw_ghosts();
+    void draw_pacman();
+    void draw_food();
+    
     void drawGameOver();
     void drawGamePaused();
     
@@ -40,6 +45,11 @@ private:
     void reset();
         
 public:
+    /*PacmanGame() : game_food_ (new Food()){}
+    
+    ~PacmanGame() {
+        delete game_food_;
+    }*/
     // Function used for one time setup
     void setup();
     

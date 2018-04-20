@@ -1,5 +1,5 @@
 #include "ofMain.h"
-#include "wanderer.h"
+#include "ghost.h"
 #pragma once
 
 class Pacman {
@@ -23,6 +23,7 @@ private:
     int num_points_; // corresponds to the food eaten
     
 public:
+    // Methods to use adapted from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
     ofVec2f getPosition() const;
     ofColor getColor() const;
 
@@ -31,7 +32,7 @@ public:
     ofVec2f getPacmanSize() const; // gets the size of a body segment, used for rendering
 	bool isDead() const; // Determines if the current state of the snake is dead
 	void update(); // updates the snake one body square in the current direction
-	void eatFood(ofColor new_body_color); // the snake has eaten a food while travelling in a certain direction.
+	void eatFood(); //
 	void resize(int w, int h); // Resizes the snake to a new width and height
 	int getNumPoints() const; // Gets the number of food items the snake has eaten
 	Direction getDirection() const; // Gets the Snake's current direction

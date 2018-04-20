@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <iostream>
 
+// LOOSELY adapted from OF-SNAKE MP: https://github.com/uiuc-sp18-cs126/of-snake-ElizWang (mostly just structural stuff)
+
 // Setup method
 void PacmanGame::setup(){
     ofSetWindowTitle("ENHANCED PACMAN");
@@ -30,13 +32,15 @@ void PacmanGame::update() {
             ofVec2f head_pos = game_pacman_.getPosition();
             ofRectangle pacman_rect(head_pos.x, head_pos.y, pacman_size.x, pacman_size.y);
             
-            ofVec2f food_size = game_food_.get_body_size();
-            ofVec2f food_pos = game_food_.get_position();
-            ofRectangle food_rect(food_pos.x, food_pos.y, food_size.x, food_size.y);
+            ofVec2f ghost_size = ghost_1_.get_body_size();
+            ofVec2f ghost_pos = ghost_1_.get_position();
+            ofRectangle ghost_rect(ghost_pos.x, ghost_pos.y, ghost_size.x, ghost_size.y);
 
-            if (pacman_rect.intersects(food_rect)) {
-                game_pacman_.eatFood(game_food_.get_color());
-                game_food_.rebase();
+            // need to add code for pacman and ghost interactions
+            
+            if (pacman_rect.intersects(game_food_.getFoodRect())) {
+                game_pacman_.eatFood(); // change this
+                game_food_.rebase(); //delete game_food_;
             }
             game_pacman_.update(); // gets new location for the pacman and draws in the next tick
             
@@ -48,11 +52,11 @@ void PacmanGame::update() {
             // direction (which happens every CONST number of steps). Note that everything to
             // do with the ghost is in the ghost class for the sake of OOP (and because the
             // Pacman game has >1 ghosts ...)
-            if (game_food_.get_num_steps_taken() % game_food_.kNumStepsBeforeDirectionChange_) {
-                game_food_.choose_random_direction();
+            if (ghost_1_.get_num_steps_taken() % ghost_1_.kNumStepsBeforeDirectionChange_) {
+                ghost_1_.choose_random_direction();
             }
-            game_food_.move_in_new_direction();
-            game_food_.incr_num_steps_taken();
+            ghost_1_.move_in_new_direction();
+            ghost_1_.incr_num_steps_taken();
             
             if (game_pacman_.isDead()) {
                 current_state_ = FINISHED;
@@ -70,7 +74,7 @@ void PacmanGame::update() {
  */
 void PacmanGame::draw(){ // is called over and over again
     if (current_state_ == NOT_STARTED) {
-        ofSetBackgroundColor(0, 0, 0); // set background as black
+        //ofSetBackgroundColor(0, 0, 0); // set background as black
 
         intro_music_.setLoop(true); // plays over and over again
         intro_music_.play();
@@ -79,12 +83,14 @@ void PacmanGame::draw(){ // is called over and over again
         ofDrawBitmapString("Click anywhere to continue", ofGetWidth()/6, ofGetHeight()/6);
         
     } else if (current_state_ == IN_PROGRESS) {
-        drawFood();
-        drawPacman();
+        draw_ghosts();
+        draw_food();
+        draw_pacman();
 
     } else if(current_state_ == PAUSED) {
-        drawFood();
-        drawPacman();
+        draw_ghosts();
+        draw_food();
+        draw_pacman();
         drawGamePaused();
         
     } else if(current_state_ == FINISHED) {
@@ -161,30 +167,34 @@ void PacmanGame::mousePressed(int x, int y, int button){
 
 void PacmanGame::reset() {
     game_pacman_ = Pacman();
-    game_food_.rebase();
+    ghost_1_.rebase();
     current_state_ = IN_PROGRESS;
 }
 
 void PacmanGame::windowResized(int w, int h){
-    game_food_.resize(w, h);
+    ghost_1_.resize(w, h);
     game_pacman_.resize(w, h);
 }
 
-void PacmanGame::drawFood() {
-    ofVec2f food_body_size = game_food_.get_body_size();
-    ofVec2f position = game_food_.get_position();
-    ofSetColor(game_food_.get_color());
-    ofDrawRectangle(position.x, position.y, food_body_size.x, food_body_size.y);
-
-    //ofSetColor(game_food_.getColor());
-    //ofDrawRectangle(game_food_.getFoodRect());
+void PacmanGame::draw_ghosts() {
+    ofVec2f ghost_body_size = ghost_1_.get_body_size();
+    ofVec2f position = ghost_1_.get_position();
+    ofSetColor(ghost_1_.get_color());
+    ofDrawRectangle(position.x, position.y, ghost_body_size.x, ghost_body_size.y);
 }
 
-void PacmanGame::drawPacman() {
+void PacmanGame::draw_pacman() {
     ofVec2f snake_body_size = game_pacman_.getPacmanSize();
     ofVec2f head_pos = game_pacman_.getPosition();
     ofSetColor(game_pacman_.getColor());
     ofDrawRectangle(head_pos.x, head_pos.y, snake_body_size.x, snake_body_size.y);
+}
+
+void PacmanGame::draw_food() {
+    ofSetColor(100, 100, 100);
+    //ofDrawRectangle(game_food_.getFoodRect());
+    ofRectangle food_frame = game_food_.getFoodRect();
+    game_food_.getFoodImage().draw(food_frame.getX(), food_frame.getY(), food_frame.getWidth(), food_frame.getHeight());
 }
 
 void PacmanGame::drawGameOver() {

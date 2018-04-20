@@ -2,6 +2,8 @@
 
 const float Pacman::kbody_size_modifier_ = 0.03; // bigger than ghosts
 
+// Adapted from OF-SNAKE MP (Snake class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang 
+
 ofVec2f Pacman::getPosition() const {
 	return position_;
 };
@@ -51,7 +53,7 @@ bool Pacman::isDead() const { // dead if pacman goes off the screen
             || position_.y > screen_dims_.y - body_size_.y);
 }
 
-void Pacman::eatFood(ofColor newBodyColor) {
+void Pacman::eatFood() {
     num_points_++;
 }
 
