@@ -38,9 +38,7 @@ private:
     
     // Resets the game objects to their original state.
     void reset();
-    
-    
-    int temp_counter = 0; // for ghosts - call changing direction once per ten steps
+        
 public:
     // Function used for one time setup
     void setup();
