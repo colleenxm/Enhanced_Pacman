@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "ghost.h"
 
-const float Ghost::kFoodModifier = 0.03; // same size as pacman
+const float Ghost::kFoodModifier = 0.1; // same size as pacman
 
 // Adapted and modified from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
 Ghost::Ghost() {
@@ -16,6 +16,8 @@ Ghost::Ghost() {
     dist_x_ = std::uniform_int_distribution<>(0, window_width - size_d);
     dist_y_ = std::uniform_int_distribution<>(0, window_height - size_d);
     dist_color_ = std::uniform_int_distribution<>(0, 255);
+    
+    ghost_image_.load("/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/image_files/ghost.png"); // loading image
     rebase();
 }
 
@@ -57,6 +59,10 @@ ofColor& Ghost::get_color() {
 
 ofRectangle& Ghost::get_image_frame() {
     return image_frame_;
+}
+
+ofImage& Ghost::get_food_image() {
+    return ghost_image_;
 }
 
 /*ofVec2f& Ghost::get_body_size() { // size of the wanderer

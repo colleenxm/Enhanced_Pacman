@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include "food.hpp"
 
-const float Food::kfood_modifier_ = 0.02;
+const float Food::kfood_modifier_ = 0.1;
 
 // Adapted from OF-SNAKE MP (SnakeFood class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
 Food::Food() {
@@ -26,7 +26,7 @@ Food::Food() {
     auto y = dist_y_(generator_);
     image_frame_.setPosition(x, y);
     
-    food_image_.load("/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/image_files/apple.png"); // temp path to display image - considering making private
+    food_image_.load("/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/image_files/apple.png"); 
 }
 
 void Food::resize(int w, int h) {
