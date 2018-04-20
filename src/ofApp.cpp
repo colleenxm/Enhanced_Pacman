@@ -1,8 +1,5 @@
 #include "ofApp.h"
 
-#include <algorithm>
-#include <iostream>
-
 // LOOSELY adapted from OF-SNAKE MP: https://github.com/uiuc-sp18-cs126/of-snake-ElizWang (mostly just structural stuff)
 
 // Setup method
@@ -13,6 +10,10 @@ void PacmanGame::setup(){
     
     string_font_.load("/Users/elizabeth/Downloads/of_v0.9.8_osx_release/examples/addons/networkTcpServerExample/bin/data/type/verdana.ttf", 32, true, false, true, 0.1);
     intro_music_.load("/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/sound_files/intro_music.mp3");
+
+
+    int nbLines = 8, nbCols = 9;
+    //std::vector<std::vector<int> > maze = rand_maze(nbLines,nbCols);
 }
 
 /*
@@ -26,7 +27,7 @@ void PacmanGame::setup(){
  4. Check to see if the snakes new position has resulted in its death and the end of the game
  */
 void PacmanGame::update() {
-    if (should_update_) {
+    /*if (should_update_) {
         if (current_state_ == IN_PROGRESS) {
             ofRectangle pacman_rect = game_pacman_.get_image_frame();
             ofRectangle ghost_rect = ghost_1_.get_image_frame();
@@ -59,7 +60,7 @@ void PacmanGame::update() {
             }
         }
     }
-    should_update_ = true;
+    should_update_ = true;*/
 }
 
 void PacmanGame::interact_pacman_with_ghost() { // responsible for all pacman-ghost iteractions
@@ -74,15 +75,13 @@ void PacmanGame::interact_pacman_with_ghost() { // responsible for all pacman-gh
             game_pacman_.eat_food_or_ghost(ghost_1_.kPointsWorth_);
             // need to do something to the ghost
         } else { // ghost eats the pacman if both objects are pointing in the same direction and the ghost is behind the pacman
-            // game over - pacman needs to die
-            game_pacman_.gets_eaten();
+            game_pacman_.gets_eaten(); // game over - pacman needs to die
             current_state_ = FINISHED;
         }
     } else { // ghost eats the pacman if the objects are pointing in different directions
         if ((pacman_direction == UP && ghost_direction == DOWN) || (pacman_direction == DOWN && ghost_direction == UP)
             || (pacman_direction == LEFT && ghost_direction == RIGHT) || (pacman_direction == RIGHT && ghost_direction == LEFT)) {
-            // game over - pacman needs to die
-            game_pacman_.gets_eaten();
+            game_pacman_.gets_eaten(); // game over - pacman needs to die
             current_state_ = FINISHED;
         }
     }
@@ -95,10 +94,30 @@ void PacmanGame::interact_pacman_with_ghost() { // responsible for all pacman-gh
  3. Draw the current position of the food and of the snake
  */
 void PacmanGame::draw(){ // is called over and over again
+    // need to keep track of the current dimensions
+    
+    const int kBlockSize = 15; // size per block
+    const int kWidthMultiplier = 15; // don't want the blocks to overlap - will lead to misleading results
+    const int kHeightMultiplier = 15;
+    
+    for (int i = 0; i < kWidth_; i++) {
+        for (int j = 0; j < kHeight_; j++) {
+            switch (maze_[i][j]) {
+                case 0: // no wall
+                    ofSetColor(100, 100, 100);
+                    break;
+                case 1: // wall
+                    ofSetColor(225, 225, 225);
+                    break;
+            }
+            ofDrawRectangle(i*kWidthMultiplier, j*kHeightMultiplier, kBlockSize, kBlockSize);
+        }
+    }
+    
     /*ofPushMatrix(); // so (0,0) is at the center - derived from https://www.safaribooksonline.com/library/view/openframeworks-essentials/9781784396145/ch02s04.html but messes around with my current game logic
     ofTranslate( ofGetWidth() / 2, ofGetHeight() / 2 );*/
 
-    if (current_state_ == NOT_STARTED) {
+    /*if (current_state_ == NOT_STARTED) {
         ofSetBackgroundColor(0, 0, 0); // set background as black
 
         intro_music_.setLoop(true); // plays over and over again
@@ -120,7 +139,7 @@ void PacmanGame::draw(){ // is called over and over again
         
     } else if(current_state_ == FINISHED) {
         drawGameOver(); // draw another panel later
-    }
+    }*/
 }
 
 /*
