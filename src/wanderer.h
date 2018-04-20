@@ -26,10 +26,12 @@ private:
     ofVec2f position_; // position of wanderer
     
     const int kNumRealDirections = 4; // number of real directions, to exclude dummy direction
-    Direction current_direction = STARTING; // starts at a dummy direction
+    Direction current_direction_ = STARTING; // starts at a dummy direction
     
-    //void choose_random_direction(); // chooses a random direction
-    //void move_in_new_direction(Direction &new_direction); // moves in that random direction
+    void choose_random_direction(); // chooses a random direction - called in update
+    void move_in_new_direction(); // moves in that random direction - called in update
+    bool is_valid_position(ofVec2f& position); // checks if new position is valid
+    ofVec2f& calculate_new_position(Direction direction); // calculates the new position and returns a pair represententing the position
     
 public:
 	Wanderer(); // Default constructor, sets up generator devices and rarndomly places food at a valid location

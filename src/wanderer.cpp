@@ -58,42 +58,63 @@ ofVec2f Wanderer::getPosition() {
     return position_;
 }
 
-void Wanderer::update() { // moves in a random direction
-    bool is_valid_direction = false;
-    
-    int new_x_pos = -1; // new x position
-    int new_y_pos = -1; // new y position - either the x or the y position will equal the original position because it's only moving in 1 direction at a time
+void Wanderer::update() {
+    choose_random_direction();
+    move_in_new_direction(); // new direction is set as current direction
+}
 
-    while (!is_valid_direction) {
-        Direction random_direction = static_cast<Direction>(rand() % kNumRealDirections); // 1 of the 4 real directions
+bool Wanderer::is_valid_position(ofVec2f& position) {// checks if new position is valid
+    return (position.x >= 0 && position.y >= 0 && position.x <= window_dims_.x && position.y <= window_dims_.y);
+}
+
+ofVec2f& Wanderer::calculate_new_position(Direction direction) { // calculates the new position and returns a pair represententing the position
+    ofVec2f new_position;
+    
+    switch (direction) {
+        case UP:
+            new_position.x =  position_.x;
+            new_position.y = position_.y - body_size_.y;
+            break;
+            
+        case DOWN:
+            new_position.x = position_.x;
+            new_position.y = position_.y + body_size_.y;
+            break;
+            
+        case LEFT:
+            new_position.x = position_.x - body_size_.x;
+            new_position.y = position_.y;
+            break;
+            
+        case RIGHT:
+            new_position.x = position_.x + body_size_.x;
+            new_position.y = position_.y;
+            break;
+    }
+    return new_position;
+}
+
+void Wanderer::choose_random_direction() { // valid position - can take at least 1 step in that direction
+
+    Direction random_direction;
+    ofVec2f new_location;
+    new_location.set(-1, -1);
+    
+    while (!is_valid_position(new_location)) { // while position isn't valid
+        random_direction = static_cast<Direction>(rand() % kNumRealDirections); // 1 of the 4 real direction
+        new_location = calculate_new_position(random_direction);
+    }
+    current_direction_ = random_direction;
+}
+
+void Wanderer::move_in_new_direction() { // need to slow this down
+    for (int steps = 0; steps < 4; steps++) {
+        ofVec2f new_position = calculate_new_position(current_direction_);
         
-        switch (random_direction) {
-            case UP:
-                new_x_pos = position_.x;
-                new_y_pos = position_.y - body_size_.y;
-                break;
-                
-            case DOWN:
-                new_x_pos = position_.x;
-                new_y_pos = position_.y + body_size_.y;
-                break;
-                
-            case LEFT:
-                new_x_pos = position_.x - body_size_.x;
-                new_y_pos = position_.y;
-                break;
-                
-            case RIGHT:
-                new_x_pos = position_.x + body_size_.x;
-                new_y_pos = position_.y;
-                break;
-                
-            default:
-                break;
-        }
-        if (new_x_pos >= 0 && new_y_pos >= 0 && new_x_pos <= window_dims_.x && new_y_pos <= window_dims_.y) {
-            is_valid_direction = true;
+        if (!is_valid_position(new_position)) { // stop moving if it's not a valid position anymore
+            break;
+        } else {
+            position_.set(new_position.x, new_position.y);
         }
     }
-    position_.set(new_x_pos, new_y_pos); // valid direction
 }
