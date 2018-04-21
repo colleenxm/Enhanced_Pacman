@@ -3,7 +3,6 @@
 //const float Pacman::kbody_size_modifier_ = 0.05; // all objects should be the same sizes
 
 // Adapted from OF-SNAKE MP (Snake class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
-
 ofVec2f& Pacman::GetMazePosition() {
     return maze_position_;
 }
@@ -18,7 +17,7 @@ Pacman::Pacman() {
 	screen_dims_.set(width, height);
 
 	current_direction_ = RIGHT; // starts out moving right
-    maze_position_.set(3, 3); // starting point
+    //maze_position_.set(3, 3); // starting point
     
     pacman_image_.load("/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/image_files/pacman.png");
     // pacman_image_.rotate90(1); // figure out rotations later
@@ -92,7 +91,7 @@ void Pacman::setDirection(Direction newDirection) {
 
 void Pacman::reset() { // back to original state
     current_direction_ = RIGHT; // starts out moving right
-    maze_position_.set(3, 3); // starting point
+    SetInitialRandomPosition();
     
     num_points_ = 0;
     is_eaten_ = false;

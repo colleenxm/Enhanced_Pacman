@@ -18,6 +18,10 @@ class Maze { // created so I can create an instance of maze (makes more sense th
     // giving the game the power to change the maze is dangerous
     
 private:
+    std::mt19937 generator_; // pseudorandom number generation
+    std::uniform_int_distribution<> dist_x_;
+    std::uniform_int_distribution<> dist_y_;
+
     // 0 = no wall - just an empty square, objects can be placed/move here
     // 1 = wall - objects can't be placed/move here
     // 2 = food - note: will just randomly generating the food here and drawing them in ofapp instead
@@ -64,7 +68,6 @@ private:
             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,1} // 36
         }
     };
-    
     int num_food_items_ = 0;
     
 public:    

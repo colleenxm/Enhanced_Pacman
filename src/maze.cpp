@@ -7,6 +7,13 @@
 
 #include "maze.h"
 
+Maze::Maze() { // set up rand num generator
+    generator_ = std::mt19937(rand());
+    
+    dist_x_ = std::uniform_int_distribution<>(0, kMazeWidth_ - 1); // inclusive at both ends
+    dist_y_ = std::uniform_int_distribution<>(0, kMazeHeight_ - 1);
+}
+
 void Maze::PopulateWithFood(int num_food_items) { // populate the maze with food objects in random, non-wall places
     std::mt19937 generator_; // pseudorandom number generation
     generator_ = std::mt19937(rand());
