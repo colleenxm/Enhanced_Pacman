@@ -25,9 +25,14 @@ private:
     int num_steps_taken_ = 0; // keeps track of the number of steps taken in the current direction (so that the direction can be changed once every kNumStepsBeforeDirectionChange_ steps)
     
     // Explanation: Using a rectangle to keep track of the width/height/x/y corods of the actual image, which is that of a ghost. Image will be drawn with the image frame's dimensions and coords.
-    ofRectangle image_frame_; // frames the still iamge
+    //ofRectangle image_frame_; // frames the still iamge
+    ofVec2f maze_position_; // x, y position of the maze - important: this corresponds to the MAZE ELEMENT and NOT to the actual coordinates in the coordinatep lane
     ofImage ghost_image_; // image that correpsonds with a ghost object
     
+    int one_d_size_; // size per object (dimensions = kBlockSize_ * kBlockSize_), need to standardize all the object sizes to prevent the objects from overlapping with the maze walls
+    const int kMazeWidth_ = 37;
+    const int kMazeHeight_ = 33;
+
 public:
     const int kNumStepsBeforeDirectionChange_ = 20; // number of steps to take in the new  direction before changing direction. Note that this is used in ofApp so each step can be drawn out (else the ghost would jump around). No point in hiding this - will need a getter anyways
 
@@ -37,9 +42,12 @@ public:
 	void rebase(); // Called once the snake has successfully eaten food, replaces the foods color and location
 	void resize(int w, int h); // Called by application resize, resizes food rect to new window dimensions
         
-	ofRectangle& get_image_frame(); // Gets the rectangle that represents the food object
-	ofColor& get_color(); // Gets the color of the current food object
+	//ofRectangle& get_image_frame(); // Gets the rectangle that represents the food object
+    ofVec2f GetMazePosition();
+    ofColor& get_color(); // Gets the color of the current food object
     ofImage& get_food_image(); // gets image
+
+    int Get1DSize(); // gets the 1d size of the object - needed to draw the image
 
     int get_num_steps_taken(); // gets the number of steps taken
     void incr_num_steps_taken(); // increments the number of steps taken

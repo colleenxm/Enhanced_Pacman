@@ -27,16 +27,19 @@ void PacmanGame::setup(){
  4. Check to see if the snakes new position has resulted in its death and the end of the game
  */
 void PacmanGame::update() {
-    /*if (should_update_) {
+    if (should_update_) {
         if (current_state_ == IN_PROGRESS) {
-            ofRectangle pacman_rect = game_pacman_.get_image_frame();
-            ofRectangle ghost_rect = ghost_1_.get_image_frame();
-            
-            if (pacman_rect.intersects(game_food_.get_image_frame())) {
+            //ofRectangle pacman_rect = game_pacman_.get_image_frame();
+            //ofRectangle ghost_rect = ghost_1_.get_image_frame();
+
+            // overlaps is logically equal to being on the same square at the same time
+            //if (pacman_rect.intersects(game_food_.get_image_frame())) {
+            if (game_pacman_.GetMazePosition().x == game_food_.GetMazePosition().x && game_pacman_.GetMazePosition().y == game_food_.GetMazePosition().y) { // problem - needs to ACTUALLY BE ON TOP OF THE OBJECT to eat it, change to a rectangle (should probably just create a rectangle)
                 game_pacman_.eat_food_or_ghost(game_food_.kPointsWorth_); // add some sort of sound effect here
                 game_food_.rebase(); //delete game_food_;
                 
-            } else if (pacman_rect.intersects(ghost_rect)) {
+            //} else if (pacman_rect.intersects(ghost_rect)) {
+            } else if (game_pacman_.GetMazePosition().x == ghost_1_.GetMazePosition().x && game_pacman_.GetMazePosition().y == ghost_1_.GetMazePosition().y) {
                 interact_pacman_with_ghost();
             }
             game_pacman_.update(); // gets new location for the pacman and draws in the next tick
@@ -60,20 +63,23 @@ void PacmanGame::update() {
             }
         }
     }
-    should_update_ = true;*/
+    should_update_ = true;
 }
 
 void PacmanGame::interact_pacman_with_ghost() { // responsible for all pacman-ghost iteractions
     Direction pacman_direction = game_pacman_.get_direction(); // note: coords for 2d = 0, 0 is on the upper lhs
     Direction ghost_direction = ghost_1_.get_direction();
     
-    ofRectangle pacman_rect = game_pacman_.get_image_frame();
-    ofRectangle ghost_rect = ghost_1_.get_image_frame();
-
+    //ofRectangle pacman_rect = game_pacman_.get_image_frame();
+    //ofRectangle ghost_rect = ghost_1_.get_image_frame();
+    ofVec2f pacman_pos = game_pacman_.GetMazePosition();
+    ofVec2f ghost_pos = ghost_1_.GetMazePosition();
+    
     if (pacman_direction == ghost_direction) { // pacman eats the ghost if both objects are pointing in the same direction and the pacman is behind the ghost
-        if (pacman_rect.getX() >= ghost_rect.getX() || pacman_rect.getY() >= ghost_rect.getY()) { // aka if pacman's x or y coord is bigger than the ghost's x y cords
+        //if (pacman_rect.getX() >= ghost_rect.getX() || pacman_rect.getY() >= ghost_rect.getY()) { // aka if pacman's x or y coord is bigger than the ghost's x y cords
+        if (pacman_pos.x >= ghost_pos.x || pacman_pos.y >= ghost_pos.y) { // aka if pacman's x or y coord is bigger than the ghost's x y cords
             game_pacman_.eat_food_or_ghost(ghost_1_.kPointsWorth_);
-            // need to do something to the ghost
+            // need to do something about the ghost
         } else { // ghost eats the pacman if both objects are pointing in the same direction and the ghost is behind the pacman
             game_pacman_.gets_eaten(); // game over - pacman needs to die
             current_state_ = FINISHED;
@@ -94,30 +100,7 @@ void PacmanGame::interact_pacman_with_ghost() { // responsible for all pacman-gh
  3. Draw the current position of the food and of the snake
  */
 void PacmanGame::draw(){ // is called over and over again
-    // need to keep track of the current dimensions
-    
-    const int kBlockSize = 15; // size per block
-    const int kWidthMultiplier = 15; // don't want the blocks to overlap - will lead to misleading results
-    const int kHeightMultiplier = 15;
-    
-    for (int i = 0; i < kWidth_; i++) {
-        for (int j = 0; j < kHeight_; j++) {
-            switch (maze_[i][j]) {
-                case 0: // no wall
-                    ofSetColor(100, 100, 100);
-                    break;
-                case 1: // wall
-                    ofSetColor(225, 225, 225);
-                    break;
-            }
-            ofDrawRectangle(i*kWidthMultiplier, j*kHeightMultiplier, kBlockSize, kBlockSize);
-        }
-    }
-    
-    /*ofPushMatrix(); // so (0,0) is at the center - derived from https://www.safaribooksonline.com/library/view/openframeworks-essentials/9781784396145/ch02s04.html but messes around with my current game logic
-    ofTranslate( ofGetWidth() / 2, ofGetHeight() / 2 );*/
-
-    /*if (current_state_ == NOT_STARTED) {
+    if (current_state_ == NOT_STARTED) {
         ofSetBackgroundColor(0, 0, 0); // set background as black
 
         intro_music_.setLoop(true); // plays over and over again
@@ -127,11 +110,13 @@ void PacmanGame::draw(){ // is called over and over again
         ofDrawBitmapString("Click anywhere to continue", ofGetWidth()/6, ofGetHeight()/6);
         
     } else if (current_state_ == IN_PROGRESS) {
+        draw_maze();
         draw_ghosts();
         draw_food();
         draw_pacman();
 
     } else if(current_state_ == PAUSED) {
+        draw_maze();
         draw_ghosts();
         draw_food();
         draw_pacman();
@@ -139,7 +124,7 @@ void PacmanGame::draw(){ // is called over and over again
         
     } else if(current_state_ == FINISHED) {
         drawGameOver(); // draw another panel later
-    }*/
+    }
 }
 
 /*
@@ -222,19 +207,44 @@ void PacmanGame::windowResized(int w, int h){
     game_pacman_.resize(w, h);
 }
 
-void PacmanGame::draw_ghosts() {
-    ofRectangle ghost_frame = ghost_1_.get_image_frame();
-    ghost_1_.get_food_image().draw(ghost_frame.getX(), ghost_frame.getY(), ghost_frame.getWidth(), ghost_frame.getHeight());
+void PacmanGame::draw_maze() { // draws the maze
+    const int kWidthMultiplier = 15; // don't want the blocks to overlap - will lead to misleading results
+    const int kHeightMultiplier = 15;
+    
+    for (int i = 0; i < kMazeWidth_; i++) {
+        for (int j = 0; j < kMazeHeight_; j++) {
+            switch (maze_[i][j]) {
+                case 0: // no wall
+                    ofSetColor(100, 100, 100);
+                    break;
+                case 1: // wall
+                    ofSetColor(225, 225, 225);
+                    break;
+            }
+            ofDrawRectangle(i*kWidthMultiplier, j*kHeightMultiplier, kObject1DSize_, kObject1DSize_);
+        }
+    }
+}
+
+void PacmanGame::draw_ghosts() { // just make sizes all the same for simplicity
+    //ofRectangle ghost_frame = ghost_1_.get_image_frame();
+    //ghost_1_.get_food_image().draw(ghost_frame.getX(), ghost_frame.getY(), ghost_frame.getWidth(), ghost_frame.getHeight());
+    ofVec2f pos = ghost_1_.GetMazePosition();
+    ghost_1_.get_food_image().draw(pos.x * coordinates_multiplier_x, pos.y * coordinates_multiplier_x, ghost_1_.Get1DSize(), ghost_1_.Get1DSize());
 }
 
 void PacmanGame::draw_pacman() {
-    ofRectangle pacman_frame = game_pacman_.get_image_frame();
-    game_pacman_.get_pacman_image().draw(pacman_frame.getX(), pacman_frame.getY(), pacman_frame.getWidth(), pacman_frame.getHeight());
+    //ofRectangle pacman_frame = game_pacman_.get_image_frame();
+    //game_pacman_.get_pacman_image().draw(pacman_frame.getX(), pacman_frame.getY(), pacman_frame.getWidth(), pacman_frame.getHeight());
+    ofVec2f pos = game_pacman_.GetMazePosition();
+    game_pacman_.get_pacman_image().draw(pos.x * coordinates_multiplier_x, pos.y * coordinates_multiplier_y, game_pacman_.Get1DSize(), game_pacman_.Get1DSize());
 }
 
 void PacmanGame::draw_food() {
-    ofRectangle food_frame = game_food_.get_image_frame();
-    game_food_.get_food_image().draw(food_frame.getX(), food_frame.getY(), food_frame.getWidth(), food_frame.getHeight());
+    //ofRectangle food_frame = game_food_.get_image_frame();
+    //game_food_.get_food_image().draw(food_frame.getX(), food_frame.getY(), food_frame.getWidth(), food_frame.getHeight());
+    ofVec2f pos = game_food_.GetMazePosition();
+    game_food_.get_food_image().draw(pos.x * coordinates_multiplier_x, pos.y * coordinates_multiplier_y, game_food_.Get1DSize(), game_food_.Get1DSize());
 }
 
 void PacmanGame::drawGameOver() {
@@ -249,4 +259,6 @@ void PacmanGame::drawGamePaused() {
     ofDrawBitmapString(pause_message, ofGetWindowWidth() / 1.5, ofGetWindowHeight() / 1.5);
 }
 
-
+bool PacmanGame::IsValidPosition(int x_pos, int y_pos) { // true if the position isn't on a part of the wall and isn't out of bounds
+    return (x_pos < kMazeWidth_) && (y_pos < kMazeHeight_) && (maze_[x_pos][y_pos] == 0); // 0 = not a part of the wall wall, 1 = part of the wall
+}

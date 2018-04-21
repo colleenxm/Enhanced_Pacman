@@ -22,8 +22,14 @@ private:
     std::uniform_int_distribution<> dist_color_; // Generates valid rgb values
     
     static const float kfood_modifier_; // What proportion of the window width the food square should be in size
-    ofRectangle image_frame_; // rectangle that frames the food picture, provides dimensions and position
+    //ofRectangle image_frame_; // rectangle that frames the food picture, provides dimensions and position
+   
+    ofVec2f maze_position_; // x, y position of the maze - important: this corresponds to the MAZE ELEMENT and NOT to the actual coordinates in the coordinatep lane
     
+    int one_d_size_; // size per object (dimensions = kBlockSize_ * kBlockSize_), need to standardize all the object sizes to prevent the objects from overlapping with the maze walls
+    const int kMazeWidth_ = 37;
+    const int kMazeHeight_ = 33;
+
     ofImage food_image_; // image that correpsonds with a food object
     
 public:
@@ -33,8 +39,10 @@ public:
     void resize(int w, int h); // Called by application resize, resizes food rect to new window dimensions
     void rebase();
     
-    ofRectangle& get_image_frame(); // Gets the rectangle that frames out the food object
+    ofVec2f& GetMazePosition(); // Gets the rectangle that frames out the food object
+    //ofRectangle& get_image_frame(); // Gets the rectangle that frames out the food object
     ofImage& get_food_image(); // gets image
+    int Get1DSize(); // for drawing the image
 };
 #endif /* food_hpp */
 

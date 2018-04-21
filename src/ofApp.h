@@ -30,8 +30,13 @@ private:
     GameState current_state_ = NOT_STARTED; // The current state of the game, used to determine possible actions
     
     // THE MAZE - will try to get a random maze generator library working later
-    const int kWidth_ = 37;
-    const int kHeight_ = 33;
+    const int kMazeWidth_ = 37;
+    const int kMazeHeight_ = 33;
+    
+    int coordinates_multiplier_x = ofGetWindowWidth() / kMazeWidth_;
+    int coordinates_multiplier_y = ofGetWindowHeight() / kMazeHeight_;
+    
+    const int kObject1DSize_ = 15; // size per object (dimensions = kBlockSize_ * kBlockSize_), need to standardize all the object sizes to prevent the objects from overlapping with the maze walls
     int maze_ [37][33] = // hard coded
     {
         {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, // 0
@@ -83,6 +88,7 @@ private:
     
     void interact_pacman_with_ghost(); // interactions between the pacman and the ghost (rename method later - weird grammar)
     // Private helper methods to render various aspects of the game on screen.
+    void draw_maze();
     void draw_ghosts();
     void draw_pacman();
     void draw_food();
@@ -105,5 +111,7 @@ public:
     void keyPressed(int key);
     void windowResized(int w, int h);
     void mousePressed(int x, int y, int button);
+    
+    bool IsValidPosition(int x_pos, int y_pos); // true if the position isn't on a part of the wall and isn't out of bounds
 };
 
