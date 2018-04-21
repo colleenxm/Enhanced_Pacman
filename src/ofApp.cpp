@@ -266,15 +266,12 @@ void PacmanGame::draw_food(int x_index, int y_index) {
 
 void PacmanGame::draw_ghosts() { // just make sizes all the same for simplicity
     ofVec2f pos = ghost_1_.GetMazePosition();
-    //ghost_1_.get_ghost_image().draw(pos.x * coord_multiplier_x_ + kOneDObjectSize_, pos.y * coord_multiplier_x_ + kOneDObjectSize_, kOneDObjectSize_, kOneDObjectSize_);
-    ghost_1_.get_ghost_image().draw(pos.x * coord_multiplier_x_ + kOneDObjectSize_/2, pos.y * coord_multiplier_x_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
-    //ofDrawBitmapString("position" + std::to_string(pos.x) +" " + std::to_string(pos.y), ofGetWidth()/6, ofGetHeight()/6);
+    ghost_1_.get_ghost_image().draw(pos.x * coord_multiplier_x_ + kOneDObjectSize_/2, pos.y * coord_multiplier_y_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
 }
 
 void PacmanGame::draw_pacman() {
     ofVec2f& pos = game_pacman_.GetMazePosition();
     game_pacman_.get_pacman_image().draw(pos.x * coord_multiplier_x_ + kOneDObjectSize_/2, pos.y * coord_multiplier_y_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
-    //game_pacman_.get_pacman_image().draw(pos.x * coord_multiplier_x_, pos.y * coord_multiplier_y_, kOneDObjectSize_, kOneDObjectSize_);
 }
 
 void PacmanGame::drawGameOver() {
