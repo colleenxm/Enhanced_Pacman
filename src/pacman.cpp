@@ -24,9 +24,7 @@ Pacman::Pacman() {
     // pacman_image_.rotate90(1); // figure out rotations later
 }
 
-void Pacman::update() {
-    maze_;
-    
+void Pacman::update() {    
     int x = maze_position_.x;
     int y = maze_position_.y;
     

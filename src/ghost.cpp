@@ -14,15 +14,15 @@ Ghost::Ghost() {
 }
 
 void Ghost::SetInitialRandomPosition() { // intial random pos - cannot be on a wall or on top of a piece of food
-    std::uniform_int_distribution<> dist_x_ = std::uniform_int_distribution<>(0, maze_.GetWidth() - 1);
-    std::uniform_int_distribution<> dist_y_ = std::uniform_int_distribution<>(0, maze_.GetHeight() - 1);
+    std::uniform_int_distribution<> dist_x = std::uniform_int_distribution<>(0, maze_.GetWidth() - 1);
+    std::uniform_int_distribution<> dist_y = std::uniform_int_distribution<>(0, maze_.GetHeight() - 1);
     
-    int x = dist_x_(generator_);
-    int y = dist_y_(generator_);
+    int x = dist_x(generator_);
+    int y = dist_y(generator_);
     
     while (!maze_.IsEmptyPosition(x, y)) { // can only start off on a blank square
-        x = dist_x_(generator_);
-        y = dist_y_(generator_);
+        x = dist_x(generator_);
+        y = dist_y(generator_);
     }
     maze_position_.set(x, y);
 }
@@ -30,6 +30,10 @@ void Ghost::SetInitialRandomPosition() { // intial random pos - cannot be on a w
 // Method adapted and modified from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
 void Ghost::resize(int w, int h) {
     window_dims_.set(w, h);
+}
+
+void Ghost::setDirection(Direction newDirection) {
+    current_direction_ = newDirection;
 }
 
 ofVec2f Ghost::GetMazePosition() {
@@ -52,30 +56,33 @@ Direction& Ghost::get_direction() { // gets the current direction - needed to ch
     return current_direction_;
 }
 
-void Ghost::CalculateNewPosition() { // calculates the new position
-    current_direction_ = static_cast<Direction>(rand() % kNumDirections_);
-    
+void Ghost::FindRandomDirection() { // chooses a random direction - separated from moving because we want the ghost to move for some number of steps (specified in .h file) before changing directions again but we need to hae the loop that causes the ghost to move straight in ofapp to prevent the ghost from jumping around
+    std::uniform_int_distribution<> dist_direction = std::uniform_int_distribution<>(0, kNumDirections_ - 1);
+    current_direction_ = static_cast<Direction>(dist_direction(generator_) % kNumDirections_);
+}
+
+void Ghost::MoveInNewDirection() { // moves in that direction - jumps over food items, cannot go through walls
     int x = maze_position_.x;
     int y = maze_position_.y;
     
     switch (current_direction_) {
         case UP:
-            if (maze_.IsLegalPosition(x, y - 1) && maze_.IsEmptyPosition(x, y - 1)) {
+            if (maze_.IsLegalPosition(x, y - 1) && maze_.IsValidPacmanPosition(x, y - 1)) {
                 maze_position_.set(x, y - 1);
             }
             break;
         case DOWN:
-            if (maze_.IsLegalPosition(x, y + 1) && maze_.IsEmptyPosition(x, y + 1)) {
+            if (maze_.IsLegalPosition(x, y + 1) && maze_.IsValidPacmanPosition(x, y + 1)) {
                 maze_position_.set(x, y + 1);
             }
             break;
         case LEFT:
-            if (maze_.IsLegalPosition(x - 1, y) && maze_.IsEmptyPosition(x - 1, y)) {
+            if (maze_.IsLegalPosition(x - 1, y) && maze_.IsValidPacmanPosition(x - 1, y)) {
                 maze_position_.set(x - 1, y);
             }
             break;
         case RIGHT:
-            if (maze_.IsLegalPosition(x + 1, y) && maze_.IsEmptyPosition(x + 1, y)) {
+            if (maze_.IsLegalPosition(x + 1, y) && maze_.IsValidPacmanPosition(x + 1, y)) {
                 maze_position_.set(x + 1, y);
             }
             break;

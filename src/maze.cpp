@@ -32,12 +32,12 @@ int Maze::GetElementAt(int x_pos, int y_pos) { // returns the element at a speci
     return raw_maze_[x_pos][y_pos];
 }
 
-bool Maze::IsEmptyPosition(int x_pos, int y_pos) { // true if the position isn't on a part of the wall and isn't out of bounds
-    return IsLegalPosition(x_pos, y_pos) && raw_maze_[x_pos][y_pos] == 0; // 0 = not a part of the wall, 1 = part of the wall
-}
-
 bool Maze::IsLegalPosition(int x_pos, int y_pos) { // true if the position is legal - not out of bounds
     return x_pos >= 0 && y_pos >= 0 && x_pos < raw_maze_.size() && y_pos < raw_maze_[0].size();
+}
+
+bool Maze::IsEmptyPosition(int x_pos, int y_pos) { // true if the position isn't on a part of the wall and isn't out of bounds
+    return IsLegalPosition(x_pos, y_pos) && raw_maze_[x_pos][y_pos] == 0; // 0 = not a part of the wall, 1 = part of the wall
 }
 
 bool Maze::IsValidPacmanPosition(int x_pos, int y_pos) { // true if it's empty or has a piece of food on it, false otherwise

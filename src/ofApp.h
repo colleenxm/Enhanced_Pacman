@@ -30,13 +30,11 @@ private:
     GameState current_state_ = NOT_STARTED; // The current state of the game, used to determine possible actions
     
     const int kNumFoodItems_ = 10; // 10 food items to put in map - can change
-    const int kOneDObjectSize_ = 25; // standardized size for all the objects (to prevent the bigger ones from "leaving" the maze)
+    const int kOneDObjectSize_ = 20; // standardized size for all the objects (to prevent the bigger ones from "leaving" the maze)
     
     // The multipliers convert coordinates on the maze matrix to coordinates on a coordinate plane
-    float coord_multiplier_x_ = -1;
-    float coord_multiplier_y_ = -1;
-    
-    const int kObject1DSize_ = 15; // size per object (dimensions = kBlockSize_ * kBlockSize_), need to standardize all the object sizes to prevent the objects from overlapping with the maze walls
+    float coord_multiplier_x_;
+    float coord_multiplier_y_;
     
     Maze maze_; // object that stores the maze, created a class for this to protect the maze from being modified and to allow the other objects to access the maze (to check for valid positions)
     
