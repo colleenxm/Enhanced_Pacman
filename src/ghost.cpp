@@ -4,12 +4,12 @@
 //const float Ghost::kFoodModifier = 0.05; // same size as pacman
 
 // Adapted and modified from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
-Ghost::Ghost() {    
+Ghost::Ghost() {
     int window_width = ofGetWindowWidth();
     int window_height = ofGetWindowHeight();
     window_dims_.set(window_width, window_height);
     generator_ = std::mt19937(rand());
-
+    
     ghost_image_.load("/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/image_files/ghost.png"); // loading image
 }
 
@@ -19,7 +19,7 @@ void Ghost::SetInitialRandomPosition() { // intial random pos - cannot be on a w
     
     int x = dist_x_(generator_);
     int y = dist_y_(generator_);
-
+    
     while (!maze_.IsEmptyPosition(x, y)) { // can only start off on a blank square
         x = dist_x_(generator_);
         y = dist_y_(generator_);
@@ -59,26 +59,26 @@ ofVec2f& Ghost::calculate_new_position(Direction direction) { // calculates the 
     int y = maze_position_.y;
     
     switch (direction) {
-    case UP:
-        if (maze_.IsLegalPosition(x, y - 1) && maze_.IsEmptyPosition(x, y - 1)) {
-            new_position.set(x, y - 1);
-        }
-        break;
-    case DOWN:
-        if (maze_.IsLegalPosition(x, y + 1) && maze_.IsEmptyPosition(x, y + 1)) {
-            new_position.set(x, y + 1);
-        }
-        break;
-    case LEFT:
-        if (maze_.IsLegalPosition(x - 1, y) && maze_.IsEmptyPosition(x - 1, y)) {
-            new_position.set(x - 1, y);
-        }
-        break;
-    case RIGHT:
-        if (maze_.IsLegalPosition(x + 1, y) && maze_.IsEmptyPosition(x + 1, y)) {
-            new_position.set(x + 1, y);
-        }
-        break;
+        case UP:
+            if (maze_.IsLegalPosition(x, y - 1) && maze_.IsEmptyPosition(x, y - 1)) {
+                new_position.set(x, y - 1);
+            }
+            break;
+        case DOWN:
+            if (maze_.IsLegalPosition(x, y + 1) && maze_.IsEmptyPosition(x, y + 1)) {
+                new_position.set(x, y + 1);
+            }
+            break;
+        case LEFT:
+            if (maze_.IsLegalPosition(x - 1, y) && maze_.IsEmptyPosition(x - 1, y)) {
+                new_position.set(x - 1, y);
+            }
+            break;
+        case RIGHT:
+            if (maze_.IsLegalPosition(x + 1, y) && maze_.IsEmptyPosition(x + 1, y)) {
+                new_position.set(x + 1, y);
+            }
+            break;
     }
     return new_position;
 }
@@ -99,6 +99,7 @@ void Ghost::MoveInNewDirection() { // need to figure out what to do if the ghost
     ofVec2f new_position = calculate_new_position(current_direction_);
     
     //if (maze_.IsEmptyPosition(new_position.x, new_position.y)) {
-        maze_position_.set(new_position.x, new_position.y);
+    maze_position_.set(new_position.x, new_position.y);
     //}
 }
+

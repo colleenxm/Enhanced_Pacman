@@ -76,7 +76,7 @@ void PacmanGame::InteractPredatorPreyObjects() { // contains logic for having ob
         game_pacman_.eat_food_ghost(kFoodPointsWorth_); // add some sort of sound effect here
         //game_food_.rebase(); //delete game_food_;
     }
-
+    
     if (pacman_rect.intersects(ghost_rect)) {
         InteractPacmanWithGhost();
     }
@@ -115,7 +115,7 @@ void PacmanGame::InteractPacmanWithGhost() { // responsible for all pacman-ghost
 void PacmanGame::draw(){ // is called over and over again
     if (current_state_ == NOT_STARTED) {
         ofSetBackgroundColor(0, 0, 0); // set background as black
-
+        
         intro_music_.setLoop(true); // plays over and over again
         intro_music_.play();
         
@@ -126,7 +126,7 @@ void PacmanGame::draw(){ // is called over and over again
         draw_maze();
         draw_ghosts();
         draw_pacman();
-
+        
     } else if(current_state_ == PAUSED) {
         draw_maze();
         draw_ghosts();
@@ -262,3 +262,4 @@ void PacmanGame::drawGamePaused() {
     ofSetColor(0, 0, 0);
     ofDrawBitmapString(pause_message, ofGetWindowWidth() / 1.5, ofGetWindowHeight() / 1.5);
 }
+

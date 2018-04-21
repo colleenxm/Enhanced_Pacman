@@ -39,7 +39,7 @@ private:
     const int kObject1DSize_ = 15; // size per object (dimensions = kBlockSize_ * kBlockSize_), need to standardize all the object sizes to prevent the objects from overlapping with the maze walls
     
     Maze maze_; // object that stores the maze, created a class for this to protect the maze from being modified and to allow the other objects to access the maze (to check for valid positions)
-
+    
     // Note: Dynamically allocationg all eatable objects (except for the pacman) so I can delete them later
     Pacman game_pacman_; // The object that represents the user controlled snake
     Ghost ghost_1_; // represents a ghost, note that ghosts can eat the pacman (which would end the game) but the pacman can also eat ghosts (which would drastically increase its num of points)
@@ -62,7 +62,7 @@ private:
     
     // Resets the game objects to their original state.
     void reset();
-        
+    
 public:
     // Function used for one time setup
     void setup();
@@ -76,4 +76,5 @@ public:
     void windowResized(int w, int h);
     void mousePressed(int x, int y, int button);
 };
+
 

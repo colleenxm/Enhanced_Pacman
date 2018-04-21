@@ -18,14 +18,10 @@ class Maze { // created so I can create an instance of maze (makes more sense th
     // giving the game the power to change the maze is dangerous
     
 private:
-    std::mt19937 generator_; // pseudorandom number generation
-    std::uniform_int_distribution<> dist_x_;
-    std::uniform_int_distribution<> dist_y_;
-
     // 0 = no wall - just an empty square, objects can be placed/move here
     // 1 = wall - objects can't be placed/move here
     // 2 = food - note: will just randomly generating the food here and drawing them in ofapp instead
-        // of even having separate objects for each
+    // of even having separate objects for each
     
     std::array<std::array<int, 33>, 37> raw_maze_ = {
         {
@@ -68,9 +64,10 @@ private:
             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,1} // 36
         }
     };
+    
     int num_food_items_ = 0;
     
-public:    
+public:
     void PopulateWithFood(int num_food_items); // populate the maze with food objects in random, non-wall places - swaps num_items number of 0's with that number of 2's, where 2 = food object. Note: Will end up doing this instead of having actual food objects - can get rid of the logic needed to remove the food objects, don't have to worry about if two food objects overlap, makes life easier
     
     int GetElementAt(int x_pos, int y_pos); // returns the element at a specified position
@@ -78,13 +75,14 @@ public:
     bool IsEmptyPosition(int x_pos, int y_pos); // true if the position is empty
     bool IsLegalPosition(int x_pos, int y_pos); // true if the position is legal - not out of bounds
     bool IsValidPacmanPosition(int x_pos, int y_pos); // true if the position is empty or has a piece of food on it
-
+    
     void RemoveFoodAt(int x_pos, int y_pos); // removes the food item (checks if it's a food item first and swaps the 2 at that location with a 0)
     
     int GetWidth();
     int GetHeight();
-
+    
     void Reset(); // return to original state - remove all leftover food items and draw the pieces of food over again
 };
 
 #endif /* maze_hpp */
+
