@@ -11,9 +11,7 @@ void PacmanGame::setup(){
     string_font_.load("/Users/elizabeth/Downloads/of_v0.9.8_osx_release/examples/addons/networkTcpServerExample/bin/data/type/verdana.ttf", 32, true, false, true, 0.1);
     intro_music_.load("/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/sound_files/intro_music.mp3");
 
-
-    int nbLines = 8, nbCols = 9;
-    //std::vector<std::vector<int> > maze = rand_maze(nbLines,nbCols);
+    maze_.PopulateWithFood(10); // 10 food items
 }
 
 /*
@@ -56,17 +54,19 @@ void PacmanGame::update() {
 
 void PacmanGame::InteractPredatorPreyObjects() { // contains logic for having objects eat each other, should probably rename the method
     ofVec2f pacman_pos = game_pacman_.GetMazePosition();
-    ofVec2f food_pos = game_food_.GetMazePosition();
+    //ofVec2f food_pos = game_food_.GetMazePosition();
     ofVec2f ghost_pos = ghost_1_.GetMazePosition();
     
-    ofRectangle pacman_rect = ofRectangle(pacman_pos.x * coordinates_multiplier_x, pacman_pos.y * coordinates_multiplier_x, one_d_obj_size_, one_d_obj_size_);
-    ofRectangle food_rect = ofRectangle(food_pos.x * coordinates_multiplier_x, food_pos.y * coordinates_multiplier_x, one_d_obj_size_, one_d_obj_size_);
-    ofRectangle ghost_rect = ofRectangle(ghost_pos.x * coordinates_multiplier_x, ghost_pos.y * coordinates_multiplier_x, one_d_obj_size_, one_d_obj_size_);
+    ofRectangle pacman_rect = ofRectangle(pacman_pos.x * coord_multiplier_x_, pacman_pos.y * coord_multiplier_x_, kOneDObjectSize_, kOneDObjectSize_);
+    //ofRectangle food_rect = ofRectangle(food_pos.x * coord_multiplier_x_, food_pos.y * coord_multiplier_x_, kOneDObjectSize_, kOneDObjectSize_);
+    ofRectangle ghost_rect = ofRectangle(ghost_pos.x * coord_multiplier_x_, ghost_pos.y * coord_multiplier_x_, kOneDObjectSize_, kOneDObjectSize_);
     
     // Note: Creating a rectangle and using intersects() instead of just comparing indices because the latter would force the predator to be ON TOP OF the object to eat it.
-    if (pacman_rect.intersects(food_rect)) {
-        game_pacman_.eat_food_ghost(game_food_.kPointsWorth_); // add some sort of sound effect here
-        game_food_.rebase(); //delete game_food_;
+    //if (pacman_rect.intersects(food_rect)) {
+    if (maze_.GetElementAt(pacman_pos.x, pacman_pos.y) == 2) { // idk if this works
+        maze_.RemoveFoodAt(pacman_pos.x, pacman_pos.y);
+        game_pacman_.eat_food_ghost(kFoodPointsWorth_); // add some sort of sound effect here
+        //game_food_.rebase(); //delete game_food_;
     }
 
     if (pacman_rect.intersects(ghost_rect)) {
@@ -117,13 +117,13 @@ void PacmanGame::draw(){ // is called over and over again
     } else if (current_state_ == IN_PROGRESS) {
         draw_maze();
         draw_ghosts();
-        draw_food();
+        //draw_food();
         draw_pacman();
 
     } else if(current_state_ == PAUSED) {
         draw_maze();
         draw_ghosts();
-        draw_food();
+        //draw_food();
         draw_pacman();
         drawGamePaused();
         
@@ -213,37 +213,41 @@ void PacmanGame::windowResized(int w, int h){
 }
 
 void PacmanGame::draw_maze() { // draws the maze
-    for (int i = 0; i < maze_.kMazeWidth_; i++) {
-        for (int j = 0; j < maze_.kMazeHeight_; j++) {
-            switch (maze_.GetElementAt(i, j)) {
+    for (int x_index = 0; x_index < maze_.kMazeWidth_; x_index++) {
+        for (int y_index = 0; y_index < maze_.kMazeHeight_; y_index++) {
+            switch (maze_.GetElementAt(x_index, y_index)) {
                 case 0: // no wall
                     ofSetColor(100, 100, 100);
+                    ofDrawRectangle(x_index * coord_multiplier_x_, y_index * coord_multiplier_y_, 20, 20); //kObject1DSize_, kObject1DSize_);
                     break;
                 case 1: // wall
                     ofSetColor(225, 225, 225);
+                    ofDrawRectangle(x_index * coord_multiplier_x_, y_index * coord_multiplier_y_, 20, 20); //kObject1DSize_, kObject1DSize_);
+                    break;
+                case 2: // food
+                    ofImage food_image_; // image that correpsonds with a food object
+                    food_image_.load("/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/image_files/apple.png");
+                    food_image_.draw(x_index * coord_multiplier_x_, y_index * coord_multiplier_y_, kOneDObjectSize_, kOneDObjectSize_);
                     break;
             }
-            ofDrawRectangle(i * coordinates_multiplier_x, j * coordinates_multiplier_y, 20, 20); //kObject1DSize_, kObject1DSize_);
         }
     }
 }
 
 void PacmanGame::draw_ghosts() { // just make sizes all the same for simplicity
     ofVec2f pos = ghost_1_.GetMazePosition();
-    ghost_1_.get_ghost_image().draw(pos.x * coordinates_multiplier_x, pos.y * coordinates_multiplier_x, one_d_obj_size_, one_d_obj_size_);
+    ghost_1_.get_ghost_image().draw(pos.x * coord_multiplier_x_, pos.y * coord_multiplier_x_, kOneDObjectSize_, kOneDObjectSize_);
 }
 
 void PacmanGame::draw_pacman() {
     ofVec2f pos = game_pacman_.GetMazePosition();
-    game_pacman_.get_pacman_image().draw(pos.x * coordinates_multiplier_x, pos.y * coordinates_multiplier_y, one_d_obj_size_, one_d_obj_size_);
+    game_pacman_.get_pacman_image().draw(pos.x * coord_multiplier_x_, pos.y * coord_multiplier_y_, kOneDObjectSize_, kOneDObjectSize_);
 }
 
-void PacmanGame::draw_food() {
+/*void PacmanGame::draw_food() {
     ofVec2f pos = game_food_.GetMazePosition();
-    std::string position_str = "x: " + std::to_string(pos.x) +" y: " + std::to_string(pos.y);
-    ofDrawBitmapString(position_str, 100, 10);
-    game_food_.get_food_image().draw(pos.x * coordinates_multiplier_x, pos.y * coordinates_multiplier_y, one_d_obj_size_, one_d_obj_size_);
-}
+    game_food_.get_food_image().draw(pos.x * coord_multiplier_x_, pos.y * coord_multiplier_y_, kOneDObjectSize_, kOneDObjectSize_);
+}*/
 
 void PacmanGame::drawGameOver() {
     ofSetBackgroundColor(0, 0, 0); // set background as black

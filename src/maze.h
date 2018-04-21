@@ -8,6 +8,7 @@
 #ifndef maze_hpp
 #define maze_hpp
 
+#include <random>
 #include <stdio.h>
 
 class Maze { // created so I can create an instance of maze (makes more sense than having maze just be in the game)
@@ -16,6 +17,10 @@ class Maze { // created so I can create an instance of maze (makes more sense th
     // giving the game the power to change the maze is dangerous
     
 private:
+    // 0 = no wall - just an empty square, objects can be placed/move here
+    // 1 = wall - objects can't be placed/move here
+    // 2 = food - note: will just randomly generating the food here and drawing them in ofapp instead
+        // of even having separate objects for each
     int raw_maze_ [37][33] = // hard coded - change to let user pass in data instead
     {
         {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, // 0
@@ -61,9 +66,11 @@ public:
     const int kMazeWidth_ = 37; // num rows - do I need to make these private or is there no point in doing so?
     const int kMazeHeight_ = 33; // num cols
 
+    void PopulateWithFood(int num_items); // populate the maze with food objects in random, non-wall places - swaps num_items number of 0's with that number of 2's, where 2 = food object. Note: Will end up doing this instead of having actual food objects - can get rid of the logic needed to remove the food objects, don't have to worry about if two food objects overlap, makes life easier
+    
     int GetElementAt(int x_pos, int y_pos); // returns the element at a specified position
     bool IsValidPosition(int x_pos, int y_pos); // true if the position isn't on a part of the wall and isn't out of bounds
-
+    void RemoveFoodAt(int x_pos, int y_pos); // removes the food item (checks if it's a food item first and swaps the 2 at that location with a 0)
 };
 
 #endif /* maze_hpp */

@@ -31,18 +31,21 @@ private:
     
     Maze maze_; // object that stores the maze, created a class for this to protect the maze from being modified and to allow the other objects to access the maze (to check for valid positions)
     
-    const int one_d_obj_size_ = 20; // standardized size for all the objects (to prevent the bigger ones from "leaving" the maze)
+    const int kNumFoodItems_ = 10; // 10 food items to put in map - can change
+    const int kOneDObjectSize_ = 20; // standardized size for all the objects (to prevent the bigger ones from "leaving" the maze)
     
     // The multipliers convert coordinates on the maze matrix to coordinates on a coordinate plane
-    float coordinates_multiplier_x = ofGetWindowWidth() / maze_.kMazeWidth_;
-    float coordinates_multiplier_y = ofGetWindowHeight() / maze_.kMazeHeight_;
+    float coord_multiplier_x_ = ofGetWindowWidth() / maze_.kMazeWidth_;
+    float coord_multiplier_y_ = ofGetWindowHeight() / maze_.kMazeHeight_;
     
     const int kObject1DSize_ = 15; // size per object (dimensions = kBlockSize_ * kBlockSize_), need to standardize all the object sizes to prevent the objects from overlapping with the maze walls
     
     // Note: Dynamically allocationg all eatable objects (except for the pacman) so I can delete them later
     Pacman game_pacman_; // The object that represents the user controlled snake
     Ghost ghost_1_; // represents a ghost, note that ghosts can eat the pacman (which would end the game) but the pacman can also eat ghosts (which would drastically increase its num of points)
-    Food game_food_;
+    //Food game_food_;
+    
+    const int kFoodPointsWorth_ = 1;
     
     bool should_update_ = true;     // A flag boolean used in the update() function.
     
@@ -52,7 +55,7 @@ private:
     void draw_maze();
     void draw_ghosts();
     void draw_pacman();
-    void draw_food();
+    //void draw_food();
     
     void drawGameOver();
     void drawGamePaused();
