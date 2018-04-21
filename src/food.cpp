@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include "food.h"
 
-const float Food::kfood_modifier_ = 0.1;
+const float Food::kfood_modifier_ = 0.05;
 
 // Adapted from OF-SNAKE MP (SnakeFood class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
 Food::Food() {

@@ -29,19 +29,7 @@ void PacmanGame::setup(){
 void PacmanGame::update() {
     if (should_update_) {
         if (current_state_ == IN_PROGRESS) {
-            //ofRectangle pacman_rect = game_pacman_.get_image_frame();
-            //ofRectangle ghost_rect = ghost_1_.get_image_frame();
-
-            // overlaps is logically equal to being on the same square at the same time
-            //if (pacman_rect.intersects(game_food_.get_image_frame())) {
-            if (game_pacman_.GetMazePosition().x == game_food_.GetMazePosition().x && game_pacman_.GetMazePosition().y == game_food_.GetMazePosition().y) { // problem - needs to ACTUALLY BE ON TOP OF THE OBJECT to eat it, change to a rectangle (should probably just create a rectangle)
-                game_pacman_.eat_food_or_ghost(game_food_.kPointsWorth_); // add some sort of sound effect here
-                game_food_.rebase(); //delete game_food_;
-                
-            //} else if (pacman_rect.intersects(ghost_rect)) {
-            } else if (game_pacman_.GetMazePosition().x == ghost_1_.GetMazePosition().x && game_pacman_.GetMazePosition().y == ghost_1_.GetMazePosition().y) {
-                interact_pacman_with_ghost();
-            }
+            HaveObjectsEat();
             game_pacman_.update(); // gets new location for the pacman and draws in the next tick
             
             // Explanation: We want the ghost to take a number of steps in its current
@@ -66,19 +54,41 @@ void PacmanGame::update() {
     should_update_ = true;
 }
 
-void PacmanGame::interact_pacman_with_ghost() { // responsible for all pacman-ghost iteractions
+void PacmanGame::HaveObjectsEat() { // contains logic for having objects eat each other, should probably rename the method
+    ofVec2f pacman_pos = game_pacman_.GetMazePosition();
+    int pacman_size = game_pacman_.Get1DSize();
+    
+    ofVec2f food_pos = game_food_.GetMazePosition();
+    int food_size = game_food_.Get1DSize();
+    
+    ofVec2f ghost_pos = ghost_1_.GetMazePosition();
+    int ghost_size = ghost_1_.Get1DSize();
+    
+    ofRectangle pacman_rect = ofRectangle(pacman_pos.x * coordinates_multiplier_x, pacman_pos.y * coordinates_multiplier_x, pacman_size, pacman_size);
+    ofRectangle food_rect = ofRectangle(food_pos.x * coordinates_multiplier_x, food_pos.y * coordinates_multiplier_x, food_size, food_size);
+    ofRectangle ghost_rect = ofRectangle(ghost_pos.x * coordinates_multiplier_x, ghost_pos.y * coordinates_multiplier_x, ghost_size, ghost_size);
+    
+    // Note: Creating a rectangle and using intersects() instead of just comparing indices because the latter would force the predator to be ON TOP OF the object to eat it.
+    if (pacman_rect.intersects(food_rect)) {
+        game_pacman_.eat_food_ghost(game_food_.kPointsWorth_); // add some sort of sound effect here
+        game_food_.rebase(); //delete game_food_;
+    }
+
+    if (pacman_rect.intersects(ghost_rect)) {
+        InteractPacmanWithGhost();
+    }
+}
+
+void PacmanGame::InteractPacmanWithGhost() { // responsible for all pacman-ghost iteractions
     Direction pacman_direction = game_pacman_.get_direction(); // note: coords for 2d = 0, 0 is on the upper lhs
     Direction ghost_direction = ghost_1_.get_direction();
     
-    //ofRectangle pacman_rect = game_pacman_.get_image_frame();
-    //ofRectangle ghost_rect = ghost_1_.get_image_frame();
-    ofVec2f pacman_pos = game_pacman_.GetMazePosition();
+    ofVec2f pacman_pos = game_pacman_.GetMazePosition(); // considering changing the logic here as well
     ofVec2f ghost_pos = ghost_1_.GetMazePosition();
     
     if (pacman_direction == ghost_direction) { // pacman eats the ghost if both objects are pointing in the same direction and the pacman is behind the ghost
-        //if (pacman_rect.getX() >= ghost_rect.getX() || pacman_rect.getY() >= ghost_rect.getY()) { // aka if pacman's x or y coord is bigger than the ghost's x y cords
         if (pacman_pos.x >= ghost_pos.x || pacman_pos.y >= ghost_pos.y) { // aka if pacman's x or y coord is bigger than the ghost's x y cords
-            game_pacman_.eat_food_or_ghost(ghost_1_.kPointsWorth_);
+            game_pacman_.eat_food_ghost(ghost_1_.kPointsWorth_);
             // need to do something about the ghost
         } else { // ghost eats the pacman if both objects are pointing in the same direction and the ghost is behind the pacman
             game_pacman_.gets_eaten(); // game over - pacman needs to die
@@ -230,7 +240,7 @@ void PacmanGame::draw_ghosts() { // just make sizes all the same for simplicity
     //ofRectangle ghost_frame = ghost_1_.get_image_frame();
     //ghost_1_.get_food_image().draw(ghost_frame.getX(), ghost_frame.getY(), ghost_frame.getWidth(), ghost_frame.getHeight());
     ofVec2f pos = ghost_1_.GetMazePosition();
-    ghost_1_.get_food_image().draw(pos.x * coordinates_multiplier_x, pos.y * coordinates_multiplier_x, ghost_1_.Get1DSize(), ghost_1_.Get1DSize());
+    ghost_1_.get_ghost_image().draw(pos.x * coordinates_multiplier_x, pos.y * coordinates_multiplier_x, ghost_1_.Get1DSize(), ghost_1_.Get1DSize());
 }
 
 void PacmanGame::draw_pacman() {

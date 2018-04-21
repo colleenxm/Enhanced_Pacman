@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "ghost.h"
 
-const float Ghost::kFoodModifier = 0.1; // same size as pacman
+const float Ghost::kFoodModifier = 0.05; // same size as pacman
 
 // Adapted and modified from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
 Ghost::Ghost() {
@@ -67,7 +67,7 @@ ofVec2f Ghost::GetMazePosition() {
     return maze_position_;
 }
 
-ofImage& Ghost::get_food_image() {
+ofImage& Ghost::get_ghost_image() {
     return ghost_image_;
 }
 
@@ -100,22 +100,22 @@ ofVec2f& Ghost::calculate_new_position(Direction direction) { // calculates the 
     switch (current_direction_) {
     case UP:
         if (y - 1 >= 0) {
-            maze_position_.set(x, y - 1);
+            new_position.set(x, y - 1);
         }
         break;
     case DOWN:
         if (y + 1 < kMazeHeight_) {
-            maze_position_.set(x, y + 1);
+            new_position.set(x, y + 1);
         }
         break;
     case LEFT:
         if (x - 1 >= 0) {
-            maze_position_.set(x - 1, y);
+            new_position.set(x - 1, y);
         }
         break;
     case RIGHT:
         if (x + 1 < kMazeWidth_) {
-            maze_position_.set(x + 1, y);
+            new_position.set(x + 1, y);
         }
         break;
     }
@@ -123,7 +123,6 @@ ofVec2f& Ghost::calculate_new_position(Direction direction) { // calculates the 
 }
 
 void Ghost::choose_random_direction() { // valid position - can take at least 1 step in that direction
-    
     Direction random_direction;
     ofVec2f new_location;
     new_location.set(-1, -1);

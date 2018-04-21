@@ -50,7 +50,7 @@ public:
 	
     void update(); // updates the pacman in the current direction
     
-	void eat_food_or_ghost(int points_gained); // gains points by eating objects - note that only the number of points gained is passed in rather than a reference to the object itself (so this method can work for both food and ghost objects)
+	void eat_food_ghost(int points_gained); // gains points by eating objects - note that only the number of points gained is passed in rather than a reference to the object itself (so this method can work for both food and ghost objects)
     
 	void resize(int w, int h); // resizes
 	int getNumPoints() const; // Gets the number of points

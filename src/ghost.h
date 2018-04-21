@@ -45,7 +45,7 @@ public:
 	//ofRectangle& get_image_frame(); // Gets the rectangle that represents the food object
     ofVec2f GetMazePosition();
     ofColor& get_color(); // Gets the color of the current food object
-    ofImage& get_food_image(); // gets image
+    ofImage& get_ghost_image(); // gets image
 
     int Get1DSize(); // gets the 1d size of the object - needed to draw the image
 

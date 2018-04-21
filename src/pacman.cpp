@@ -1,6 +1,6 @@
 #include "pacman.h"
 
-const float Pacman::kbody_size_modifier_ = 0.1; // bigger than ghosts
+const float Pacman::kbody_size_modifier_ = 0.05; // all objects should be the same sizes
 
 // Adapted from OF-SNAKE MP (Snake class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang 
 
@@ -88,7 +88,7 @@ void Pacman::gets_eaten() { // pacman is eaten
     return (x == 0 || y == 0 || x == kMazeWidth_ - 1 || y == kMazeHeight_ - 1);
 }*/
 
-void Pacman::eat_food_or_ghost(int points_gained) { // gains points after eating food and ghost objects
+void Pacman::eat_food_ghost(int points_gained) { // gains points after eating food and ghost objects
     num_points_ += points_gained;
 }
 

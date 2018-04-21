@@ -6,7 +6,7 @@
 #include <memory>
 #include <utility>
 
-#include "maze_generators.h"
+#include "maze.h"
 #include "ofMain.h"
 #include "pacman.h"
 #include "ghost.h"
@@ -82,11 +82,12 @@ private:
     // Note: Dynamically allocationg all eatable objects (except for the pacman) so I can delete them later
     Pacman game_pacman_; // The object that represents the user controlled snake
     Ghost ghost_1_; // represents a ghost, note that ghosts can eat the pacman (which would end the game) but the pacman can also eat ghosts (which would drastically increase its num of points)
-    Food/***/ game_food_;
+    Food game_food_;
     
     bool should_update_ = true;     // A flag boolean used in the update() function.
     
-    void interact_pacman_with_ghost(); // interactions between the pacman and the ghost (rename method later - weird grammar)
+    void HaveObjectsEat(); // contains logic for objects eating each other rename later
+    void InteractPacmanWithGhost(); // interactions between the pacman and the ghost (rename method later - weird grammar)
     // Private helper methods to render various aspects of the game on screen.
     void draw_maze();
     void draw_ghosts();
