@@ -18,11 +18,13 @@ class Maze { // created so I can create an instance of maze (makes more sense th
     // giving the game the power to change the maze is dangerous
     
 private:
+    std::mt19937 generator_; // pseudorandom number generation
+    std::uniform_int_distribution<> dist_x_;
+    std::uniform_int_distribution<> dist_y_;
+
     // 0 = no wall - just an empty square, objects can be placed/move here
     // 1 = wall - objects can't be placed/move here
-    // 2 = food - note: will just randomly generating the food here and drawing them in ofapp instead
-        // of even having separate objects for each
-    
+    // 2 = food - note: will just randomly generating the food here and drawing them in ofapp instead of even having separate objects for each
     std::array<std::array<int, 36>, 37> raw_maze_ = {
         {
             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, // 0
@@ -64,10 +66,11 @@ private:
             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,1} // 36
         }
     };
-    
     int num_food_items_ = 0;
     
-public:    
+public:
+    Maze();
+    
     static const int kMazeWidth_ = 37; // num rows - do I need to make these private or is there no point in doing so?
     static const int kMazeHeight_ = 33; // num cols
 

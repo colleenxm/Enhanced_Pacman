@@ -7,11 +7,19 @@
 
 #include "maze.h"
 
+Maze::Maze() { // set up rand num generator
+    generator_ = std::mt19937(rand());
+    
+    dist_x_ = std::uniform_int_distribution<>(0, kMazeWidth_ - 1); // inclusive at both ends
+    dist_y_ = std::uniform_int_distribution<>(0, kMazeHeight_ - 1);
+}
+
 void Maze::PopulateWithFood(int num_food_items) { // populate the maze with food objects in random, non-wall places
     int num_items_created = 0;
     while (num_items_created < num_food_items) {
-        int x = rand() % kMazeWidth_; // random x and y coord/food item
-        int y = rand() % kMazeWidth_;
+        int x = dist_x_(generator_);
+        int y = dist_y_(generator_);
+        
         if (raw_maze_[x][y] == 0) { // can only change if it's a wall - can't change wall to food
             raw_maze_[x][y] = 2;
             num_items_created++;

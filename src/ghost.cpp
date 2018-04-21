@@ -1,30 +1,21 @@
 #include <stdlib.h>
 #include "ghost.h"
 
-//const float Ghost::kFoodModifier = 0.05; // same size as pacman
-
 // Adapted and modified from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
 Ghost::Ghost() {    
     int window_width = ofGetWindowWidth();
     int window_height = ofGetWindowHeight();
     window_dims_.set(window_width, window_height);
-    //one_d_size_ = kFoodModifier * window_width; // need to figure out what to do with the size
-
-    //image_frame_.setSize(size_d, size_d);
     
     generator_ = std::mt19937(rand());
+    dist_x_ = std::uniform_int_distribution<>(0, maze_.kMazeWidth_ - 1); // inclusive on both ends - needs index
+    dist_y_ = std::uniform_int_distribution<>(0, maze_.kMazeHeight_ - 1);
+    dist_directions_ = std::uniform_int_distribution<>(0, kNumDirections_ - 1);
 
     ghost_image_.load("/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/image_files/ghost.png"); // loading image
 }
 
-/*void Ghost::SetMaze(Maze& maze) { // set maze reference
-    maze_ = maze;
-}*/
-
 void Ghost::SetInitialRandomPosition() { // intial random pos
-    dist_x_ = std::uniform_int_distribution<>(0, maze_.kMazeWidth_);
-    dist_y_ = std::uniform_int_distribution<>(0, maze_.kMazeHeight_);
-    
     auto x = dist_x_(generator_);
     auto y = dist_y_(generator_);
     
@@ -48,10 +39,6 @@ void Ghost::resize(int w, int h) {
     window_dims_.set(w, h);
 }
 
-/*ofRectangle& Ghost::get_image_frame() {
-    return image_frame_;
-}*/
-
 ofVec2f Ghost::GetMazePosition() {
     return maze_position_;
 }
@@ -59,10 +46,6 @@ ofVec2f Ghost::GetMazePosition() {
 ofImage& Ghost::get_ghost_image() {
     return ghost_image_;
 }
-
-/*int Ghost::Get1DSize() {
-    return one_d_size_;
-}*/
 
 int Ghost::get_num_steps_taken() { // gets the number of steps taken
     return num_steps_taken_;
@@ -117,7 +100,8 @@ void Ghost::choose_random_direction() { // valid position - can take at least 1 
     new_location.set(-1, -1);
     
     while (!is_valid_position(new_location)) { // while position isn't valid
-        random_direction = static_cast<Direction>(rand() % kNumRealDirections_); // 1 of the 4 real direction
+        //random_direction = static_cast<Direction>(rand() % kNumDirections_); // 1 of the 4 real direction
+        random_direction = static_cast<Direction>(dist_directions_(generator_)); // 1 of the 4 real direction
         new_location = calculate_new_position(random_direction);
     }
     current_direction_ = random_direction;
@@ -127,8 +111,6 @@ void Ghost::move_in_new_direction() { // need to figure out what to do if the gh
     ofVec2f new_position = calculate_new_position(current_direction_);
     
     if (is_valid_position(new_position)) {
-        //position_.set(new_position.x, new_position.y);
-        //image_frame_.setPosition(new_position.x, new_position.y);
         maze_position_.set(new_position.x, new_position.y);
     }
 }

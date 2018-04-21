@@ -12,8 +12,9 @@ private:
 	std::mt19937 generator_; // pseudorandom number generation
 	std::uniform_int_distribution<> dist_x_;
 	std::uniform_int_distribution<> dist_y_;
-    
-    const int kNumRealDirections_ = 4; // number of real directions, to exclude dummy direction
+    std::uniform_int_distribution<> dist_directions_; // generate random direction
+
+    const int kNumDirections_ = 4; // number of valid directions
     Direction current_direction_ = RIGHT; // starts off going right
     
     bool is_valid_position(ofVec2f& position); // checks if new position is valid

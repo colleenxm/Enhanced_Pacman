@@ -3,7 +3,6 @@
 //const float Pacman::kbody_size_modifier_ = 0.05; // all objects should be the same sizes
 
 // Adapted from OF-SNAKE MP (Snake class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
-
 ofVec2f& Pacman::GetMazePosition() {
     return maze_position_;
 }
@@ -18,15 +17,23 @@ Pacman::Pacman() {
 	screen_dims_.set(width, height);
 
 	current_direction_ = RIGHT; // starts out moving right
-    maze_position_.set(3, 3); // starting point
+    //maze_position_.set(3, 3); // starting point
     
     pacman_image_.load("/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/image_files/pacman.png");
     // pacman_image_.rotate90(1); // figure out rotations later
 }
 
-/*void Pacman::SetMaze(Maze& maze) { // set maze reference
-    maze_ = maze;
-}*/
+void Pacman::SetInitialRandomPosition() { // set at random position
+    generator_ = std::mt19937(rand());
+
+    dist_x_ = std::uniform_int_distribution<>(0, maze_.kMazeWidth_ - 1); // inclusive at both ends
+    dist_y_ = std::uniform_int_distribution<>(0, maze_.kMazeHeight_ - 1);
+    
+    auto x = dist_x_(generator_);
+    auto y = dist_y_(generator_);
+    
+    maze_position_.set(x, y);
+}
 
 void Pacman::update() {
     maze_;
@@ -36,9 +43,6 @@ void Pacman::update() {
     //int y = image_frame_.getY();
     int x = maze_position_.x;
     int y = maze_position_.y;
-    
-    //int width = image_frame_.getWidth();
-    //int height = image_frame_.getHeight();
     
 	switch (current_direction_) {
 		case UP:
@@ -72,18 +76,6 @@ void Pacman::gets_eaten() { // pacman is eaten
     is_eaten_ = true;
 }
 
-/*bool Pacman::is_offscreen() const { // dead if pacman goes off the screen
-    //int x = image_frame_.getX();
-    //int y = image_frame_.getY();
-    int x = maze_position_.x;
-    int y = maze_position_.y; // so the maze position was never initialized
-    
-    //int width = image_frame_.getWidth();
-    //int height = image_frame_.getHeight();
-
-    return (x == 0 || y == 0 || x == kMazeWidth_ - 1 || y == kMazeHeight_ - 1);
-}*/
-
 void Pacman::eat_food_ghost(int points_gained) { // gains points after eating food and ghost objects
     num_points_ += points_gained;
 }
@@ -93,15 +85,7 @@ void Pacman::resize(int w, int h) {
 	int width = ofGetWindowWidth();
 	int height = ofGetWindowHeight();
 
-    //float new_x = ((image_frame_.getX() / screen_dims_.x) * w); // element coords shouldn't change
-    //float new_y = ((image_frame_.getY() / screen_dims_.y) * h);
-    //image_frame_.setPosition(new_x, new_y);
-
     screen_dims_.set(width, height);
-
-	//one_d_size_ = kbody_size_modifier_ * width;
-	//body_size_.set(body_d, body_d);
-    //image_frame_.setSize(body_d, body_d);
 }
 
 int Pacman::getNumPoints() const {
@@ -118,7 +102,7 @@ void Pacman::setDirection(Direction newDirection) {
 
 void Pacman::reset() { // back to original state
     current_direction_ = RIGHT; // starts out moving right
-    maze_position_.set(3, 3); // starting point
+    SetInitialRandomPosition();
     
     num_points_ = 0;
     is_eaten_ = false;
