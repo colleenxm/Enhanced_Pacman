@@ -15,10 +15,16 @@ Ghost::Ghost() {
     ghost_image_.load("/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/image_files/ghost.png"); // loading image
 }
 
-void Ghost::SetInitialRandomPosition() { // intial random pos
-    auto x = dist_x_(generator_);
-    auto y = dist_y_(generator_);
+void Ghost::SetInitialRandomPosition() { // intial random pos - can't be on food or on wall
+    int obj_at_position = -1; // what object's currently at the generated position
     
+    int x = -1;
+    int y = -1;
+    while (obj_at_position != 0) { // can only be on a blank sqUARE
+        x = dist_x_(generator_);
+        y = dist_y_(generator_);
+        obj_at_position = maze_.GetElementAt(x, y);
+    }
     maze_position_.set(x, y);
 }
 
@@ -60,7 +66,10 @@ Direction& Ghost::get_direction() { // gets the current direction - needed to ch
 }
 
 bool Ghost::is_valid_position(ofVec2f& position) {// checks if new position is valid
-    return (position.x >= 0 && position.y >= 0 && position.x < maze_.kMazeWidth_ && position.y < maze_.kMazeHeight_);
+    int x = position.x;
+    int y = position.y;
+    
+    return (x >= 0 && y >= 0 && x < maze_.kMazeWidth_ && y < maze_.kMazeHeight_ && maze_.GetElementAt(x, y) != 1); // can't go over wall, can go over food
 }
 
 ofVec2f& Ghost::calculate_new_position(Direction direction) { // calculates the new position and returns a pair represententing the position
