@@ -46,12 +46,15 @@ void PacmanGame::update() {
             // direction (which happens every CONST number of steps). Note that everything to
             // do with the ghost is in the ghost class for the sake of OOP (and because the
             // Pacman game has >1 ghosts ...)
-            if (ghost_1_.get_num_steps_taken() % ghost_1_.kNumStepsBeforeDirectionChange_) {
-                ghost_1_.choose_random_direction();
+            /*if (ghost_1_.get_num_steps_taken() % ghost_1_.kNumStepsBeforeDirectionChange_) {
+                ghost_1_.ChooseRandomDirection();
             }
             ghost_1_.MoveInNewDirection();
             ghost_1_.IncrNumStepsTaken();
+            ghost_1_.ChooseRandomDirection();*/
             
+            ghost_1_.CalculateNewPosition();
+
             if (game_pacman_.is_dead()) {
                 current_state_ = FINISHED;
             }
@@ -74,7 +77,6 @@ void PacmanGame::InteractPredatorPreyObjects() { // contains logic for having ob
     if (maze_.GetElementAt(pacman_pos.x, pacman_pos.y) == 2) { // idk if this works
         maze_.RemoveFoodAt(pacman_pos.x, pacman_pos.y);
         game_pacman_.eat_food_ghost(kFoodPointsWorth_); // add some sort of sound effect here
-        //game_food_.rebase(); //delete game_food_;
     }
     
     if (pacman_rect.intersects(ghost_rect)) {

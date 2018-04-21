@@ -41,13 +41,29 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "src/ghost.cpp"
-            timestampString = "545987404.9009629"
+            filePath = "src/ofApp.cpp"
+            timestampString = "545989105.112042"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "83"
-            endingLineNumber = "83"
-            landmarkName = "Ghost::calculate_new_position(Direction direction)"
+            startingLineNumber = "49"
+            endingLineNumber = "49"
+            landmarkName = "PacmanGame::update()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "src/ghost.cpp"
+            timestampString = "545989105.112125"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "96"
+            endingLineNumber = "96"
+            landmarkName = "Ghost::ChooseRandomDirection()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

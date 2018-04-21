@@ -52,54 +52,57 @@ Direction& Ghost::get_direction() { // gets the current direction - needed to ch
     return current_direction_;
 }
 
-ofVec2f& Ghost::calculate_new_position(Direction direction) { // calculates the new position and returns a pair represententing the position
-    ofVec2f new_position;
+void Ghost::CalculateNewPosition() { // calculates the new position
+    current_direction_ = static_cast<Direction>(rand() % kNumDirections_);
     
     int x = maze_position_.x;
     int y = maze_position_.y;
     
-    switch (direction) {
+    switch (current_direction_) {
         case UP:
             if (maze_.IsLegalPosition(x, y - 1) && maze_.IsEmptyPosition(x, y - 1)) {
-                new_position.set(x, y - 1);
+                maze_position_.set(x, y - 1);
             }
             break;
         case DOWN:
             if (maze_.IsLegalPosition(x, y + 1) && maze_.IsEmptyPosition(x, y + 1)) {
-                new_position.set(x, y + 1);
+                maze_position_.set(x, y + 1);
             }
             break;
         case LEFT:
             if (maze_.IsLegalPosition(x - 1, y) && maze_.IsEmptyPosition(x - 1, y)) {
-                new_position.set(x - 1, y);
+                maze_position_.set(x - 1, y);
             }
             break;
         case RIGHT:
             if (maze_.IsLegalPosition(x + 1, y) && maze_.IsEmptyPosition(x + 1, y)) {
-                new_position.set(x + 1, y);
+                maze_position_.set(x + 1, y);
             }
             break;
     }
-    return new_position;
 }
 
-void Ghost::choose_random_direction() { // valid position - can take at least 1 step in that direction
-    Direction random_direction;
-    ofVec2f new_position;
-    new_position.set(0, 0); // always invalid - corner
+void Ghost::ChooseRandomDirection() { // valid position - can take at least 1 step in that direction
+    //Direction random_direction;
+    //ofVec2f new_position;
+    //new_position.set(0, 0); // always invalid - corner
     
-    while (!maze_.IsEmptyPosition(new_position.x, new_position.y)) { // while position isn't valid
-        random_direction = static_cast<Direction>(rand() % kNumDirections_); // 1 of the 4 real directions
-        new_position = calculate_new_position(random_direction);
-    }
-    current_direction_ = random_direction;
+    //while (!maze_.IsEmptyPosition(new_position.x, new_position.y)) { // while position isn't valid
+    //    random_direction = static_cast<Direction>(rand() % kNumDirections_); // 1 of the 4 real directions
+    //    new_position = calculate_new_position(random_direction);
+    //}
+    //random_direction = static_cast<Direction>(rand() % kNumDirections_); // 1 of the 4 real directions
+
+    current_direction_ = static_cast<Direction>(rand() % kNumDirections_);
+    //ofVec2f new_position = CalculateNewPosition(current_direction_);
+    //maze_position_.set(new_position.x, new_position.y);
 }
 
 void Ghost::MoveInNewDirection() { // need to figure out what to do if the ghost becomes stuck
-    ofVec2f new_position = calculate_new_position(current_direction_);
+    //ofVec2f new_position = CalculateNewPosition(current_direction_);
     
     //if (maze_.IsEmptyPosition(new_position.x, new_position.y)) {
-    maze_position_.set(new_position.x, new_position.y);
+    //maze_position_.set(new_position.x, new_position.y);
     //}
 }
 
