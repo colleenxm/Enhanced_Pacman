@@ -24,8 +24,17 @@ private:
         FINISHED
     };
     
-    // FOR INTRODUCTION PANEL
+    // ALL PATHS
+    std::string kTextPath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/font_files/verdana.ttf";
+    std::string kIntroMusicPath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/sound_files/intro_music.mp3";
+    std::string kDeathSoundPath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/sound_files/wilhelmscream.mp3";
+    std::string kFoodImagePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/image_files/apple.png";
+
+    // ALL SOUNDS
     ofSoundPlayer intro_music_; // plays music
+    ofSoundPlayer pacman_death_sound_; // wilhem scream
+    
+    // FOR INTRODUCTION PANEL
     ofTrueTypeFont string_font_; // sets font, used to print strings with colors/sizes/fonts other than the default
     GameState current_state_ = NOT_STARTED; // The current state of the game, used to determine possible actions
     
@@ -43,9 +52,8 @@ private:
     std::vector<Ghost> all_ghosts_;
     const int kNumGhosts_ = 3;
     
-    // FOOD DATA
+    // FOOD
     const int kFoodPointsWorth_ = 1; // how many points a food object is worth
-    std::string kFoodImagePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/image_files/apple.png";
     
     bool should_update_ = true;     // A flag boolean used in the update() function.
     
@@ -56,7 +64,8 @@ private:
     void DrawMaze();
     void DrawGhosts();
     void DrawPacman();
-    
+    void DrawScoreboard();
+
     void DrawGameOver();
     void DrawGamePaused();
     

@@ -8,8 +8,9 @@ void PacmanGame::setup(){
     
     srand(static_cast<unsigned>(time(0))); // Seed random with current time
     
-    string_font_.load("/Users/elizabeth/Downloads/of_v0.9.8_osx_release/examples/addons/networkTcpServerExample/bin/data/type/verdana.ttf", 32, true, false, true, 0.1);
-    intro_music_.load("/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/sound_files/intro_music.mp3");
+    string_font_.load(kTextPath_, 32, true, false, true, 0.1);
+    intro_music_.load(kIntroMusicPath_);
+    pacman_death_sound_.load(kDeathSoundPath_);
     
     // set the maze reference so the other objects can keep track of the maze as well
     //game_pacman_.SetMaze(maze_);
@@ -98,11 +99,13 @@ void PacmanGame::InteractPacmanWithGhost(Ghost& current_ghost) { // responsible 
             // need to do something about the ghost
         } else { // ghost eats the pacman if both objects are pointing in the same direction and the ghost is behind the pacman
             game_pacman_.GetsEaten(); // game over - pacman needs to die
+            pacman_death_sound_.play();
         }
     } else { // ghost eats the pacman if the objects are pointing in different directions
         if ((pacman_direction == UP && ghost_direction == DOWN) || (pacman_direction == DOWN && ghost_direction == UP)
             || (pacman_direction == LEFT && ghost_direction == RIGHT) || (pacman_direction == RIGHT && ghost_direction == LEFT)) {
             game_pacman_.GetsEaten(); // game over - pacman needs to die
+            pacman_death_sound_.play();
         }
     }
 }
@@ -120,13 +123,14 @@ void PacmanGame::draw(){ // is called over and over again
         intro_music_.setLoop(true); // plays over and over again
         intro_music_.play();
         
-        string_font_.drawString("WELCOME TO PACMAN!", ofGetWidth()/1.5, ofGetHeight()/1.5);
+        string_font_.drawString("WELCOME TO PACMAN!", ofGetWidth()/3, ofGetHeight()/3);
         ofDrawBitmapString("Click anywhere to continue", ofGetWidth()/6, ofGetHeight()/6);
         
     } else if (current_state_ == IN_PROGRESS) {
         DrawMaze();
         DrawGhosts();
         DrawPacman();
+        DrawScoreboard();
         
     } else if(current_state_ == PAUSED) {
         DrawMaze();
@@ -272,9 +276,17 @@ void PacmanGame::DrawPacman() {
     game_pacman_.GetPacmanImage().draw(pos.x * coord_multiplier_x_ + kOneDObjectSize_/2, pos.y * coord_multiplier_y_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
 }
 
+void PacmanGame::DrawScoreboard() {
+    std::string current_score = "Current score: " + std::to_string(game_pacman_.GetNumPoints());
+    
+    ofSetColor(200, 200, 200);
+    ofDrawBitmapString(current_score, ofGetWidth() - 200, ofGetHeight() - 200);
+    //string_font_.drawString(current_score, ofGetWidth() - 200, ofGetHeight() - 200);
+}
+
 void PacmanGame::DrawGameOver() {
     ofSetBackgroundColor(0, 0, 0); // set background as black
-    string_font_.drawString("YOU LOST!", ofGetWidth()/6, ofGetHeight()/6);
+    string_font_.drawString("YOU LOST!", ofGetWidth()/1.5, ofGetHeight()/1.5);
 }
 
 void PacmanGame::DrawGamePaused() {
