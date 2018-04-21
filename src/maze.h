@@ -23,7 +23,7 @@ private:
     // 2 = food - note: will just randomly generating the food here and drawing them in ofapp instead
         // of even having separate objects for each
     
-    std::array<std::array<int, 36>, 37> raw_maze_ = {
+    std::array<std::array<int, 33>, 37> raw_maze_ = {
         {
             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, // 0
             {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1}, // 1
@@ -68,16 +68,20 @@ private:
     int num_food_items_ = 0;
     
 public:    
-    static const int kMazeWidth_ = 37; // num rows - do I need to make these private or is there no point in doing so?
-    static const int kMazeHeight_ = 33; // num cols
-
     void PopulateWithFood(int num_food_items); // populate the maze with food objects in random, non-wall places - swaps num_items number of 0's with that number of 2's, where 2 = food object. Note: Will end up doing this instead of having actual food objects - can get rid of the logic needed to remove the food objects, don't have to worry about if two food objects overlap, makes life easier
     
     int GetElementAt(int x_pos, int y_pos); // returns the element at a specified position
-    bool IsValidPosition(int x_pos, int y_pos); // true if the position isn't on a part of the wall and isn't out of bounds
+    
+    bool IsEmptyPosition(int x_pos, int y_pos); // true if the position is empty
+    bool IsLegalPosition(int x_pos, int y_pos); // true if the position is legal - not out of bounds
+    bool IsValidPacmanPosition(int x_pos, int y_pos); // true if the position is empty or has a piece of food on it
+
     void RemoveFoodAt(int x_pos, int y_pos); // removes the food item (checks if it's a food item first and swaps the 2 at that location with a 0)
     
-    void Reset();
+    int GetWidth();
+    int GetHeight();
+
+    void Reset(); // return to original state - remove all leftover food items and draw the pieces of food over again
 };
 
 #endif /* maze_hpp */

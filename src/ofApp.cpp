@@ -17,8 +17,9 @@ void PacmanGame::setup(){
     ghost_1_.SetInitialRandomPosition();
     maze_.PopulateWithFood(kNumFoodItems_);
     
-    coord_multiplier_x_ = ofGetWindowWidth() / maze_.kMazeWidth_;
-    coord_multiplier_y_ = ofGetWindowHeight() / maze_.kMazeHeight_;
+    //int val = maze_.GetElementAt(10, 10);
+    coord_multiplier_x_ = ofGetWindowWidth() / maze_.GetWidth();
+    coord_multiplier_y_ = ofGetWindowHeight() / maze_.GetHeight();
 }
 
 /*
@@ -48,8 +49,8 @@ void PacmanGame::update() {
             if (ghost_1_.get_num_steps_taken() % ghost_1_.kNumStepsBeforeDirectionChange_) {
                 ghost_1_.choose_random_direction();
             }
-            ghost_1_.move_in_new_direction();
-            ghost_1_.incr_num_steps_taken();
+            ghost_1_.MoveInNewDirection();
+            ghost_1_.IncrNumStepsTaken();
             
             if (game_pacman_.is_dead()) {
                 current_state_ = FINISHED;
@@ -124,13 +125,11 @@ void PacmanGame::draw(){ // is called over and over again
     } else if (current_state_ == IN_PROGRESS) {
         draw_maze();
         draw_ghosts();
-        //draw_food();
         draw_pacman();
 
     } else if(current_state_ == PAUSED) {
         draw_maze();
         draw_ghosts();
-        //draw_food();
         draw_pacman();
         drawGamePaused();
         
@@ -197,7 +196,6 @@ void PacmanGame::keyPressed(int key){
             current_state_ = PAUSED;
         }
     } else if (upper_key == 'R' && current_state_ == FINISHED) {
-        //updateHighestScores(game_snake_.getFoodEaten()); // "works" if updating here, problem is that I'll be one game behind
         reset();
     }
 }
@@ -222,8 +220,8 @@ void PacmanGame::windowResized(int w, int h){
 }
 
 void PacmanGame::draw_maze() { // draws the maze
-    for (int x_index = 0; x_index < maze_.kMazeWidth_; x_index++) {
-        for (int y_index = 0; y_index < maze_.kMazeHeight_; y_index++) {
+    for (int x_index = 0; x_index < maze_.GetWidth(); x_index++) {
+        for (int y_index = 0; y_index < maze_.GetHeight(); y_index++) {
             switch (maze_.GetElementAt(x_index, y_index)) {
                 case 0: // no wall
                     ofSetColor(100, 100, 100);
@@ -252,11 +250,6 @@ void PacmanGame::draw_pacman() {
     ofVec2f pos = game_pacman_.GetMazePosition();
     game_pacman_.get_pacman_image().draw(pos.x * coord_multiplier_x_, pos.y * coord_multiplier_y_, kOneDObjectSize_, kOneDObjectSize_);
 }
-
-/*void PacmanGame::draw_food() {
-    ofVec2f pos = game_food_.GetMazePosition();
-    game_food_.get_food_image().draw(pos.x * coord_multiplier_x_, pos.y * coord_multiplier_y_, kOneDObjectSize_, kOneDObjectSize_);
-}*/
 
 void PacmanGame::drawGameOver() {
     ofSetBackgroundColor(0, 0, 0); // set background as black

@@ -24,40 +24,34 @@ Pacman::Pacman() {
     // pacman_image_.rotate90(1); // figure out rotations later
 }
 
-/*void Pacman::SetMaze(Maze& maze) { // set maze reference
-    maze_ = maze;
-}*/
-
 void Pacman::update() {
     maze_;
     
-	// Move the head one body square in the direction the snake is moving
-    //int x = image_frame_.getX();
-    //int y = image_frame_.getY();
     int x = maze_position_.x;
     int y = maze_position_.y;
     
-    //int width = image_frame_.getWidth();
-    //int height = image_frame_.getHeight();
-    
 	switch (current_direction_) {
 		case UP:
-            if (y - 1 >= 0) {
+            //if (y - 1 >= 0 && maze_.GetElementAt(x, y - 1) == 0) { // is legal and is valid pacman
+            if (maze_.IsLegalPosition(x, y - 1) && maze_.IsValidPacmanPosition(x, y - 1)) {
                 maze_position_.set(x, y - 1);
             }
             break;
 		case DOWN:
-            if (y + 1 < maze_.kMazeHeight_) {
+            //if (y + 1 < maze_.GetHeight() && maze_.GetElementAt(x, y + 1) == 0) {
+            if (maze_.IsLegalPosition(x, y + 1) && maze_.IsValidPacmanPosition(x, y + 1)) {
                 maze_position_.set(x, y + 1);
             }
 			break;
 		case LEFT:
-            if (x - 1 >= 0) {
+            //if (x - 1 >= 0 && maze_.GetElementAt(x - 1, y) == 0) {
+            if (maze_.IsLegalPosition(x - 1, y) && maze_.IsValidPacmanPosition(x - 1, y)) {
                 maze_position_.set(x - 1, y);
             }
 			break;
 		case RIGHT:
-            if (x + 1 < maze_.kMazeWidth_) {
+            //if (x + 1 < maze_.GetWidth() && maze_.GetElementAt(x + 1, y) == 0) {
+            if (maze_.IsLegalPosition(x + 1, y) && maze_.IsValidPacmanPosition(x + 1, y)) {
                 maze_position_.set(x + 1, y);
             }
             break;
@@ -72,18 +66,6 @@ void Pacman::gets_eaten() { // pacman is eaten
     is_eaten_ = true;
 }
 
-/*bool Pacman::is_offscreen() const { // dead if pacman goes off the screen
-    //int x = image_frame_.getX();
-    //int y = image_frame_.getY();
-    int x = maze_position_.x;
-    int y = maze_position_.y; // so the maze position was never initialized
-    
-    //int width = image_frame_.getWidth();
-    //int height = image_frame_.getHeight();
-
-    return (x == 0 || y == 0 || x == kMazeWidth_ - 1 || y == kMazeHeight_ - 1);
-}*/
-
 void Pacman::eat_food_ghost(int points_gained) { // gains points after eating food and ghost objects
     num_points_ += points_gained;
 }
@@ -92,16 +74,8 @@ void Pacman::eat_food_ghost(int points_gained) { // gains points after eating fo
 void Pacman::resize(int w, int h) {
 	int width = ofGetWindowWidth();
 	int height = ofGetWindowHeight();
-
-    //float new_x = ((image_frame_.getX() / screen_dims_.x) * w); // element coords shouldn't change
-    //float new_y = ((image_frame_.getY() / screen_dims_.y) * h);
-    //image_frame_.setPosition(new_x, new_y);
-
+    
     screen_dims_.set(width, height);
-
-	//one_d_size_ = kbody_size_modifier_ * width;
-	//body_size_.set(body_d, body_d);
-    //image_frame_.setSize(body_d, body_d);
 }
 
 int Pacman::getNumPoints() const {
