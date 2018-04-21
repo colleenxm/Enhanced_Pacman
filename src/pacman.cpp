@@ -17,19 +17,20 @@ Pacman::Pacman() {
 	int height = ofGetWindowHeight();
 	screen_dims_.set(width, height);
 
-	//one_d_size_ = kbody_size_modifier_ * width;
-    //image_frame_.setSize(body_d, body_d);
-	//body_size_.set(body_d, body_d);
-
 	current_direction_ = RIGHT; // starts out moving right
-    //image_frame_.setPosition(0, 2 * k1DSize_);
     maze_position_.set(3, 3); // starting point
     
     pacman_image_.load("/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/image_files/pacman.png");
     // pacman_image_.rotate90(1); // figure out rotations later
 }
 
+/*void Pacman::SetMaze(Maze& maze) { // set maze reference
+    maze_ = maze;
+}*/
+
 void Pacman::update() {
+    maze_;
+    
 	// Move the head one body square in the direction the snake is moving
     //int x = image_frame_.getX();
     //int y = image_frame_.getY();
@@ -46,7 +47,7 @@ void Pacman::update() {
             }
             break;
 		case DOWN:
-            if (y + 1 < kMazeHeight_) {
+            if (y + 1 < maze_.kMazeHeight_) {
                 maze_position_.set(x, y + 1);
             }
 			break;
@@ -56,7 +57,7 @@ void Pacman::update() {
             }
 			break;
 		case RIGHT:
-            if (x + 1 < kMazeWidth_) {
+            if (x + 1 < maze_.kMazeWidth_) {
                 maze_position_.set(x + 1, y);
             }
             break;
@@ -115,6 +116,11 @@ void Pacman::setDirection(Direction newDirection) {
 	current_direction_ = newDirection;
 }
 
-/*int Pacman::Get1DSize() {
-    return one_d_size_;
-}*/
+void Pacman::reset() { // back to original state
+    current_direction_ = RIGHT; // starts out moving right
+    maze_position_.set(3, 3); // starting point
+    
+    num_points_ = 0;
+    is_eaten_ = false;
+}
+

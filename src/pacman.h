@@ -2,6 +2,7 @@
 #include "direction.h"
 #include "ghost.h"
 #include "food.h"
+#include "maze.h"
 
 #pragma once
 
@@ -21,28 +22,24 @@ private:
     ofVec2f maze_position_; // x, y position of the maze - important: this corresponds to the MAZE ELEMENT and NOT to the actual coordinates in the coordinatep lane
     
     //int one_d_size_; // size per object (dimensions = kBlockSize_ * kBlockSize_), need to standardize all the object sizes to prevent the objects from overlapping with the maze walls
-    static const int kMazeWidth_ = 37;
-    static const int kMazeHeight_ = 33;
 
     ofImage pacman_image_; // image that correpsonds with the pacman 
     bool is_eaten_ = false; // dies if eaten
     
-    //bool is_offscreen() const; // checks if pacman is offscreen
+    Maze maze_; // keeps track of the maze - to check if position is valid, same maze as the one in the game
 
 public:
     // Methods to use adapted from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
-    //ofVec2f getPosition() const;
     ofColor& get_color() const;
-    //ofRectangle& get_image_frame();
     ofVec2f& GetMazePosition();
     ofImage& get_pacman_image(); // gets image
     
     Direction get_direction() const; // Gets the current direction
     void setDirection(Direction new_direction); // Sets the current direction
-
-    //int Get1DSize(); // gets the 1d size of the object - needed to draw the image
     
 	Pacman(); // Default constructor, initializes and places length 1 snake
+    
+    //void SetMaze(Maze& maze); // set the maze - need to keep track of the maze to know if the obj's at a wall
     
     bool is_dead();
     void gets_eaten(); // pacman is eaten
@@ -54,4 +51,5 @@ public:
 	void resize(int w, int h); // resizes
 	int getNumPoints() const; // Gets the number of points
     
+    void reset(); // clears everything
 };

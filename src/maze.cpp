@@ -17,6 +17,7 @@ void Maze::PopulateWithFood(int num_food_items) { // populate the maze with food
             num_items_created++;
         }
     }
+    num_food_items_ = num_food_items; // store after - note: didn't use constructor because I didn't want to use magic numbers in ofapp
 }
 
 int Maze::GetElementAt(int x_pos, int y_pos) { // returns the element at a specified position
@@ -31,4 +32,15 @@ void Maze::RemoveFoodAt(int x_pos, int y_pos) { // removes the food item (checks
     if (raw_maze_[x_pos][y_pos] == 2) {
         raw_maze_[x_pos][y_pos] = 0;
     }
+}
+
+void Maze::Reset() { // clears all remaining food items and redraws food from the stored number of food items
+    for (int x = 0; x < kMazeWidth_; x++) {
+        for (int y = 0; y < kMazeHeight_; y++) {
+            if (raw_maze_[x][y] == 2) {
+                raw_maze_[x][y] = 0; // clear food item
+            }
+        }
+    }
+    PopulateWithFood(num_food_items_);
 }

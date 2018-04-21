@@ -10,8 +10,15 @@ void PacmanGame::setup(){
     
     string_font_.load("/Users/elizabeth/Downloads/of_v0.9.8_osx_release/examples/addons/networkTcpServerExample/bin/data/type/verdana.ttf", 32, true, false, true, 0.1);
     intro_music_.load("/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/sound_files/intro_music.mp3");
-
-    maze_.PopulateWithFood(10); // 10 food items
+    
+    // set the maze reference so the other objects can keep track of the maze as well
+    //game_pacman_.SetMaze(maze_);
+    //ghost_1_.SetMaze(maze_);
+    ghost_1_.SetInitialRandomPosition();
+    maze_.PopulateWithFood(kNumFoodItems_);
+    
+    coord_multiplier_x_ = ofGetWindowWidth() / maze_.kMazeWidth_;
+    coord_multiplier_y_ = ofGetWindowHeight() / maze_.kMazeHeight_;
 }
 
 /*
@@ -162,7 +169,7 @@ void PacmanGame::keyPressed(int key){
         Direction current_direction = game_pacman_.get_direction();
         
         // If current direction has changed to a valid new one, force an immediate update and skip the next frame update
-        if (upper_key == 'W' && current_direction != DOWN && current_direction != UP) {
+        if (upper_key == 'W') {
             game_pacman_.setDirection(UP);
             update();
             should_update_ = false;
@@ -170,18 +177,18 @@ void PacmanGame::keyPressed(int key){
             // need to rotate pacman here
         }
         
-        else if (upper_key == 'A' && current_direction != RIGHT && current_direction != LEFT) {
+        else if (upper_key == 'A') {
             game_pacman_.setDirection(LEFT);
             update();
             should_update_ = false;
         }
         
-        else if ((upper_key == 'S') && current_direction != UP && current_direction != DOWN) {
+        else if (upper_key == 'S') {
             game_pacman_.setDirection(DOWN);
             update();
             should_update_ = false;
         }
-        else if (upper_key == 'D' && current_direction != LEFT && current_direction != RIGHT) {
+        else if (upper_key == 'D') {
             game_pacman_.setDirection(RIGHT);
             update();
             should_update_ = false;
@@ -201,10 +208,12 @@ void PacmanGame::mousePressed(int x, int y, int button){
     }
 }
 
-void PacmanGame::reset() {
-    game_pacman_ = Pacman();
-    ghost_1_.rebase();
+void PacmanGame::reset() { // resets everything
+    game_pacman_.reset();
+    ghost_1_.SetInitialRandomPosition();
     current_state_ = IN_PROGRESS;
+    
+    maze_.Reset(); // clears all leftover food items and redraws food items
 }
 
 void PacmanGame::windowResized(int w, int h){

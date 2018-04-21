@@ -3,6 +3,7 @@
 
 #include "direction.h"
 #include "ofMain.h"
+#include "maze.h"
 
 class Ghost {
 private:
@@ -25,17 +26,16 @@ private:
     ofVec2f maze_position_; // x, y position of the maze - important: this corresponds to the MAZE ELEMENT and NOT to the actual coordinates in the coordinatep lane
     ofImage ghost_image_; // image that correpsonds with a ghost object
     
-    //int one_d_size_; // size per object (dimensions = kBlockSize_ * kBlockSize_), need to standardize all the object sizes to prevent the objects from overlapping with the maze walls
-    const int kMazeWidth_ = 37;
-    const int kMazeHeight_ = 33;
-
+    Maze maze_; // keeps track of the maze - to check if position is valid, same maze as the one in the game
+    
 public:
     const int kNumStepsBeforeDirectionChange_ = 20; // number of steps to take in the new  direction before changing direction. Note that this is used in ofApp so each step can be drawn out (else the ghost would jump around). No point in hiding this - will need a getter anyways
 
     const int kPointsWorth_ = 10; // worth 10 points (b/c it's riskier to eat a ghost since the ghost can turn around and eat you)
 
 	Ghost(); // Default constructor, sets up generator devices and rarndomly places food at a valid location
-	void rebase(); // Called once the snake has successfully eaten food, replaces the foods color and location
+    //void SetMaze(Maze& maze); // set the maze - need to keep track of the maze to know if the obj's at a wall
+    void SetInitialRandomPosition(); // intial random pos
 	void resize(int w, int h); // Called by application resize, resizes food rect to new window dimensions
         
 	//ofRectangle& get_image_frame(); // Gets the rectangle that represents the food object

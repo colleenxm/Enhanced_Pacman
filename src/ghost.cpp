@@ -4,7 +4,7 @@
 //const float Ghost::kFoodModifier = 0.05; // same size as pacman
 
 // Adapted and modified from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
-Ghost::Ghost() {
+Ghost::Ghost() {    
     int window_width = ofGetWindowWidth();
     int window_height = ofGetWindowHeight();
     window_dims_.set(window_width, window_height);
@@ -13,13 +13,22 @@ Ghost::Ghost() {
     //image_frame_.setSize(size_d, size_d);
     
     generator_ = std::mt19937(rand());
-    //dist_x_ = std::uniform_int_distribution<>(0, window_width - size_d);
-    //dist_y_ = std::uniform_int_distribution<>(0, window_height - size_d);
-    dist_x_ = std::uniform_int_distribution<>(0, kMazeWidth_);
-    dist_y_ = std::uniform_int_distribution<>(0, kMazeHeight_);
-    
+
     ghost_image_.load("/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/image_files/ghost.png"); // loading image
-    rebase();
+}
+
+/*void Ghost::SetMaze(Maze& maze) { // set maze reference
+    maze_ = maze;
+}*/
+
+void Ghost::SetInitialRandomPosition() { // intial random pos
+    dist_x_ = std::uniform_int_distribution<>(0, maze_.kMazeWidth_);
+    dist_y_ = std::uniform_int_distribution<>(0, maze_.kMazeHeight_);
+    
+    auto x = dist_x_(generator_);
+    auto y = dist_y_(generator_);
+    
+    maze_position_.set(x, y);
 }
 
 // Method adapted and modified from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
@@ -37,15 +46,6 @@ void Ghost::resize(int w, int h) {
     //dist_x_ = std::uniform_int_distribution<>(0, w - k1DSize_); // shouldn't change
     //dist_y_ = std::uniform_int_distribution<>(0, h - k1DSize_);
     window_dims_.set(w, h);
-}
-
-// Method adapted and modified from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
-void Ghost::rebase() {
-    auto x = dist_x_(generator_);
-    auto y = dist_y_(generator_);
-    
-    maze_position_.set(x, y);
-    //image_frame_.setPosition(x, y);
 }
 
 /*ofRectangle& Ghost::get_image_frame() {
@@ -77,7 +77,7 @@ Direction& Ghost::get_direction() { // gets the current direction - needed to ch
 }
 
 bool Ghost::is_valid_position(ofVec2f& position) {// checks if new position is valid
-    return (position.x >= 0 && position.y >= 0 && position.x < kMazeWidth_ && position.y < kMazeHeight_);
+    return (position.x >= 0 && position.y >= 0 && position.x < maze_.kMazeWidth_ && position.y < maze_.kMazeHeight_);
 }
 
 ofVec2f& Ghost::calculate_new_position(Direction direction) { // calculates the new position and returns a pair represententing the position
@@ -93,7 +93,7 @@ ofVec2f& Ghost::calculate_new_position(Direction direction) { // calculates the 
         }
         break;
     case DOWN:
-        if (y + 1 < kMazeHeight_) {
+        if (y + 1 < maze_.kMazeHeight_) {
             new_position.set(x, y + 1);
         }
         break;
@@ -103,7 +103,7 @@ ofVec2f& Ghost::calculate_new_position(Direction direction) { // calculates the 
         }
         break;
     case RIGHT:
-        if (x + 1 < kMazeWidth_) {
+        if (x + 1 < maze_.kMazeWidth_) {
             new_position.set(x + 1, y);
         }
         break;

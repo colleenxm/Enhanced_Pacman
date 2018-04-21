@@ -10,7 +10,6 @@
 		04A5D9160D7B47C28FE6BFB8 /* ofxButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13869F639BF6C4B3904CAB1C /* ofxButton.cpp */; };
 		21FFE1CD382B6E45A991EE58 /* ghost.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B434C81FEA90B888FF023E6A /* ghost.cpp */; };
 		231CAAC9769D9DAF8EFEA6E2 /* ofxGuiGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 51E6B94C4D93A27EAC81479F /* ofxGuiGroup.cpp */; };
-		55BBC67E20899B2D00BE6408 /* food.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55BBC67C20899B2D00BE6408 /* food.cpp */; };
 		55BBC69B208ACEF900BE6408 /* maze.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55BBC699208ACEF900BE6408 /* maze.cpp */; };
 		5F4473007572ECCCF1FD6835 /* ofxPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 206AF929EBE882BA10ED52B7 /* ofxPanel.cpp */; };
 		5F51302C45E28399DC25EDAB /* ofxToggle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D8948FDEB910502FD195EEF1 /* ofxToggle.cpp */; };
@@ -60,8 +59,6 @@
 		21B6AA95E94945B95C08485D /* ofxLabel.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxLabel.h; path = ../../Downloads/of_v0.9.8_osx_release/addons/ofxGui/src/ofxLabel.h; sourceTree = SOURCE_ROOT; };
 		489EF59343A4D08B16F14798 /* pacman.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = pacman.cpp; path = src/pacman.cpp; sourceTree = SOURCE_ROOT; };
 		51E6B94C4D93A27EAC81479F /* ofxGuiGroup.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxGuiGroup.cpp; path = ../../Downloads/of_v0.9.8_osx_release/addons/ofxGui/src/ofxGuiGroup.cpp; sourceTree = SOURCE_ROOT; };
-		55BBC67C20899B2D00BE6408 /* food.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = food.cpp; sourceTree = "<group>"; };
-		55BBC67D20899B2D00BE6408 /* food.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = food.h; sourceTree = "<group>"; };
 		55BBC68B208A542A00BE6408 /* direction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = direction.h; sourceTree = "<group>"; };
 		55BBC699208ACEF900BE6408 /* maze.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = maze.cpp; sourceTree = "<group>"; };
 		55BBC69A208ACEF900BE6408 /* maze.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = maze.h; sourceTree = "<group>"; };
@@ -180,8 +177,6 @@
 				6AFBA72D791BD93B9CC2D7EF /* ghost.h */,
 				C9DA7183A8CF60AA78424772 /* pacman.h */,
 				B434C81FEA90B888FF023E6A /* ghost.cpp */,
-				55BBC67C20899B2D00BE6408 /* food.cpp */,
-				55BBC67D20899B2D00BE6408 /* food.h */,
 				55BBC68B208A542A00BE6408 /* direction.h */,
 				55BBC699208ACEF900BE6408 /* maze.cpp */,
 				55BBC69A208ACEF900BE6408 /* maze.h */,
@@ -288,7 +283,6 @@
 				55BBC69B208ACEF900BE6408 /* maze.cpp in Sources */,
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
-				55BBC67E20899B2D00BE6408 /* food.cpp in Sources */,
 				8F29E45A58EDABE7DA3C8937 /* pacman.cpp in Sources */,
 				21FFE1CD382B6E45A991EE58 /* ghost.cpp in Sources */,
 				8A4AAC912426DADCC901DB3E /* ofxBaseGui.cpp in Sources */,
