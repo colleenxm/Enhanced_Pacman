@@ -9,11 +9,10 @@ class Pacman {
 private:
 	Direction current_direction_; // current direction
 	ofVec2f screen_dims_; // The current screen dimensions (needed to calculate values on resize()
-	static const float kbody_size_modifier_; // The proportion of the screen width a body square is
+	//static const float kbody_size_modifier_; // The proportion of the screen width a body square is
     
     //ofVec2f body_size_; // the size based on kbody_size_modifier_
     //ofVec2f position_; // position of pacman
-    ofColor color_;
     
     int num_points_; // corresponds to the food eaten
    
@@ -21,7 +20,7 @@ private:
 
     ofVec2f maze_position_; // x, y position of the maze - important: this corresponds to the MAZE ELEMENT and NOT to the actual coordinates in the coordinatep lane
     
-    int one_d_size_; // size per object (dimensions = kBlockSize_ * kBlockSize_), need to standardize all the object sizes to prevent the objects from overlapping with the maze walls
+    //int one_d_size_; // size per object (dimensions = kBlockSize_ * kBlockSize_), need to standardize all the object sizes to prevent the objects from overlapping with the maze walls
     static const int kMazeWidth_ = 37;
     static const int kMazeHeight_ = 33;
 
@@ -41,7 +40,7 @@ public:
     Direction get_direction() const; // Gets the current direction
     void setDirection(Direction new_direction); // Sets the current direction
 
-    int Get1DSize(); // gets the 1d size of the object - needed to draw the image
+    //int Get1DSize(); // gets the 1d size of the object - needed to draw the image
     
 	Pacman(); // Default constructor, initializes and places length 1 snake
     

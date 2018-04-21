@@ -29,7 +29,7 @@ void PacmanGame::setup(){
 void PacmanGame::update() {
     if (should_update_) {
         if (current_state_ == IN_PROGRESS) {
-            HaveObjectsEat();
+            InteractPredatorPreyObjects();
             game_pacman_.update(); // gets new location for the pacman and draws in the next tick
             
             // Explanation: We want the ghost to take a number of steps in its current
@@ -54,19 +54,14 @@ void PacmanGame::update() {
     should_update_ = true;
 }
 
-void PacmanGame::HaveObjectsEat() { // contains logic for having objects eat each other, should probably rename the method
+void PacmanGame::InteractPredatorPreyObjects() { // contains logic for having objects eat each other, should probably rename the method
     ofVec2f pacman_pos = game_pacman_.GetMazePosition();
-    int pacman_size = game_pacman_.Get1DSize();
-    
     ofVec2f food_pos = game_food_.GetMazePosition();
-    int food_size = game_food_.Get1DSize();
-    
     ofVec2f ghost_pos = ghost_1_.GetMazePosition();
-    int ghost_size = ghost_1_.Get1DSize();
     
-    ofRectangle pacman_rect = ofRectangle(pacman_pos.x * coordinates_multiplier_x, pacman_pos.y * coordinates_multiplier_x, pacman_size, pacman_size);
-    ofRectangle food_rect = ofRectangle(food_pos.x * coordinates_multiplier_x, food_pos.y * coordinates_multiplier_x, food_size, food_size);
-    ofRectangle ghost_rect = ofRectangle(ghost_pos.x * coordinates_multiplier_x, ghost_pos.y * coordinates_multiplier_x, ghost_size, ghost_size);
+    ofRectangle pacman_rect = ofRectangle(pacman_pos.x * coordinates_multiplier_x, pacman_pos.y * coordinates_multiplier_x, one_d_obj_size_, one_d_obj_size_);
+    ofRectangle food_rect = ofRectangle(food_pos.x * coordinates_multiplier_x, food_pos.y * coordinates_multiplier_x, one_d_obj_size_, one_d_obj_size_);
+    ofRectangle ghost_rect = ofRectangle(ghost_pos.x * coordinates_multiplier_x, ghost_pos.y * coordinates_multiplier_x, one_d_obj_size_, one_d_obj_size_);
     
     // Note: Creating a rectangle and using intersects() instead of just comparing indices because the latter would force the predator to be ON TOP OF the object to eat it.
     if (pacman_rect.intersects(food_rect)) {
@@ -218,12 +213,9 @@ void PacmanGame::windowResized(int w, int h){
 }
 
 void PacmanGame::draw_maze() { // draws the maze
-    const int kWidthMultiplier = 15; // don't want the blocks to overlap - will lead to misleading results
-    const int kHeightMultiplier = 15;
-    
-    for (int i = 0; i < kMazeWidth_; i++) {
-        for (int j = 0; j < kMazeHeight_; j++) {
-            switch (maze_[i][j]) {
+    for (int i = 0; i < maze_.kMazeWidth_; i++) {
+        for (int j = 0; j < maze_.kMazeHeight_; j++) {
+            switch (maze_.GetElementAt(i, j)) {
                 case 0: // no wall
                     ofSetColor(100, 100, 100);
                     break;
@@ -231,30 +223,26 @@ void PacmanGame::draw_maze() { // draws the maze
                     ofSetColor(225, 225, 225);
                     break;
             }
-            ofDrawRectangle(i*kWidthMultiplier, j*kHeightMultiplier, kObject1DSize_, kObject1DSize_);
+            ofDrawRectangle(i * coordinates_multiplier_x, j * coordinates_multiplier_y, 20, 20); //kObject1DSize_, kObject1DSize_);
         }
     }
 }
 
 void PacmanGame::draw_ghosts() { // just make sizes all the same for simplicity
-    //ofRectangle ghost_frame = ghost_1_.get_image_frame();
-    //ghost_1_.get_food_image().draw(ghost_frame.getX(), ghost_frame.getY(), ghost_frame.getWidth(), ghost_frame.getHeight());
     ofVec2f pos = ghost_1_.GetMazePosition();
-    ghost_1_.get_ghost_image().draw(pos.x * coordinates_multiplier_x, pos.y * coordinates_multiplier_x, ghost_1_.Get1DSize(), ghost_1_.Get1DSize());
+    ghost_1_.get_ghost_image().draw(pos.x * coordinates_multiplier_x, pos.y * coordinates_multiplier_x, one_d_obj_size_, one_d_obj_size_);
 }
 
 void PacmanGame::draw_pacman() {
-    //ofRectangle pacman_frame = game_pacman_.get_image_frame();
-    //game_pacman_.get_pacman_image().draw(pacman_frame.getX(), pacman_frame.getY(), pacman_frame.getWidth(), pacman_frame.getHeight());
     ofVec2f pos = game_pacman_.GetMazePosition();
-    game_pacman_.get_pacman_image().draw(pos.x * coordinates_multiplier_x, pos.y * coordinates_multiplier_y, game_pacman_.Get1DSize(), game_pacman_.Get1DSize());
+    game_pacman_.get_pacman_image().draw(pos.x * coordinates_multiplier_x, pos.y * coordinates_multiplier_y, one_d_obj_size_, one_d_obj_size_);
 }
 
 void PacmanGame::draw_food() {
-    //ofRectangle food_frame = game_food_.get_image_frame();
-    //game_food_.get_food_image().draw(food_frame.getX(), food_frame.getY(), food_frame.getWidth(), food_frame.getHeight());
     ofVec2f pos = game_food_.GetMazePosition();
-    game_food_.get_food_image().draw(pos.x * coordinates_multiplier_x, pos.y * coordinates_multiplier_y, game_food_.Get1DSize(), game_food_.Get1DSize());
+    std::string position_str = "x: " + std::to_string(pos.x) +" y: " + std::to_string(pos.y);
+    ofDrawBitmapString(position_str, 100, 10);
+    game_food_.get_food_image().draw(pos.x * coordinates_multiplier_x, pos.y * coordinates_multiplier_y, one_d_obj_size_, one_d_obj_size_);
 }
 
 void PacmanGame::drawGameOver() {
@@ -267,8 +255,4 @@ void PacmanGame::drawGamePaused() {
     string pause_message = "P to Unpause!";
     ofSetColor(0, 0, 0);
     ofDrawBitmapString(pause_message, ofGetWindowWidth() / 1.5, ofGetWindowHeight() / 1.5);
-}
-
-bool PacmanGame::IsValidPosition(int x_pos, int y_pos) { // true if the position isn't on a part of the wall and isn't out of bounds
-    return (x_pos < kMazeWidth_) && (y_pos < kMazeHeight_) && (maze_[x_pos][y_pos] == 0); // 0 = not a part of the wall wall, 1 = part of the wall
 }

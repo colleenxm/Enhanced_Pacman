@@ -1,12 +1,8 @@
 #include "pacman.h"
 
-const float Pacman::kbody_size_modifier_ = 0.05; // all objects should be the same sizes
+//const float Pacman::kbody_size_modifier_ = 0.05; // all objects should be the same sizes
 
-// Adapted from OF-SNAKE MP (Snake class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang 
-
-/*ofRectangle& Pacman::get_image_frame() {
-    return image_frame_;
-}*/
+// Adapted from OF-SNAKE MP (Snake class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
 
 ofVec2f& Pacman::GetMazePosition() {
     return maze_position_;
@@ -21,14 +17,13 @@ Pacman::Pacman() {
 	int height = ofGetWindowHeight();
 	screen_dims_.set(width, height);
 
-	one_d_size_ = kbody_size_modifier_ * width;
+	//one_d_size_ = kbody_size_modifier_ * width;
     //image_frame_.setSize(body_d, body_d);
 	//body_size_.set(body_d, body_d);
 
 	current_direction_ = RIGHT; // starts out moving right
     //image_frame_.setPosition(0, 2 * k1DSize_);
     maze_position_.set(3, 3); // starting point
-    color_ = ofColor(0, 100, 0);
     
     pacman_image_.load("/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/image_files/pacman.png");
     // pacman_image_.rotate90(1); // figure out rotations later
@@ -103,7 +98,7 @@ void Pacman::resize(int w, int h) {
 
     screen_dims_.set(width, height);
 
-	one_d_size_ = kbody_size_modifier_ * width;
+	//one_d_size_ = kbody_size_modifier_ * width;
 	//body_size_.set(body_d, body_d);
     //image_frame_.setSize(body_d, body_d);
 }
@@ -120,6 +115,6 @@ void Pacman::setDirection(Direction newDirection) {
 	current_direction_ = newDirection;
 }
 
-int Pacman::Get1DSize() {
+/*int Pacman::Get1DSize() {
     return one_d_size_;
-}
+}*/

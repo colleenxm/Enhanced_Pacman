@@ -1,15 +1,14 @@
 #include <stdlib.h>
 #include "ghost.h"
 
-const float Ghost::kFoodModifier = 0.05; // same size as pacman
+//const float Ghost::kFoodModifier = 0.05; // same size as pacman
 
 // Adapted and modified from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
 Ghost::Ghost() {
     int window_width = ofGetWindowWidth();
     int window_height = ofGetWindowHeight();
     window_dims_.set(window_width, window_height);
-    //float size_d = kFoodModifier * window_width; // need to figure out what to do with the size
-    one_d_size_ = kFoodModifier * window_width; // need to figure out what to do with the size
+    //one_d_size_ = kFoodModifier * window_width; // need to figure out what to do with the size
 
     //image_frame_.setSize(size_d, size_d);
     
@@ -19,15 +18,13 @@ Ghost::Ghost() {
     dist_x_ = std::uniform_int_distribution<>(0, kMazeWidth_);
     dist_y_ = std::uniform_int_distribution<>(0, kMazeHeight_);
     
-    dist_color_ = std::uniform_int_distribution<>(0, 255);
-    
     ghost_image_.load("/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/image_files/ghost.png"); // loading image
     rebase();
 }
 
 // Method adapted and modified from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
 void Ghost::resize(int w, int h) {
-    one_d_size_ = kFoodModifier * w;
+    //one_d_size_ = kFoodModifier * w;
     //image_frame_.setSize(size_d, size_d);
     
     //float new_x = ((image_frame_.getWidth() / window_dims_.x) * w);
@@ -49,14 +46,6 @@ void Ghost::rebase() {
     
     maze_position_.set(x, y);
     //image_frame_.setPosition(x, y);
-    
-    color_.r = dist_color_(generator_);
-    color_.g = dist_color_(generator_);
-    color_.b = dist_color_(generator_);
-}
-
-ofColor& Ghost::get_color() {
-    return color_;
 }
 
 /*ofRectangle& Ghost::get_image_frame() {
@@ -71,9 +60,9 @@ ofImage& Ghost::get_ghost_image() {
     return ghost_image_;
 }
 
-int Ghost::Get1DSize() {
+/*int Ghost::Get1DSize() {
     return one_d_size_;
-}
+}*/
 
 int Ghost::get_num_steps_taken() { // gets the number of steps taken
     return num_steps_taken_;
