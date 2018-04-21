@@ -18,8 +18,8 @@ void PacmanGame::setup(){
     maze_.PopulateWithFood(kNumFoodItems_);
     
     //int val = maze_.GetElementAt(10, 10);
-    coord_multiplier_x_ = ofGetWindowWidth() / maze_.GetWidth();
-    coord_multiplier_y_ = ofGetWindowHeight() / maze_.GetHeight();
+    coord_multiplier_x_ = ofGetWindowWidth() / maze_.GetWidth() * 0.95;
+    coord_multiplier_y_ = ofGetWindowHeight() / maze_.GetHeight()* 0.95;
 }
 
 /*
@@ -222,25 +222,34 @@ void PacmanGame::windowResized(int w, int h){
 }
 
 void PacmanGame::draw_maze() { // draws the maze
-    for (int x_index = 0; x_index < maze_.GetWidth(); x_index++) {
+    std::vector<std::pair<int, int> > food_indices; // use to store the indices of the food elements - so I can just directly iterate through this vector and draw the food items rathe than having to go through the maze again
+    
+    for (int x_index = 0; x_index < maze_.GetWidth(); x_index++) { // draw the maze first and THEN draw apples over the maze to prevent the apples from being covered by maze blocks (which would make them look squished)
         for (int y_index = 0; y_index < maze_.GetHeight(); y_index++) {
             switch (maze_.GetElementAt(x_index, y_index)) {
                 case 0: // no wall
                     ofSetColor(100, 100, 100);
-                    ofDrawRectangle(x_index * coord_multiplier_x_, y_index * coord_multiplier_y_, 20, 20); //kObject1DSize_, kObject1DSize_);
+                    ofDrawRectangle(x_index * coord_multiplier_x_, y_index * coord_multiplier_y_, kOneDObjectSize_, kOneDObjectSize_);
                     break;
                 case 1: // wall
                     ofSetColor(225, 225, 225);
-                    ofDrawRectangle(x_index * coord_multiplier_x_, y_index * coord_multiplier_y_, 20, 20); //kObject1DSize_, kObject1DSize_);
+                    ofDrawRectangle(x_index * coord_multiplier_x_, y_index * coord_multiplier_y_, kOneDObjectSize_, kOneDObjectSize_);
                     break;
-                case 2: // food
-                    ofImage food_image_; // image that correpsonds with a food object
-                    food_image_.load("/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/image_files/apple.png");
-                    food_image_.draw(x_index * coord_multiplier_x_, y_index * coord_multiplier_y_, kOneDObjectSize_, kOneDObjectSize_);
-                    break;
+                case 2: // store indices of food elements
+                    food_indices.push_back(std::make_pair(x_index, y_index));
             }
         }
     }
+    for (int i = 0; i < food_indices.size(); i++) { // draw food AFTER drawing the maze
+        std::pair<int, int>& indices = food_indices[i];
+        draw_food(indices.first, indices.second);
+    }
+}
+
+void PacmanGame::draw_food(int x_index, int y_index) {
+    ofImage food_image_; // image that correpsonds with a food object
+    food_image_.load(kFoodImagePath_);
+    food_image_.draw(x_index * coord_multiplier_x_, y_index * coord_multiplier_y_, kOneDObjectSize_ * 0.5, kOneDObjectSize_ * 0.5);
 }
 
 void PacmanGame::draw_ghosts() { // just make sizes all the same for simplicity

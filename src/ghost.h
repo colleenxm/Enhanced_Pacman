@@ -14,13 +14,13 @@ private:
     const int kNumDirections_ = 4; // number of real directions, to exclude dummy direction
     Direction current_direction_ = RIGHT; // starts off going right
     
-    //bool is_valid_position(ofVec2f& position); // checks if new position is valid
     int num_steps_taken_ = 0; // keeps track of the number of steps taken in the current direction (so that the direction can be changed once every kNumStepsBeforeDirectionChange_ steps)
     
-    // Explanation: Using a rectangle to keep track of the width/height/x/y corods of the actual image, which is that of a ghost. Image will be drawn with the image frame's dimensions and coords.
-    ofVec2f maze_position_; // x, y position of the maze - important: this corresponds to the MAZE ELEMENT and NOT to the actual coordinates in the coordinatep lane
-    ofImage ghost_image_; // image that correpsonds with a ghost object
+    ofVec2f maze_position_; // x, y position of the maze - important: this corresponds to the MAZE ELEMENT and NOT to the actual coordinates in the coordinatep lane. Used as 2 of the 4 dimensions needed to frame the image (to control its position and size)
     
+    ofImage ghost_image_; // image that correpsonds with a ghost object
+    const std::string kImagePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/image_files/ghost2.png";
+
     Maze maze_; // keeps track of the maze - to check if position is valid, same maze as the one in the game
     
 public:

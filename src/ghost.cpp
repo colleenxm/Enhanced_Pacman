@@ -10,7 +10,7 @@ Ghost::Ghost() {
     window_dims_.set(window_width, window_height);
     generator_ = std::mt19937(rand());
     
-    ghost_image_.load("/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/image_files/ghost.png"); // loading image
+    ghost_image_.load(kImagePath_); // loading image
 }
 
 void Ghost::SetInitialRandomPosition() { // intial random pos - cannot be on a wall or on top of a piece of food
@@ -81,28 +81,3 @@ void Ghost::CalculateNewPosition() { // calculates the new position
             break;
     }
 }
-
-void Ghost::ChooseRandomDirection() { // valid position - can take at least 1 step in that direction
-    //Direction random_direction;
-    //ofVec2f new_position;
-    //new_position.set(0, 0); // always invalid - corner
-    
-    //while (!maze_.IsEmptyPosition(new_position.x, new_position.y)) { // while position isn't valid
-    //    random_direction = static_cast<Direction>(rand() % kNumDirections_); // 1 of the 4 real directions
-    //    new_position = calculate_new_position(random_direction);
-    //}
-    //random_direction = static_cast<Direction>(rand() % kNumDirections_); // 1 of the 4 real directions
-
-    current_direction_ = static_cast<Direction>(rand() % kNumDirections_);
-    //ofVec2f new_position = CalculateNewPosition(current_direction_);
-    //maze_position_.set(new_position.x, new_position.y);
-}
-
-void Ghost::MoveInNewDirection() { // need to figure out what to do if the ghost becomes stuck
-    //ofVec2f new_position = CalculateNewPosition(current_direction_);
-    
-    //if (maze_.IsEmptyPosition(new_position.x, new_position.y)) {
-    //maze_position_.set(new_position.x, new_position.y);
-    //}
-}
-

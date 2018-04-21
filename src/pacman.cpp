@@ -20,7 +20,7 @@ Pacman::Pacman() {
     current_direction_ = RIGHT; // starts out moving right
     maze_position_.set(3, 3); // starting point
     
-    pacman_image_.load("/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/image_files/pacman.png");
+    pacman_image_.load(kImagePath_);
     // pacman_image_.rotate90(1); // figure out rotations later
 }
 
@@ -32,25 +32,21 @@ void Pacman::update() {
     
     switch (current_direction_) {
         case UP:
-            //if (y - 1 >= 0 && maze_.GetElementAt(x, y - 1) == 0) { // is legal and is valid pacman
             if (maze_.IsLegalPosition(x, y - 1) && maze_.IsValidPacmanPosition(x, y - 1)) {
                 maze_position_.set(x, y - 1);
             }
             break;
         case DOWN:
-            //if (y + 1 < maze_.GetHeight() && maze_.GetElementAt(x, y + 1) == 0) {
             if (maze_.IsLegalPosition(x, y + 1) && maze_.IsValidPacmanPosition(x, y + 1)) {
                 maze_position_.set(x, y + 1);
             }
             break;
         case LEFT:
-            //if (x - 1 >= 0 && maze_.GetElementAt(x - 1, y) == 0) {
             if (maze_.IsLegalPosition(x - 1, y) && maze_.IsValidPacmanPosition(x - 1, y)) {
                 maze_position_.set(x - 1, y);
             }
             break;
         case RIGHT:
-            //if (x + 1 < maze_.GetWidth() && maze_.GetElementAt(x + 1, y) == 0) {
             if (maze_.IsLegalPosition(x + 1, y) && maze_.IsValidPacmanPosition(x + 1, y)) {
                 maze_position_.set(x + 1, y);
             }

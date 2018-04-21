@@ -30,7 +30,7 @@ private:
     GameState current_state_ = NOT_STARTED; // The current state of the game, used to determine possible actions
     
     const int kNumFoodItems_ = 10; // 10 food items to put in map - can change
-    const int kOneDObjectSize_ = 20; // standardized size for all the objects (to prevent the bigger ones from "leaving" the maze)
+    const int kOneDObjectSize_ = 25; // standardized size for all the objects (to prevent the bigger ones from "leaving" the maze)
     
     // The multipliers convert coordinates on the maze matrix to coordinates on a coordinate plane
     float coord_multiplier_x_ = -1;
@@ -43,19 +43,20 @@ private:
     // Note: Dynamically allocationg all eatable objects (except for the pacman) so I can delete them later
     Pacman game_pacman_; // The object that represents the user controlled snake
     Ghost ghost_1_; // represents a ghost, note that ghosts can eat the pacman (which would end the game) but the pacman can also eat ghosts (which would drastically increase its num of points)
-    //Food game_food_;
-    
+
+    // FOOD DATA
     const int kFoodPointsWorth_ = 1; // how many points a food object is worth
+    std::string kFoodImagePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/image_files/apple.png";
     
     bool should_update_ = true;     // A flag boolean used in the update() function.
     
     void InteractPredatorPreyObjects(); // contains logic for objects eating each other rename later
     void InteractPacmanWithGhost(); // interactions between the pacman and the ghost (rename method later - weird grammar)
     // Private helper methods to render various aspects of the game on screen.
+    void draw_food(int x_index, int y_index);
     void draw_maze();
     void draw_ghosts();
     void draw_pacman();
-    //void draw_food();
     
     void drawGameOver();
     void drawGamePaused();

@@ -42,7 +42,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "545989105.112042"
+            timestampString = "546023449.474315"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "49"
@@ -58,12 +58,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ghost.cpp"
-            timestampString = "545989105.112125"
+            timestampString = "546023449.474694"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "96"
-            endingLineNumber = "96"
-            landmarkName = "Ghost::ChooseRandomDirection()"
+            startingLineNumber = "64"
+            endingLineNumber = "64"
+            landmarkName = "Ghost::CalculateNewPosition()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
