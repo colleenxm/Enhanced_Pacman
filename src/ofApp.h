@@ -40,8 +40,9 @@ private:
     
     // Note: Dynamically allocationg all eatable objects (except for the pacman) so I can delete them later
     Pacman game_pacman_; // The object that represents the user controlled snake
-    Ghost ghost_1_; // represents a ghost, note that ghosts can eat the pacman (which would end the game) but the pacman can also eat ghosts (which would drastically increase its num of points)
-
+    std::vector<Ghost> all_ghosts_;
+    const int kNumGhosts_ = 3;
+    
     // FOOD DATA
     const int kFoodPointsWorth_ = 1; // how many points a food object is worth
     std::string kFoodImagePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/image_files/apple.png";
@@ -49,18 +50,18 @@ private:
     bool should_update_ = true;     // A flag boolean used in the update() function.
     
     void InteractPredatorPreyObjects(); // contains logic for objects eating each other rename later
-    void InteractPacmanWithGhost(); // interactions between the pacman and the ghost (rename method later - weird grammar)
+    void InteractPacmanWithGhost(Ghost& current_ghost); // interactions between the pacman and the ghost (rename method later - weird grammar)
     // Private helper methods to render various aspects of the game on screen.
-    void draw_food(int x_index, int y_index);
-    void draw_maze();
-    void draw_ghosts();
-    void draw_pacman();
+    void DrawFood(int x_index, int y_index);
+    void DrawMaze();
+    void DrawGhosts();
+    void DrawPacman();
     
-    void drawGameOver();
-    void drawGamePaused();
+    void DrawGameOver();
+    void DrawGamePaused();
     
     // Resets the game objects to their original state.
-    void reset();
+    void Reset();
     
 public:
     // Function used for one time setup

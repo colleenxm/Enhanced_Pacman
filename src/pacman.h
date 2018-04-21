@@ -23,26 +23,25 @@ private:
     
 public:
     // Methods to use adapted from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
-    ofColor& get_color() const;
     ofVec2f& GetMazePosition();
-    ofImage& get_pacman_image(); // gets image
+    ofImage& GetPacmanImage(); // gets image
     
-    Direction get_direction() const; // Gets the current direction
+    Direction GetDirection() const; // Gets the current direction
     void setDirection(Direction new_direction); // Sets the current direction
     
     Pacman(); // Default constructor, initializes and places length 1 snake
     
     //void SetMaze(Maze& maze); // set the maze - need to keep track of the maze to know if the obj's at a wall
     
-    bool is_dead();
-    void gets_eaten(); // pacman is eaten
+    bool IsDead();
+    void GetsEaten(); // pacman is eaten
     
-    void update(); // updates the pacman in the current direction
+    void Update(); // updates the pacman in the current direction
     
-    void eat_food_ghost(int points_gained); // gains points by eating objects - note that only the number of points gained is passed in rather than a reference to the object itself (so this method can work for both food and ghost objects)
+    void EatObject(int points_gained); // gains points by eating objects - note that only the number of points gained is passed in rather than a reference to the object itself (so this method can work for both food and ghost objects)
     
     void resize(int w, int h); // resizes
-    int getNumPoints() const; // Gets the number of points
+    int GetNumPoints() const; // Gets the number of points
     
     void reset(); // clears everything
 };

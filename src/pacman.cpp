@@ -8,7 +8,7 @@ ofVec2f& Pacman::GetMazePosition() {
     return maze_position_;
 }
 
-ofImage& Pacman::get_pacman_image() { // gets image
+ofImage& Pacman::GetPacmanImage() { // gets image
     return pacman_image_;
 }
 
@@ -24,7 +24,7 @@ Pacman::Pacman() {
     // pacman_image_.rotate90(1); // figure out rotations later
 }
 
-void Pacman::update() {    
+void Pacman::Update() {    
     int x = maze_position_.x;
     int y = maze_position_.y;
     
@@ -52,15 +52,15 @@ void Pacman::update() {
     }
 }
 
-bool Pacman::is_dead() { // eaten - doesn't make sense for the pacman to be able to go off the map
+bool Pacman::IsDead() { // eaten - doesn't make sense for the pacman to be able to go off the map
     return is_eaten_;  /*|| is_offscreen();*/
 }
 
-void Pacman::gets_eaten() { // pacman is eaten
+void Pacman::GetsEaten() { // pacman is eaten
     is_eaten_ = true;
 }
 
-void Pacman::eat_food_ghost(int points_gained) { // gains points after eating food and ghost objects
+void Pacman::EatObject(int points_gained) { // gains points after eating food and ghost objects
     num_points_ += points_gained;
 }
 
@@ -72,11 +72,11 @@ void Pacman::resize(int w, int h) {
     screen_dims_.set(width, height);
 }
 
-int Pacman::getNumPoints() const {
+int Pacman::GetNumPoints() const {
     return num_points_;
 }
 
-Direction Pacman::get_direction() const {
+Direction Pacman::GetDirection() const {
     return current_direction_;
 }
 

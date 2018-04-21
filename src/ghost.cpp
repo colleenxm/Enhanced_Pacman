@@ -32,7 +32,7 @@ void Ghost::resize(int w, int h) {
     window_dims_.set(w, h);
 }
 
-void Ghost::setDirection(Direction newDirection) {
+void Ghost::SetDirection(Direction newDirection) {
     current_direction_ = newDirection;
 }
 
@@ -40,11 +40,11 @@ ofVec2f Ghost::GetMazePosition() {
     return maze_position_;
 }
 
-ofImage& Ghost::get_ghost_image() {
+ofImage& Ghost::GetGhostImage() {
     return ghost_image_;
 }
 
-int Ghost::get_num_steps_taken() { // gets the number of steps taken
+int Ghost::GetNumStepsTaken() { // gets the number of steps taken
     return num_steps_taken_;
 }
 
@@ -52,7 +52,7 @@ void Ghost::IncrNumStepsTaken() { // increments the number of steps taken
     num_steps_taken_++;
 }
 
-Direction& Ghost::get_direction() { // gets the current direction - needed to check whether the ghost is eating the pacman or if the pacman is eating the ghost
+Direction& Ghost::GetDirection() { // gets the current direction - needed to check whether the ghost is eating the pacman or if the pacman is eating the ghost
     return current_direction_;
 }
 

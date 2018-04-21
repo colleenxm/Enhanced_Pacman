@@ -32,17 +32,16 @@ public:
     void SetInitialRandomPosition(); // intial random pos
     void resize(int w, int h); // Called by application resize, resizes food rect to new window dimensions
     
-    void setDirection(Direction newDirection);
+    void SetDirection(Direction newDirection);
     ofVec2f GetMazePosition();
-    ofColor& get_color(); // Gets the color of the current food object
-    ofImage& get_ghost_image(); // gets image
+    ofImage& GetGhostImage(); // gets image
     
-    int get_num_steps_taken(); // gets the number of steps taken
+    int GetNumStepsTaken(); // gets the number of steps taken
     void IncrNumStepsTaken(); // increments the number of steps taken
     
-    Direction& get_direction(); // gets the current direction - needed to check whether the ghost is eating the pacman or if the pacman is eating the ghost
+    Direction& GetDirection(); // gets the current direction - needed to check whether the ghost is eating the pacman or if the pacman is eating the ghost
     
-    void update();
+    void Update();
     void FindRandomDirection(); // finds new direction
     void MoveInNewDirection(); // moves in that random direction - note that this method is called more than choose_random_direction so the ghost can actually move before changing directions (will look like it's jumping around otherwise)
 };

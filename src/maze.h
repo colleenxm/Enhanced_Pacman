@@ -65,7 +65,7 @@ private:
         }
     };
     
-    int num_food_items_ = 0;
+    int num_food_items_ = 0; // num food items to randomly place inside
     
 public:
     void PopulateWithFood(int num_food_items); // populate the maze with food objects in random, non-wall places - swaps num_items number of 0's with that number of 2's, where 2 = food object. Note: Will end up doing this instead of having actual food objects - can get rid of the logic needed to remove the food objects, don't have to worry about if two food objects overlap, makes life easier
