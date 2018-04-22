@@ -74,7 +74,7 @@ void PacmanGame::update() {
 
 void PacmanGame::ManageObjectCollisons() { // contains logic for having objects eat each other, should probably rename the method
     ofVec2f pacman_pos = game_pacman_.GetMazePosition();
-    ofRectangle pacman_rect = ofRectangle(pacman_pos.x * coord_multiplier_x_ + kOneDObjectSize_/2, pacman_pos.y * coord_multiplier_x_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
+    ofRectangle pacman_rect = ofRectangle(pacman_pos.x * coord_multiplier_x_ + kOneDObjectSize_/2, pacman_pos.y * coord_multiplier_y_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
 
     if (maze_.GetElementAt(pacman_pos.x, pacman_pos.y) == Maze::FOOD) { // food
         maze_.RemoveFoodAt(pacman_pos.x, pacman_pos.y);
@@ -84,7 +84,7 @@ void PacmanGame::ManageObjectCollisons() { // contains logic for having objects 
     
     for (Ghost& current_ghost : all_ghosts_) { // ghost
         ofVec2f ghost_pos = current_ghost.GetMazePosition();
-        ofRectangle ghost_rect = ofRectangle(ghost_pos.x * coord_multiplier_x_ + kOneDObjectSize_/2, ghost_pos.y * coord_multiplier_x_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
+        ofRectangle ghost_rect = ofRectangle(ghost_pos.x * coord_multiplier_x_ + kOneDObjectSize_/2, ghost_pos.y * coord_multiplier_y_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
         
         if (pacman_rect.intersects(ghost_rect)) {
             ManagePacmanGhostCollisions(current_ghost);
@@ -225,7 +225,8 @@ void PacmanGame::mousePressed(int x, int y, int button){
 }
 
 void PacmanGame::Reset() { // resets everything
-    game_pacman_.reset();
+    //game_pacman_.reset();
+    game_pacman_ = Pacman();
     
     for (Ghost& current_ghost : all_ghosts_) {
         current_ghost.SetInitialRandomPosition();
