@@ -13,9 +13,15 @@ void PacmanGame::setup(){
     pacman_death_sound_.load(kDeathSoundPath_);
     demo_movie_.load(kDemoMoviePath_);
     
-    // set the maze reference so the other objects can keep track of the maze as well
-    //game_pacman_.SetMaze(maze_);
-    //ghost_1_.SetMaze(maze_);
+    // WEBCAM SETUP
+    photo_taking_button_.addListener(this, &PacmanGame::PhotoButtonPressed);
+    photo_taking_button_.setup("TAKE PHOTO");
+    webcam_.setup(2000, 2000); // set up the webcam separately from the pane
+
+    // HAAR CASCADER SETUP
+    facial_detector_.setup(kFacialCascadePath_);
+
+    // OBJECTS SETUP
     for (int current_num_ghosts = 0; current_num_ghosts < kNumGhosts_; current_num_ghosts++) {
         Ghost ghost;
         ghost.SetInitialRandomPosition();
@@ -28,6 +34,11 @@ void PacmanGame::setup(){
     
     coord_multiplier_x_ = ((float) ofGetWindowWidth()) / maze_.GetWidth(); // bug here - doesn't take into account the size of the object - causes ovelap
     coord_multiplier_y_ = ((float) ofGetWindowHeight()) / maze_.GetHeight();
+}
+
+void PacmanGame::PhotoButtonPressed() { // listener - takes picture when button is pressed
+    photo_taken_.setFromPixels(webcam_.getPixels()); // take the picture
+    current_state_ = DISPLAYING_PHOTO;
 }
 
 /*
@@ -44,6 +55,12 @@ void PacmanGame::update() {
     if (should_update_) {
         if (current_state_ == NOT_STARTED) { // play demo
             demo_movie_.update();
+            
+        } else if (current_state_ == TAKING_PHOTO) {
+            webcam_.update(); // updates webcam - is a moving image
+            
+        } else if (current_state_ == DISPLAYING_PHOTO) {
+            DetectFacesInPhoto();
             
         } else if (current_state_ == IN_PROGRESS) {
             ManageObjectCollisons();
@@ -70,6 +87,20 @@ void PacmanGame::update() {
         }
     }
     should_update_ = true;
+}
+
+// DERIVED FROM EXAMPLE http://openframeworks.cc/documentation/ofxOpenCv/ofxCvHaarFinder/
+void PacmanGame::DetectFacesInPhoto() { // using haar cascader (opencv) to detect faces
+    ofxCvColorImage temp_color_img; // temp color img
+    ofxCvGrayscaleImage grayscale_img_; // need to convert from regular iamge to ofxCvColorImage to ofxCvGrayscaleImage in order to use the haar cascader
+    
+    temp_color_img.setFromPixels(photo_taken_.getPixels()); // need to convert from regular iamge to ofxCvColorImage to ofxCvGrayscaleImage in order to use the haar cascader
+    grayscale_img_.setFromColorImage(temp_color_img);
+    
+    //temp_color_img.draw(0, 0, temp_color_img.getWidth(), temp_color_img.getHeight());
+    //grayscale_img_.draw(0, 0, grayscale_img_.getWidth(), grayscale_img_.getHeight());
+    
+    facial_detector_.findHaarObjects(grayscale_img_);
 }
 
 void PacmanGame::ManageObjectCollisons() { // contains logic for having objects eat each other, should probably rename the method
@@ -130,6 +161,15 @@ void PacmanGame::ManagePacmanGhostCollisions(Ghost& current_ghost) { // responsi
  */
 void PacmanGame::draw(){ // is called over and over again
     if (current_state_ == NOT_STARTED) {
+        DrawIntroduction();
+    }
+    else if (current_state_ == TAKING_PHOTO) {
+        DrawWebcamUI(); // draw everything to do with the webcam
+        
+    } else if (current_state_ == DISPLAYING_PHOTO) {
+        DrawFacialDetectionPhoto();
+    }
+    /*if (current_state_ == NOT_STARTED) {
         ofSetBackgroundColor(0, 0, 0); // set background as black
         
         intro_music_.setLoop(true); // plays over and over again
@@ -142,8 +182,9 @@ void PacmanGame::draw(){ // is called over and over again
         demo_movie_.draw(ofGetWidth()/4, ofGetHeight()/5, 400, 200); // play movie
         
         ofDrawBitmapString("Click anywhere to continue", ofGetWidth()/6, ofGetHeight()/6);
-    } else if (current_state_ == COUNTDOWN) {
-        DrawThree();
+        
+    } else if (current_state_ == PHOTO_TAKING) {
+        DrawWebcamUI(); // draw everything to do with the webcam
         current_state_ = IN_PROGRESS;
         
     } else if (current_state_ == IN_PROGRESS) {
@@ -160,7 +201,7 @@ void PacmanGame::draw(){ // is called over and over again
         
     } else if(current_state_ == FINISHED) {
         DrawGameOver(); // draw another panel later
-    }
+    }*/
 }
 
 // Adapted from OF-SNAKE MP: https://github.com/uiuc-sp18-cs126/of-snake-ElizWang (mostly just structural stuff)
@@ -196,16 +237,19 @@ void PacmanGame::keyPressed(int key){
             game_pacman_.SetDirection(NORTH);
             update();
             should_update_ = false;
+            
         } else if (upper_key == 'A') {
             game_pacman_.CalculateNumRotations(WEST);
             game_pacman_.SetDirection(WEST);
             update();
             should_update_ = false;
+            
         } else if (upper_key == 'S') {
             game_pacman_.CalculateNumRotations(SOUTH);
             game_pacman_.SetDirection(SOUTH);
             update();
             should_update_ = false;
+            
         } else if (upper_key == 'D') {
             game_pacman_.CalculateNumRotations(EAST);
             game_pacman_.SetDirection(EAST);
@@ -220,7 +264,7 @@ void PacmanGame::keyPressed(int key){
 
 void PacmanGame::mousePressed(int x, int y, int button){
     if (current_state_ == NOT_STARTED) {
-        current_state_ = COUNTDOWN;
+        current_state_ = TAKING_PHOTO;
     }
 }
 
@@ -240,6 +284,37 @@ void PacmanGame::windowResized(int w, int h){
         current_ghost.resize(w, h);
     }
     game_pacman_.resize(w, h);
+}
+
+void PacmanGame::DrawIntroduction() { // everything to do with the intro
+    ofSetBackgroundColor(0, 0, 0); // set background as black
+    
+    intro_music_.setLoop(true); // plays over and over again
+    intro_music_.play();
+    
+    ofSetColor(0, 200, 0); // green
+    string_font_.drawString("WELCOME TO PACMAN!", ofGetWidth()/8, ofGetHeight()/8);
+    
+    ofSetColor(255, 255, 255); // white
+    demo_movie_.draw(ofGetWidth()/4, ofGetHeight()/5, 400, 200); // play movie
+    
+    ofDrawBitmapString("Click anywhere to continue", ofGetWidth()/6, ofGetHeight()/6);
+}
+
+void PacmanGame::DrawWebcamUI() { // everything to do with the webcam
+    ofClear(0);
+    photo_taking_button_.draw();
+    webcam_.draw(ofGetWidth() - ofGetWidth()/1.1, ofGetHeight() - ofGetHeight()/1.1, ofGetWidth()/1.1, ofGetHeight()/1.1);
+}
+
+void PacmanGame::DrawFacialDetectionPhoto() {
+    // DERIVED FROM http://openframeworks.cc/documentation/ofxOpenCv/ofxCvHaarFinder/#show_findHaarObjects
+    //photo_taken_.draw(0, 0, photo_taken_.getWidth(), photo_taken_.getHeight());
+    for(int i = 0; i < facial_detector_.blobs.size(); i++) {
+        ofRectangle facial_frame = facial_detector_.blobs[i].boundingRect;
+        //ofDrawRectangle(rect);
+        photo_taken_.drawSubsection(0, 0, facial_frame.getWidth(), facial_frame.getHeight(), facial_frame.getX(), facial_frame.getY()); // draws out the part of the photo corresponding to the face the haar cascade detected
+    }
 }
 
 void PacmanGame::DrawMaze() { // draws the maze
@@ -271,15 +346,6 @@ void PacmanGame::DrawMaze() { // draws the maze
         DrawFood(indices.first, indices.second);
     }
 }
-
-void PacmanGame::DrawThree() {
-    ofSetColor(0, 200, 0); // green
-    string_font_.drawString("3", ofGetWidth()/8, ofGetHeight()/8);
-    string_font_.drawString("2", ofGetWidth()/8, ofGetHeight()/8);
-    string_font_.drawString("1", ofGetWidth()/8, ofGetHeight()/8);
-    string_font_.drawString("BEGIN", ofGetWidth()/8, ofGetHeight()/8);
-}
-
 
 void PacmanGame::DrawFood(int x_index, int y_index) {
     ofImage food_image_; // image that correpsonds with a food object
