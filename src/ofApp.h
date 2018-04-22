@@ -22,6 +22,7 @@ private:
     // Enum to represent the current state of the game
     enum GameState {
         NOT_STARTED = 0,
+        DISPLAYING_INSTRUCTIONS,
         TAKING_PHOTO,
         DISPLAYING_PHOTO,
         IN_PROGRESS,
@@ -49,7 +50,9 @@ private:
     ofSoundPlayer coin_collection_; // ka-ching
     
     // FOR INTRODUCTION PANEL
-    ofTrueTypeFont string_font_; // sets font, used to print strings with colors/sizes/fonts other than the default
+    ofTrueTypeFont title_font_; // sets font, used to print titles
+    ofTrueTypeFont body_font_; // sets font, used to print more text
+
     GameState current_state_ = NOT_STARTED; // The current state of the game, used to determine possible actions
     ofVideoPlayer demo_movie_; // demo of what the game looks like
     
@@ -99,6 +102,7 @@ private:
     
     // METHODS FOR RENDERING
     void DrawIntroduction();
+    void DrawInstructions();
     void DrawWebcamUI();
     void DrawFacialDetectionPhoto();
     void DrawFood(int x_index, int y_index);

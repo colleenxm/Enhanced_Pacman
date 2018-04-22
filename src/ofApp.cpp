@@ -7,7 +7,9 @@ void PacmanGame::setup(){
     srand(static_cast<unsigned>(time(0))); // Seed random with current time
     
     // LOADING FROM PATH
-    string_font_.load(kTextPath_, 32, true, false, true, 0.1);
+    title_font_.load(kTextPath_, 32, true, false, true, 0.1);
+    body_font_.load(kTextPath_, 16, true, false, true, 0.1);
+
     intro_music_.load(kIntroMusicPath_);
     crunch_.load(kPacmanEating_);
     coin_collection_.load(kCoinCollection_);
@@ -116,9 +118,6 @@ void PacmanGame::DetectFacesInPhoto() { // using haar cascader (opencv) to detec
     temp_color_img.setFromPixels(photo_taken_.getPixels()); // need to convert from regular iamge to ofxCvColorImage to ofxCvGrayscaleImage in order to use the haar cascader
     grayscale_img_.setFromColorImage(temp_color_img);
     
-    //temp_color_img.draw(0, 0, temp_color_img.getWidth(), temp_color_img.getHeight());
-    //grayscale_img_.draw(0, 0, grayscale_img_.getWidth(), grayscale_img_.getHeight());
-    
     facial_detector_.findHaarObjects(grayscale_img_);
 }
 
@@ -185,8 +184,11 @@ void PacmanGame::ManagePacmanGhostCollisions(Ghost& current_ghost) { // responsi
 void PacmanGame::draw(){ // is called over and over again
     if (current_state_ == NOT_STARTED) {
         DrawIntroduction();
-    }
-    else if (current_state_ == TAKING_PHOTO) {
+        
+    } else if (current_state_ == DISPLAYING_INSTRUCTIONS) {
+        DrawInstructions();
+        
+    } else if (current_state_ == TAKING_PHOTO) {
         DrawWebcamUI(); // draw everything to do with the webcam
         
     } else if (current_state_ == DISPLAYING_PHOTO) {
@@ -216,17 +218,32 @@ void PacmanGame::DrawIntroduction() { // everything to do with the intro
     intro_music_.play();
     
     ofSetColor(0, 200, 0); // green
-    string_font_.drawString("WELCOME TO PACMAN!", ofGetWidth()/8, ofGetHeight()/8);
+    title_font_.drawString("WELCOME TO PACMAN!", ofGetWidth()/8, ofGetHeight()/8);
     
     ofSetColor(255, 255, 255); // white
     demo_movie_.draw(ofGetWidth()/4, ofGetHeight()/5, 400, 200); // play movie
+    body_font_.drawString("Click anywhere to continue.", ofGetWidth()/6, ofGetHeight()/6);
+}
+
+void PacmanGame::DrawInstructions() {
+    ofSetBackgroundColor(0, 0, 0); // set background as black
     
-    ofDrawBitmapString("Click anywhere to continue", ofGetWidth()/6, ofGetHeight()/6);
+    intro_music_.setLoop(true); // plays over and over again
+    intro_music_.play();
+    
+    ofSetColor(0, 200, 0); // green
+    title_font_.drawString("INSTRUCTIONS", ofGetWidth()/6, ofGetHeight()/10);
+
+    ofSetColor(255, 255, 255); // white
+    
+    std::string instructions = "This game is an enhanced version of Pacman.\nYou (the pacman) can navigate through the maze using WASD logic \n\t\tW = north \n\t\tD = east \n\t\tS = south \n\t\tA = west\nTry to consume as many apples and gold coins as possible.\nYou may also engage with the ghosts \n- depending on your orientation, you will either eat the ghost or vica versa.\nThe game ends when: \n\t\t1. You eat all the pieces on the board\nor\n\t2. You're eaten by a ghost.\n\n\n\t\t\tClick anywhere to continue.";
+    body_font_.drawString(instructions, ofGetWidth()/15, ofGetHeight()/3);
 }
 
 void PacmanGame::DrawWebcamUI() { // everything to do with the webcam
     ofClear(0);
-    photo_taking_button_.draw();
+    body_font_.drawString("Click anywhere to take a picture.\nMake sure your face is clearly visible.\n", ofGetWidth()/15, ofGetHeight()/3);
+    //photo_taking_button_.draw();
     webcam_.draw(ofGetWidth() - ofGetWidth()/1.1, ofGetHeight() - ofGetHeight()/1.1, ofGetWidth()/1.1, ofGetHeight()/1.1);
 }
 
@@ -242,11 +259,6 @@ void PacmanGame::DrawFacialDetectionPhoto() {
         ofDrawBitmapString("ERROR - face not found", ofGetWidth()/2, ofGetHeight()/2); // loop back
         current_state_ = TAKING_PHOTO;
     }
-    
-    /*for(int i = 0; i < facial_detector_.blobs.size(); i++) {
-        ofRectangle facial_frame = facial_detector_.blobs[i].boundingRect;
-        photo_taken_.drawSubsection(ofGetWidth()/2, ofGetHeight()/2, facial_frame.getWidth(), facial_frame.getHeight(), facial_frame.getX(), facial_frame.getY()); // draws out the part of the photo corresponding to the face the haar cascade detected
-    }*/
 }
 
 void PacmanGame::DrawMaze() { // draws the maze
@@ -280,11 +292,6 @@ void PacmanGame::DrawMaze() { // draws the maze
             }
         }
     }
-    /*for (int i = 0; i < food_indices.size(); i++) { // draw food AFTER drawing the maze to prevent overlap
-        std::pair<int, int>& indices = food_indices[i];
-        DrawFood(indices.first, indices.second);
-    }*/
-    
     for (auto food_index : food_indices) {
         DrawFood(food_index.first, food_index.second);
     }
@@ -323,14 +330,13 @@ void PacmanGame::DrawPacman() {
 void PacmanGame::DrawScoreboard() {
     std::string current_score = "Current score: " + std::to_string(game_pacman_.GetNumPoints());
     
-    ofSetColor(200, 200, 200);
-    ofDrawBitmapString(current_score, ofGetWidth() - 200, ofGetHeight() - 200);
-    //string_font_.drawString(current_score, ofGetWidth() - 200, ofGetHeight() - 200);
+    ofSetColor(255, 255, 255);
+    ofDrawBitmapString(current_score, ofGetWidth() - 150, ofGetHeight() - 150);
 }
 
 void PacmanGame::DrawGameOver() {
     ofSetBackgroundColor(0, 0, 0); // set background as black
-    string_font_.drawString("YOU LOST!", ofGetWidth()/1.5, ofGetHeight()/1.5);
+    title_font_.drawString("YOU LOST!", ofGetWidth()/1.5, ofGetHeight()/1.5);
 }
 
 void PacmanGame::DrawGamePaused() {
@@ -399,7 +405,14 @@ void PacmanGame::keyPressed(int key){
 
 void PacmanGame::mousePressed(int x, int y, int button){
     if (current_state_ == NOT_STARTED) {
+        current_state_ = DISPLAYING_INSTRUCTIONS;
+        
+    } else if (current_state_ == DISPLAYING_INSTRUCTIONS) {
         current_state_ = TAKING_PHOTO;
+        
+    } else if (current_state_ == TAKING_PHOTO) {
+        photo_taken_.setFromPixels(webcam_.getPixels()); // take the picture
+        current_state_ = DISPLAYING_PHOTO;
     }
 }
 
