@@ -38,7 +38,7 @@ private:
     std::string kDemoMoviePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/demos/raw_screencast_demo.mov";
     
     // MISC PATHS
-    std::string kTextPath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/font_files/square_block.ttf";
+    std::string kTextPath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/font_files/roboto_black.ttf";
     std::string kFoodImagePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/image_files/apple.png";
     std::string kCoinImagePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/image_files/coin.png";
     std::string kFacialCascadePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/haar_cascades/haarcascade_frontalface_alt.xml";
@@ -57,8 +57,6 @@ private:
     ofVideoPlayer demo_movie_; // demo of what the game looks like
     
     // EVERYTHING TO DO WITH THE WEBCAM (,taking photos, and the general UI)
-    ofxButton photo_taking_button_; // button to press to take the photo
-    ofxButton face_approval_button_; // button to press to set face as sprite and move on to the game
     ofVideoGrabber webcam_; // turns on webcam and gets webcam video feed
     ofImage photo_taken_; // stores the photo taken
     bool show_webcam_ = true; // to show the webcam
@@ -89,8 +87,6 @@ private:
     
     // METHODS
     // FOR INTRODUCTIONARY PARTS
-    void PhotoButtonPressed(); // listener - takes photo when button is pressed
-    void ApprovalButtonPressed(); // listener - sets face as sprite and moves on to the game when button is pressed
     void DetectFacesInPhoto(); // use haar cascade to detect faces
     
     // FACIAL PROCESSING

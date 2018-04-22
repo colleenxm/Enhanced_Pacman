@@ -16,12 +16,6 @@ void PacmanGame::setup(){
     wilhelm_scream_.load(kWilhelmScreamPath_);
     demo_movie_.load(kDemoMoviePath_);
     
-    // BUTTONS SETUP
-    photo_taking_button_.addListener(this, &PacmanGame::PhotoButtonPressed);
-    face_approval_button_.addListener(this, &PacmanGame::ApprovalButtonPressed);
-    photo_taking_button_.setup("TAKE PHOTO");
-    face_approval_button_.setup("APPROVE AND PROCEED");
-    
     // WEBCAM SETUP
     webcam_.setup(2000, 2000);
 
@@ -42,16 +36,6 @@ void PacmanGame::setup(){
 
     coord_multiplier_x_ = ((float) ofGetWindowWidth()) / maze_.GetWidth(); // bug here - doesn't take into account the size of the object - causes ovelap
     coord_multiplier_y_ = ((float) ofGetWindowHeight()) / maze_.GetHeight();
-}
-
-void PacmanGame::PhotoButtonPressed() { // listener - takes picture when button is pressed
-    photo_taken_.setFromPixels(webcam_.getPixels()); // take the picture
-    current_state_ = DISPLAYING_PHOTO;
-}
-
-void PacmanGame::ApprovalButtonPressed() { // listener - sets face as sprite and moves on to the game when button is pressed
-    SetFaceAsPacman();
-    current_state_ = IN_PROGRESS;
 }
 
 void PacmanGame::SetFaceAsPacman() { // cuts the face out and uses it as pacman
@@ -221,7 +205,9 @@ void PacmanGame::DrawIntroduction() { // everything to do with the intro
     title_font_.drawString("WELCOME TO PACMAN!", ofGetWidth()/8, ofGetHeight()/8);
     
     ofSetColor(255, 255, 255); // white
-    demo_movie_.draw(ofGetWidth()/4, ofGetHeight()/5, 400, 200); // play movie
+    
+    const int kDivider = 4; // keep track of to center the demo
+    demo_movie_.draw(ofGetWidth()/2 - ofGetWidth()/(2 * kDivider), ofGetHeight()/2 - ofGetHeight()/(2 * kDivider), ofGetWidth()/kDivider, ofGetHeight()/kDivider); // play movie
     body_font_.drawString("Click anywhere to continue.", ofGetWidth()/6, ofGetHeight()/6);
 }
 
@@ -236,27 +222,25 @@ void PacmanGame::DrawInstructions() {
 
     ofSetColor(255, 255, 255); // white
     
-    std::string instructions = "This game is an enhanced version of Pacman.\nYou (the pacman) can navigate through the maze using WASD logic \n\t\tW = north \n\t\tD = east \n\t\tS = south \n\t\tA = west\nTry to consume as many apples and gold coins as possible.\nYou may also engage with the ghosts \n- depending on your orientation, you will either eat the ghost or vica versa.\nThe game ends when: \n\t\t1. You eat all the pieces on the board\nor\n\t2. You're eaten by a ghost.\n\n\n\t\t\tClick anywhere to continue.";
+    std::string instructions = "This game is an enhanced version of Pacman.\nYou (the pacman) can navigate through the maze using WASD logic \n\t\tW = north \n\t\tD = east \n\t\tS = south \n\t\tA = west.\nYou can also press 'p' to pause the game\nand r to reset the game after it ends.\nTry to consume as many apples and gold coins as possible.\nYou may also engage with the ghosts \n- depending on your orientation, you will either eat the ghost or vica versa.\nThe game ends when: \n\t\t1. You eat all the pieces on the board\nor\n\t2. You're eaten by a ghost.\n\n\n\t\t\tClick anywhere to continue.";
     body_font_.drawString(instructions, ofGetWidth()/15, ofGetHeight()/3);
 }
 
 void PacmanGame::DrawWebcamUI() { // everything to do with the webcam
     ofClear(0);
-    body_font_.drawString("Click anywhere to take a picture.\nMake sure your face is clearly visible.\n", ofGetWidth()/15, ofGetHeight()/3);
-    //photo_taking_button_.draw();
-    webcam_.draw(ofGetWidth() - ofGetWidth()/1.1, ofGetHeight() - ofGetHeight()/1.1, ofGetWidth()/1.1, ofGetHeight()/1.1);
+    body_font_.drawString("Click anywhere to take a picture.\nMake sure your face is clearly visible.\n", ofGetWidth()/10, ofGetHeight()/18);
+    webcam_.draw(ofGetWidth()/2 - ofGetWidth()/5, ofGetHeight()/2 - ofGetHeight()/5, ofGetWidth()/2.5, ofGetHeight()/2.5);
 }
 
 void PacmanGame::DrawFacialDetectionPhoto() {
     // DERIVED FROM http://openframeworks.cc/documentation/ofxOpenCv/ofxCvHaarFinder/#show_findHaarObjects
     if (facial_detector_.blobs.size() > 0) { // takes the first face found - change later?
-        ofDrawBitmapString("Click the button to proceed to the game. Your face will be used as the pacman", ofGetWidth()/2, ofGetHeight()/2);
-        face_approval_button_.draw();
+        body_font_.drawString("Click anywhere to proceed to the game or press 'r' to retake the photo", ofGetWidth()/15, ofGetHeight()/15);
 
         ofRectangle facial_frame = facial_detector_.blobs[0].boundingRect;
-        photo_taken_.drawSubsection(ofGetWidth()/2, ofGetHeight()/2, facial_frame.getWidth(), facial_frame.getHeight(), facial_frame.getX(), facial_frame.getY()); // draws out the part of the photo corresponding to the face the haar cascade detected
+        photo_taken_.drawSubsection(ofGetWidth()/2 - facial_frame.getWidth()/2, ofGetHeight()/2 - facial_frame.getHeight()/2, facial_frame.getWidth(), facial_frame.getHeight(), facial_frame.getX(), facial_frame.getY()); // draws out the part of the photo corresponding to the face the haar cascade detected
     } else {
-        ofDrawBitmapString("ERROR - face not found", ofGetWidth()/2, ofGetHeight()/2); // loop back
+        body_font_.drawString("ERROR - face not found", ofGetWidth()/2, ofGetHeight()/2); // loop back
         current_state_ = TAKING_PHOTO;
     }
 }
@@ -331,7 +315,8 @@ void PacmanGame::DrawScoreboard() {
     std::string current_score = "Current score: " + std::to_string(game_pacman_.GetNumPoints());
     
     ofSetColor(255, 255, 255);
-    ofDrawBitmapString(current_score, ofGetWidth() - 150, ofGetHeight() - 150);
+    body_font_.drawString(current_score, ofGetWidth() - ofGetWidth() * 0.8, ofGetHeight() - ofGetHeight() * 0.8);
+    //ofDrawBitmapString(current_score, ofGetWidth() - 150, ofGetHeight() - 150);
 }
 
 void PacmanGame::DrawGameOver() {
@@ -340,9 +325,8 @@ void PacmanGame::DrawGameOver() {
 }
 
 void PacmanGame::DrawGamePaused() {
-    std::string pause_message = "P to Unpause!";
-    ofSetColor(0, 0, 0);
-    ofDrawBitmapString(pause_message, ofGetWindowWidth() / 1.5, ofGetWindowHeight() / 1.5);
+    ofSetColor(255, 255, 255);
+    ofDrawBitmapString("P to Unpause!", ofGetWindowWidth() / 1.5, ofGetWindowHeight() / 1.5);
 }
 
 // Adapted from OF-SNAKE MP: https://github.com/uiuc-sp18-cs126/of-snake-ElizWang (mostly just structural stuff)
@@ -398,8 +382,13 @@ void PacmanGame::keyPressed(int key){
             should_update_ = false;
         }
         
-    } else if (upper_key == 'R' && current_state_ == FINISHED) {
-        Reset();
+    } else if (upper_key == 'R') {
+        if (current_state_ == DISPLAYING_PHOTO) { // go back to taking the photo
+            current_state_ = TAKING_PHOTO;
+            
+        } else if (current_state_ == FINISHED) { // restart
+            Reset();
+        }
     }
 }
 
@@ -413,6 +402,10 @@ void PacmanGame::mousePressed(int x, int y, int button){
     } else if (current_state_ == TAKING_PHOTO) {
         photo_taken_.setFromPixels(webcam_.getPixels()); // take the picture
         current_state_ = DISPLAYING_PHOTO;
+        
+    } else if (current_state_ == DISPLAYING_PHOTO) {
+        SetFaceAsPacman();
+        current_state_ = IN_PROGRESS;
     }
 }
 
