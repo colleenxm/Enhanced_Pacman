@@ -85,6 +85,9 @@ private:
     void ApprovalButtonPressed(); // listener - sets face as sprite and moves on to the game when button is pressed
     void DetectFacesInPhoto(); // use haar cascade to detect faces
     
+    // FACIAL PROCESSING
+    void SetFaceAsPacman(); // cuts the face out and uses it as pacman
+
     // COLLISIONS
     void ManageObjectCollisons(); // contains logic for objects eating each other rename later
     void ManagePacmanGhostCollisions(Ghost& current_ghost); // interactions between the pacman and the ghost
@@ -98,7 +101,6 @@ private:
     void DrawGhosts();
     void DrawPacman();
     void DrawScoreboard();
-
     void DrawGameOver();
     void DrawGamePaused();
     

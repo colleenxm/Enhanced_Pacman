@@ -46,8 +46,16 @@ void PacmanGame::PhotoButtonPressed() { // listener - takes picture when button 
 }
 
 void PacmanGame::ApprovalButtonPressed() { // listener - sets face as sprite and moves on to the game when button is pressed
-    // something here
+    SetFaceAsPacman();
     current_state_ = IN_PROGRESS;
+}
+
+void PacmanGame::SetFaceAsPacman() { // cuts the face out and uses it as pacman
+    ofRectangle facial_frame = facial_detector_.blobs[0].boundingRect;
+    ofImage cropped_face;
+    cropped_face.cropFrom(photo_taken_, facial_frame.getX(), facial_frame.getY(), facial_frame.getWidth(), facial_frame.getHeight());
+    
+    game_pacman_.SetFacialImage(cropped_face); // need to set as pacman image
 }
 
 /*

@@ -28,6 +28,8 @@ public:
     
     // Methods to use adapted from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
     ofVec2f& GetMazePosition();
+    
+    void SetFacialImage(ofImage& facial_image); // replaces the default yellow pacman
     ofImage& GetPacmanImage(); // gets image
     
     Direction GetDirection() const; // Gets the current direction

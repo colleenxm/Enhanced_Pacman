@@ -20,6 +20,10 @@ ofVec2f& Pacman::GetMazePosition() {
     return maze_position_;
 }
 
+void Pacman::SetFacialImage(ofImage& facial_image) { // replaces the default yellow pacman with the user's face
+    pacman_image_ = facial_image;
+}
+
 ofImage& Pacman::GetPacmanImage() { // gets image
     return pacman_image_;
 }
