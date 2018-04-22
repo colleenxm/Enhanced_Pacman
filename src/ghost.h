@@ -11,7 +11,7 @@ private:
     ofVec2f window_dims_;
     std::mt19937 generator_; // pseudorandom number generation
     
-    const int kNumDirections_ = 4; // number of real directions, to exclude dummy direction
+    static const int kNumDirections_ = 4; // number of real directions, to exclude dummy direction
     Direction current_direction_ = EAST; // starts off going right
     
     int num_steps_taken_ = 0; // keeps track of the number of steps taken in the current direction (so that the direction can be changed once every kNumStepsBeforeDirectionChange_ steps)
@@ -19,14 +19,15 @@ private:
     ofVec2f maze_position_; // x, y position of the maze - important: this corresponds to the MAZE ELEMENT and NOT to the actual coordinates in the coordinatep lane. Used as 2 of the 4 dimensions needed to frame the image (to control its position and size)
     
     ofImage ghost_image_; // image that correpsonds with a ghost object
-    const std::string kImagePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/image_files/pacman_ghost.png";
+
+    static const std::string kImagePath_;
     
     Maze maze_; // keeps track of the maze - to check if position is valid, same maze as the one in the game
     
 public:
-    const int kNumStepsBeforeDirectionChange_ = 20; // number of steps to take in the new  direction before changing direction. Note that this is used in ofApp so each step can be drawn out (else the ghost would jump around). No point in hiding this - will need a getter anyways
+    static const int kNumStepsBeforeDirectionChange_ = 20; // number of steps to take in the new  direction before changing direction. Note that this is used in ofApp so each step can be drawn out (else the ghost would jump around). No point in hiding this - will need a getter anyways
     
-    const int kPointsWorth_ = 10; // worth 10 points (b/c it's riskier to eat a ghost since the ghost can turn around and eat you)
+    static const int kPointsWorth_ = 10; // worth 10 points (b/c it's riskier to eat a ghost since the ghost can turn around and eat you)
     
     Ghost(); // Default constructor, sets up generator devices and rarndomly places food at a valid location
     void SetInitialRandomPosition(); // intial random pos

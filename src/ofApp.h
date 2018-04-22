@@ -19,19 +19,21 @@ private:
     // Enum to represent the current state of the game
     enum GameState {
         NOT_STARTED = 0,
+        COUNTDOWN,
         IN_PROGRESS,
         PAUSED,
         FINISHED
     };
     
     // ALL PATHS
-    std::string kTextPath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/font_files/verdana.ttf";
+    std::string kTextPath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/font_files/square_block.ttf";
     std::string kFoodImagePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/image_files/apple.png";
 
     std::string kIntroMusicPath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/sound_files/intro_music.mp3";
     std::string kPacmanEating_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/sound_files/eating_sound.mp3";
     std::string kDeathSoundPath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/sound_files/wilhelmscream.mp3";
-
+    std::string kDemoMoviePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/demos/raw_screencast_demo.mov";
+    
     // ALL SOUNDS
     ofSoundPlayer intro_music_; // plays music
     ofSoundPlayer pacman_death_sound_; // wilhem scream
@@ -40,7 +42,9 @@ private:
     // FOR INTRODUCTION PANEL
     ofTrueTypeFont string_font_; // sets font, used to print strings with colors/sizes/fonts other than the default
     GameState current_state_ = NOT_STARTED; // The current state of the game, used to determine possible actions
+    ofVideoPlayer demo_movie_; // demo of what the game looks like
     
+    // CONSTANTS
     const int kNumFoodItems_ = 10; // 10 food items to put in map - can change
     const int kOneDObjectSize_ = 20; // standardized size for all the objects (to prevent the bigger ones from "leaving" the maze)
     
@@ -53,16 +57,23 @@ private:
     // Note: Dynamically allocationg all eatable objects (except for the pacman) so I can delete them later
     Pacman game_pacman_; // The object that represents the user controlled snake
     std::vector<Ghost> all_ghosts_;
-    const int kNumGhosts_ = 3;
+    const int kNumGhosts_ = 10;
     
     // FOOD
     const int kFoodPointsWorth_ = 1; // how many points a food object is worth
     
     bool should_update_ = true;     // A flag boolean used in the update() function.
+        
+    void ManageObjectCollisons(); // contains logic for objects eating each other rename later
+    void ManagePacmanGhostCollisions(Ghost& current_ghost); // interactions between the pacman and the ghost
     
-    void InteractPredatorPreyObjects(); // contains logic for objects eating each other rename later
-    void InteractPacmanWithGhost(Ghost& current_ghost); // interactions between the pacman and the ghost (rename method later - weird grammar)
     // Private helper methods to render various aspects of the game on screen.
+    void DrawCountdown();
+    void DrawThree(); // want each to be on its own panel
+    void DrawTwo();
+    void DrawOne();
+    void DrawBegin();
+
     void DrawFood(int x_index, int y_index);
     void DrawMaze();
     void DrawGhosts();

@@ -4,24 +4,24 @@
 
 // Adapted from OF-SNAKE MP (Snake class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
 
-ofVec2f& Pacman::GetMazePosition() {
-    return maze_position_;
-}
-
-ofImage& Pacman::GetPacmanImage() { // gets image
-    return pacman_image_;
-}
-
 Pacman::Pacman() {
     int width = ofGetWindowWidth();
     int height = ofGetWindowHeight();
     screen_dims_.set(width, height);
     
     current_direction_ = EAST; // starts out moving right
-    maze_position_.set(3, 3); // starting point
+    maze_position_.set(1, 1); // starting point
     
     pacman_image_.load(kImagePath_);
     num_rotations_ = 0; // initialize
+}
+
+ofVec2f& Pacman::GetMazePosition() {
+    return maze_position_;
+}
+
+ofImage& Pacman::GetPacmanImage() { // gets image
+    return pacman_image_;
 }
 
 void Pacman::Update() {    
@@ -126,11 +126,12 @@ int Pacman::GetIndex(Direction direction) { // put in a method later
 }
 
 void Pacman::reset() { // back to original state
-    current_direction_ = EAST; // starts out moving right
-    maze_position_.set(3, 3); // starting point
+    current_direction_ = EAST; 
+    maze_position_.set(1, 1); // starting point
     
     num_points_ = 0;
     is_eaten_ = false;
+    num_rotations_ = 0;
+    
+    pacman_image_.load(kImagePath_); // reload the picture - rotating actually CHANGES the picture and reset should set everything back to its original orientaiton
 }
-
-

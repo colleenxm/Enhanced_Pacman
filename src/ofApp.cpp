@@ -6,10 +6,12 @@ void PacmanGame::setup(){
     
     srand(static_cast<unsigned>(time(0))); // Seed random with current time
     
+    // LOADING FROM PATH
     string_font_.load(kTextPath_, 32, true, false, true, 0.1);
     intro_music_.load(kIntroMusicPath_);
     pacman_eating_sound_.load(kPacmanEating_);
     pacman_death_sound_.load(kDeathSoundPath_);
+    demo_movie_.load(kDemoMoviePath_);
     
     // set the maze reference so the other objects can keep track of the maze as well
     //game_pacman_.SetMaze(maze_);
@@ -40,8 +42,11 @@ void PacmanGame::setup(){
  */
 void PacmanGame::update() {
     if (should_update_) {
-        if (current_state_ == IN_PROGRESS) {
-            InteractPredatorPreyObjects();
+        if (current_state_ == NOT_STARTED) { // play demo
+            demo_movie_.update();
+            
+        } else if (current_state_ == IN_PROGRESS) {
+            ManageObjectCollisons();
             game_pacman_.Update(); // gets new location for the pacman and draws in the next tick
             
             // Explanation: We want the ghost to take a number of steps in its current
@@ -67,7 +72,7 @@ void PacmanGame::update() {
     should_update_ = true;
 }
 
-void PacmanGame::InteractPredatorPreyObjects() { // contains logic for having objects eat each other, should probably rename the method
+void PacmanGame::ManageObjectCollisons() { // contains logic for having objects eat each other, should probably rename the method
     ofVec2f pacman_pos = game_pacman_.GetMazePosition();
     ofRectangle pacman_rect = ofRectangle(pacman_pos.x * coord_multiplier_x_ + kOneDObjectSize_/2, pacman_pos.y * coord_multiplier_x_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
 
@@ -82,12 +87,12 @@ void PacmanGame::InteractPredatorPreyObjects() { // contains logic for having ob
         ofRectangle ghost_rect = ofRectangle(ghost_pos.x * coord_multiplier_x_ + kOneDObjectSize_/2, ghost_pos.y * coord_multiplier_x_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
         
         if (pacman_rect.intersects(ghost_rect)) {
-            InteractPacmanWithGhost(current_ghost);
+            ManagePacmanGhostCollisions(current_ghost);
         }
     }
 }
 
-void PacmanGame::InteractPacmanWithGhost(Ghost& current_ghost) { // responsible for all pacman-ghost iteractions
+void PacmanGame::ManagePacmanGhostCollisions(Ghost& current_ghost) { // responsible for all pacman-ghost iteractions
     Direction pacman_direction = game_pacman_.GetDirection(); // note: coords for 2d = 0, 0 is on the upper lhs
     Direction ghost_direction = current_ghost.GetDirection();
     
@@ -97,15 +102,21 @@ void PacmanGame::InteractPacmanWithGhost(Ghost& current_ghost) { // responsible 
     if (pacman_direction == ghost_direction) { // pacman eats the ghost if both objects are pointing in the same direction and the pacman is behind the ghost
         if (pacman_pos.x >= ghost_pos.x || pacman_pos.y >= ghost_pos.y) { // aka if pacman's x or y coord is bigger than the ghost's x y cords
             game_pacman_.EatObject(current_ghost.kPointsWorth_);
-            // need to do something about the ghost
+            
+            for (int ghost_ind = 0; ghost_ind < all_ghosts_.size(); ghost_ind++) { // remove the ghost
+                if (current_ghost.GetMazePosition() == all_ghosts_[ghost_ind].GetMazePosition()) {
+                    all_ghosts_.erase(all_ghosts_.begin() + ghost_ind); // delete the ghost
+                }
+            }
+            
         } else { // ghost eats the pacman if both objects are pointing in the same direction and the ghost is behind the pacman
-            game_pacman_.GetsEaten(); // game over - pacman needs to die
+            game_pacman_.GetsEaten(); // pacman dies
             pacman_death_sound_.play();
         }
     } else { // ghost eats the pacman if the objects are pointing in different directions
         if ((pacman_direction == NORTH && ghost_direction == SOUTH) || (pacman_direction == SOUTH && ghost_direction == NORTH)
             || (pacman_direction == WEST && ghost_direction == EAST) || (pacman_direction == EAST && ghost_direction == WEST)) {
-            game_pacman_.GetsEaten(); // game over - pacman needs to die
+            game_pacman_.GetsEaten(); // pacman dies
             pacman_death_sound_.play();
         }
     }
@@ -124,8 +135,16 @@ void PacmanGame::draw(){ // is called over and over again
         intro_music_.setLoop(true); // plays over and over again
         intro_music_.play();
         
-        string_font_.drawString("WELCOME TO PACMAN!", ofGetWidth()/3, ofGetHeight()/3);
+        ofSetColor(0, 200, 0); // green
+        string_font_.drawString("WELCOME TO PACMAN!", ofGetWidth()/8, ofGetHeight()/8);
+
+        ofSetColor(255, 255, 255); // white
+        demo_movie_.draw(ofGetWidth()/4, ofGetHeight()/5, 400, 200); // play movie
+        
         ofDrawBitmapString("Click anywhere to continue", ofGetWidth()/6, ofGetHeight()/6);
+    } else if (current_state_ == COUNTDOWN) {
+        DrawThree();
+        current_state_ = IN_PROGRESS;
         
     } else if (current_state_ == IN_PROGRESS) {
         DrawMaze();
@@ -163,15 +182,13 @@ void PacmanGame::keyPressed(int key){
         ofToggleFullscreen();
         return;
     }
-    
     int upper_key = toupper(key); // Standardize on upper case
     
     if (upper_key == 'P' && current_state_ != FINISHED) {
         // Pause or unpause
         current_state_ = (current_state_ == IN_PROGRESS) ? PAUSED : IN_PROGRESS;
-    }
-    else if (current_state_ == IN_PROGRESS)
-    {
+        
+    } else if (current_state_ == IN_PROGRESS) {
         Direction current_direction = game_pacman_.GetDirection();
         if (upper_key == 'W') { // change up order - makes logical sense
             // need to rotate pacman here
@@ -179,28 +196,21 @@ void PacmanGame::keyPressed(int key){
             game_pacman_.SetDirection(NORTH);
             update();
             should_update_ = false;
-        }
-        
-        else if (upper_key == 'A') {
+        } else if (upper_key == 'A') {
             game_pacman_.CalculateNumRotations(WEST);
             game_pacman_.SetDirection(WEST);
             update();
             should_update_ = false;
-        }
-        
-        else if (upper_key == 'S') {
+        } else if (upper_key == 'S') {
             game_pacman_.CalculateNumRotations(SOUTH);
             game_pacman_.SetDirection(SOUTH);
             update();
             should_update_ = false;
-        }
-        
-        else if (upper_key == 'D') {
+        } else if (upper_key == 'D') {
             game_pacman_.CalculateNumRotations(EAST);
             game_pacman_.SetDirection(EAST);
             update();
             should_update_ = false;
-            
         }
         
     } else if (upper_key == 'R' && current_state_ == FINISHED) {
@@ -210,7 +220,7 @@ void PacmanGame::keyPressed(int key){
 
 void PacmanGame::mousePressed(int x, int y, int button){
     if (current_state_ == NOT_STARTED) {
-        current_state_ = IN_PROGRESS;
+        current_state_ = COUNTDOWN;
     }
 }
 
@@ -220,9 +230,8 @@ void PacmanGame::Reset() { // resets everything
     for (Ghost& current_ghost : all_ghosts_) {
         current_ghost.SetInitialRandomPosition();
     }
-    current_state_ = IN_PROGRESS;
-    
-    maze_.Reset(); // clears all leftover food items and redraws food items
+    current_state_ = IN_PROGRESS;    
+    maze_.Reset(); // clears all leftover food items and redraws food items    
 }
 
 void PacmanGame::windowResized(int w, int h){
@@ -262,6 +271,15 @@ void PacmanGame::DrawMaze() { // draws the maze
     }
 }
 
+void PacmanGame::DrawThree() {
+    ofSetColor(0, 200, 0); // green
+    string_font_.drawString("3", ofGetWidth()/8, ofGetHeight()/8);
+    string_font_.drawString("2", ofGetWidth()/8, ofGetHeight()/8);
+    string_font_.drawString("1", ofGetWidth()/8, ofGetHeight()/8);
+    string_font_.drawString("BEGIN", ofGetWidth()/8, ofGetHeight()/8);
+}
+
+
 void PacmanGame::DrawFood(int x_index, int y_index) {
     ofImage food_image_; // image that correpsonds with a food object
     food_image_.load(kFoodImagePath_);
@@ -279,6 +297,7 @@ void PacmanGame::DrawGhosts() { // just make sizes all the same for simplicity
 void PacmanGame::DrawPacman() {
     ofVec2f& pos = game_pacman_.GetMazePosition();
     game_pacman_.GetPacmanImage().rotate90(game_pacman_.GetNumRotations());
+    
     game_pacman_.GetPacmanImage().draw(pos.x * coord_multiplier_x_ + kOneDObjectSize_/2, pos.y * coord_multiplier_y_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
     game_pacman_.ClearNumRotations(); // set back to 0 to prevent the pacman from spinning into oblivion
 }

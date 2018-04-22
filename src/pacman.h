@@ -15,7 +15,7 @@ private:
     ofVec2f maze_position_; // x, y position of the maze - important: this corresponds to the MAZE ELEMENT and NOT to the actual coordinates in the coordinatep lane
 
     ofImage pacman_image_; // image that correpsonds with the pacman
-    const std::string kImagePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/image_files/pacman.png";
+    std::string kImagePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/image_files/pacman.png";
     
     bool is_eaten_ = false; // dies if eaten
     
@@ -24,6 +24,8 @@ private:
     int num_rotations_; // keeps track of the number of rotations needed
     
 public:
+    Pacman(); // Default constructor, initializes and places length 1 snake
+    
     // Methods to use adapted from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
     ofVec2f& GetMazePosition();
     ofImage& GetPacmanImage(); // gets image
@@ -34,10 +36,6 @@ public:
     void CalculateNumRotations(Direction new_direction); // calculates the number of 90 degree clockwise rotations needed
     void ClearNumRotations(); // sets num rotations back to 0, must be called each time an object finishes rotation
     int GetNumRotations(); // returns the number of rotations
-    
-    Pacman(); // Default constructor, initializes and places length 1 snake
-    
-    //void SetMaze(Maze& maze); // set the maze - need to keep track of the maze to know if the obj's at a wall
     
     bool IsDead();
     void GetsEaten(); // pacman is eaten
