@@ -66,22 +66,22 @@ void Ghost::MoveInNewDirection() { // moves in that direction - jumps over food 
     int y = maze_position_.y;
     
     switch (current_direction_) {
-        case UP:
+        case NORTH:
             if (maze_.IsLegalPosition(x, y - 1) && maze_.IsValidPacmanPosition(x, y - 1)) {
                 maze_position_.set(x, y - 1);
             }
             break;
-        case DOWN:
+        case SOUTH:
             if (maze_.IsLegalPosition(x, y + 1) && maze_.IsValidPacmanPosition(x, y + 1)) {
                 maze_position_.set(x, y + 1);
             }
             break;
-        case LEFT:
+        case WEST:
             if (maze_.IsLegalPosition(x - 1, y) && maze_.IsValidPacmanPosition(x - 1, y)) {
                 maze_position_.set(x - 1, y);
             }
             break;
-        case RIGHT:
+        case EAST:
             if (maze_.IsLegalPosition(x + 1, y) && maze_.IsValidPacmanPosition(x + 1, y)) {
                 maze_position_.set(x + 1, y);
             }

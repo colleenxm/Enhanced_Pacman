@@ -8,12 +8,12 @@
 #ifndef location_h
 #define location_h
 
-typedef enum { // directions for moving objects - put in global because all moving objects have the same possible directions
-    UP = 0,
-    DOWN,
-    RIGHT,
-    LEFT
-} Direction;
+enum Direction { // directions for moving objects - put in global because all moving objects have the same possible directions
+    NORTH = 0,
+    EAST,
+    SOUTH,
+    WEST
+};
 
 #endif /* location_h */
 

@@ -17,11 +17,11 @@ Pacman::Pacman() {
     int height = ofGetWindowHeight();
     screen_dims_.set(width, height);
     
-    current_direction_ = RIGHT; // starts out moving right
+    current_direction_ = EAST; // starts out moving right
     maze_position_.set(3, 3); // starting point
     
     pacman_image_.load(kImagePath_);
-    // pacman_image_.rotate90(1); // figure out rotations later
+    num_rotations_ = 0; // initialize
 }
 
 void Pacman::Update() {    
@@ -29,22 +29,22 @@ void Pacman::Update() {
     int y = maze_position_.y;
     
     switch (current_direction_) {
-        case UP:
+        case NORTH:
             if (maze_.IsLegalPosition(x, y - 1) && maze_.IsValidPacmanPosition(x, y - 1)) {
                 maze_position_.set(x, y - 1);
             }
             break;
-        case DOWN:
+        case SOUTH:
             if (maze_.IsLegalPosition(x, y + 1) && maze_.IsValidPacmanPosition(x, y + 1)) {
                 maze_position_.set(x, y + 1);
             }
             break;
-        case LEFT:
+        case WEST:
             if (maze_.IsLegalPosition(x - 1, y) && maze_.IsValidPacmanPosition(x - 1, y)) {
                 maze_position_.set(x - 1, y);
             }
             break;
-        case RIGHT:
+        case EAST:
             if (maze_.IsLegalPosition(x + 1, y) && maze_.IsValidPacmanPosition(x + 1, y)) {
                 maze_position_.set(x + 1, y);
             }
@@ -80,12 +80,53 @@ Direction Pacman::GetDirection() const {
     return current_direction_;
 }
 
-void Pacman::setDirection(Direction newDirection) {
-    current_direction_ = newDirection;
+void Pacman::SetDirection(Direction new_direction) {
+    current_direction_ = new_direction;
+}
+
+void Pacman::CalculateNumRotations(Direction new_direction) { // calculates the number of clockwise 90 degree rotations needed, note: pacman can't actually be rotated in this class - has to be rotated in the game
+    
+    int index_difference = GetIndex(new_direction) - GetIndex(current_direction_); // difference in indices of directions
+
+    if (index_difference >= 0) { // then the number of clockwise 90 degree rotations = the index difference
+        num_rotations_ = index_difference;
+    } else { // rotating counterclockwise
+        const int kNumDirections = 4;
+        num_rotations_ = kNumDirections + index_difference;
+        /*switch (index_difference) {
+            case -1:
+                num_rotations_ = 3;
+            case -2: // not sure about the logic here
+                return 2;
+            case -3:
+                return 1;
+        }*/
+    }
+}
+
+void Pacman::ClearNumRotations() { // sets num rotations back to 0, must be called each time an object finishes rotation
+    num_rotations_ = 0;
+}
+
+int Pacman::GetNumRotations() { // returns the number of rotations
+    return num_rotations_;
+}
+
+int Pacman::GetIndex(Direction direction) { // put in a method later
+    switch(direction) {
+        case NORTH:
+            return 0;
+        case EAST:
+            return 1;
+        case SOUTH:
+            return 2;
+        case WEST:
+            return 3;
+    }
 }
 
 void Pacman::reset() { // back to original state
-    current_direction_ = RIGHT; // starts out moving right
+    current_direction_ = EAST; // starts out moving right
     maze_position_.set(3, 3); // starting point
     
     num_points_ = 0;

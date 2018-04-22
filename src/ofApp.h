@@ -26,13 +26,16 @@ private:
     
     // ALL PATHS
     std::string kTextPath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/font_files/verdana.ttf";
-    std::string kIntroMusicPath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/sound_files/intro_music.mp3";
-    std::string kDeathSoundPath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/sound_files/wilhelmscream.mp3";
     std::string kFoodImagePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/image_files/apple.png";
+
+    std::string kIntroMusicPath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/sound_files/intro_music.mp3";
+    std::string kPacmanEating_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/sound_files/eating_sound.mp3";
+    std::string kDeathSoundPath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/sound_files/wilhelmscream.mp3";
 
     // ALL SOUNDS
     ofSoundPlayer intro_music_; // plays music
     ofSoundPlayer pacman_death_sound_; // wilhem scream
+    ofSoundPlayer pacman_eating_sound_; // cartoonish crunch
     
     // FOR INTRODUCTION PANEL
     ofTrueTypeFont string_font_; // sets font, used to print strings with colors/sizes/fonts other than the default

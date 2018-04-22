@@ -21,13 +21,19 @@ private:
     
     Maze maze_; // keeps track of the maze - to check if position is valid, same maze as the one in the game
     
+    int num_rotations_; // keeps track of the number of rotations needed
+    
 public:
     // Methods to use adapted from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
     ofVec2f& GetMazePosition();
     ofImage& GetPacmanImage(); // gets image
     
     Direction GetDirection() const; // Gets the current direction
-    void setDirection(Direction new_direction); // Sets the current direction
+    void SetDirection(Direction new_direction); // Sets the current direction
+    
+    void CalculateNumRotations(Direction new_direction); // calculates the number of 90 degree clockwise rotations needed
+    void ClearNumRotations(); // sets num rotations back to 0, must be called each time an object finishes rotation
+    int GetNumRotations(); // returns the number of rotations
     
     Pacman(); // Default constructor, initializes and places length 1 snake
     
@@ -43,6 +49,7 @@ public:
     void resize(int w, int h); // resizes
     int GetNumPoints() const; // Gets the number of points
     
+    int GetIndex(Direction direction); // get index from direction - need to move this elsewhere
     void reset(); // clears everything
 };
 

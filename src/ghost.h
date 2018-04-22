@@ -12,7 +12,7 @@ private:
     std::mt19937 generator_; // pseudorandom number generation
     
     const int kNumDirections_ = 4; // number of real directions, to exclude dummy direction
-    Direction current_direction_ = RIGHT; // starts off going right
+    Direction current_direction_ = EAST; // starts off going right
     
     int num_steps_taken_ = 0; // keeps track of the number of steps taken in the current direction (so that the direction can be changed once every kNumStepsBeforeDirectionChange_ steps)
     
