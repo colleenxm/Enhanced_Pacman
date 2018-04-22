@@ -7,8 +7,8 @@ void PacmanGame::setup(){
     srand(static_cast<unsigned>(time(0))); // Seed random with current time
     
     // LOADING FROM PATH
-    title_font_.load(kTextPath_, 32, true, false, true, 0.1);
-    body_font_.load(kTextPath_, 16, true, false, true, 0.1);
+    title_font_.load(kTextPath_, 32);
+    body_font_.load(kTextPath_, 16);
 
     intro_music_.load(kIntroMusicPath_);
     crunch_.load(kPacmanEating_);
@@ -30,12 +30,24 @@ void PacmanGame::setup(){
                 
         // make sure ghosts aren't all at the same spot
     }
-
     maze_.PopulateWithFood(kNumFoodItems_);
     maze_.PopulateWithCoins(kNumCoins_);
 
-    coord_multiplier_x_ = ((float) ofGetWindowWidth()) / maze_.GetWidth(); // bug here - doesn't take into account the size of the object - causes ovelap
-    coord_multiplier_y_ = ((float) ofGetWindowHeight()) / maze_.GetHeight();
+    // CALCULATING DIMENSIONS
+    space_between_objects_ = 0.01 * ofGetWidth() + 0.01 * ofGetHeight();
+    one_d_object_size_ = ofGetScreenWidth()/(kNumCoins_ + kNumGhosts_ + kNumFoodItems_ + space_between_objects_); // shouldn't be a fixed const
+    coord_multiplier_x_ = ((float) ofGetWidth()) / maze_.GetWidth(); // center
+    coord_multiplier_y_ = ((float) ofGetHeight()) / maze_.GetHeight();
+    
+    //vertical_shift_ = ofGetHeight() - one_d_object_size_ * maze_.GetHeight() * 1.05;
+    //horizontial_shift_ = ofGetWidth() - one_d_object_size_ * maze_.GetWidth();
+    float rectangular_width = maze_.GetWidth() * one_d_object_size_;
+    float rectangular_height = maze_.GetHeight() * one_d_object_size_;
+    float starting_x = ofGetWidth()/2 - rectangular_width/2;
+    float starting_y = ofGetHeight() - rectangular_height;
+    
+    vertical_shift_ = ofGetHeight() - rectangular_height + 1.15 * one_d_object_size_;
+    horizontial_shift_ = ofGetWidth()/2 - rectangular_width/2.5;  //+ 1.5 * one_d_object_size_;
 }
 
 void PacmanGame::SetFaceAsPacman() { // cuts the face out and uses it as pacman
@@ -107,7 +119,7 @@ void PacmanGame::DetectFacesInPhoto() { // using haar cascader (opencv) to detec
 
 void PacmanGame::ManageObjectCollisons() { // contains logic for having objects eat each other, should probably rename the method
     ofVec2f pacman_pos = game_pacman_.GetMazePosition();
-    ofRectangle pacman_rect = ofRectangle(pacman_pos.x * coord_multiplier_x_ + kOneDObjectSize_/2, pacman_pos.y * coord_multiplier_y_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
+    ofRectangle pacman_rect = ofRectangle(pacman_pos.x * coord_multiplier_x_ + one_d_object_size_/2, pacman_pos.y * coord_multiplier_y_ + one_d_object_size_/2, one_d_object_size_, one_d_object_size_);
 
     if (maze_.GetElementAt(pacman_pos.x, pacman_pos.y) == Maze::FOOD) { // food
         maze_.RemoveFoodAt(pacman_pos.x, pacman_pos.y);
@@ -119,44 +131,27 @@ void PacmanGame::ManageObjectCollisons() { // contains logic for having objects 
         coin_collection_.play();
         game_pacman_.EatObject(kCoinPointsWorth_); // add some sort of sound effect here
     }
-    for (Ghost& current_ghost : all_ghosts_) { // ghost
+    for (int ghost_ind = 0; ghost_ind < all_ghosts_.size(); ghost_ind++) { // ghost
+        Ghost& current_ghost = all_ghosts_[ghost_ind];
         ofVec2f ghost_pos = current_ghost.GetMazePosition();
-        ofRectangle ghost_rect = ofRectangle(ghost_pos.x * coord_multiplier_x_ + kOneDObjectSize_/2, ghost_pos.y * coord_multiplier_y_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
         
-        if (pacman_rect.intersects(ghost_rect)) {
-            ManagePacmanGhostCollisions(current_ghost);
+        if (pacman_pos.x == ghost_pos.x && pacman_pos.y == ghost_pos.y) {
+            if (DoesPacmanEatGhost(current_ghost)) { // remove the current ghost
+                all_ghosts_.erase(all_ghosts_.begin() + ghost_ind); // delete the ghost
+            }
         }
     }
 }
 
-void PacmanGame::ManagePacmanGhostCollisions(Ghost& current_ghost) { // responsible for all pacman-ghost iteractions
-    Direction pacman_direction = game_pacman_.GetDirection(); // note: coords for 2d = 0, 0 is on the upper lhs
-    Direction ghost_direction = current_ghost.GetDirection();
-    
-    ofVec2f pacman_pos = game_pacman_.GetMazePosition(); // considering changing the logic here as well
-    ofVec2f ghost_pos = current_ghost.GetMazePosition();
-    
-    if (pacman_direction == ghost_direction) { // pacman eats the ghost if both objects are pointing in the same direction and the pacman is behind the ghost
-        if (pacman_pos.x >= ghost_pos.x || pacman_pos.y >= ghost_pos.y) { // aka if pacman's x or y coord is bigger than the ghost's x y cords
-            game_pacman_.EatObject(current_ghost.kPointsWorth_);
-            
-            for (int ghost_ind = 0; ghost_ind < all_ghosts_.size(); ghost_ind++) { // remove the ghost
-                if (current_ghost.GetMazePosition() == all_ghosts_[ghost_ind].GetMazePosition()) {
-                    all_ghosts_.erase(all_ghosts_.begin() + ghost_ind); // delete the ghost
-                }
-            }
-            
-        } else { // ghost eats the pacman if both objects are pointing in the same direction and the ghost is behind the pacman
-            game_pacman_.GetsEaten(); // pacman dies
-            wilhelm_scream_.play();
-        }
-    } else { // ghost eats the pacman if the objects are pointing in different directions
-        if ((pacman_direction == NORTH && ghost_direction == SOUTH) || (pacman_direction == SOUTH && ghost_direction == NORTH)
-            || (pacman_direction == WEST && ghost_direction == EAST) || (pacman_direction == EAST && ghost_direction == WEST)) {
-            game_pacman_.GetsEaten(); // pacman dies
-            wilhelm_scream_.play();
-        }
+bool PacmanGame::DoesPacmanEatGhost(Ghost& current_ghost) { // responsible for all pacman-ghost iteractions, true if pacman eats the ghost, false otherwise
+    if (game_pacman_.GetDirection() == current_ghost.GetDirection()) { // pacman eats the ghost if both objects are pointing in the same direction
+        game_pacman_.EatObject(current_ghost.kPointsWorth_);
+        crunch_.play();
+        return true;
     }
+    game_pacman_.GetsEaten(); // pacman dies
+    wilhelm_scream_.play();
+    return false;
 }
 
 /*
@@ -202,13 +197,15 @@ void PacmanGame::DrawIntroduction() { // everything to do with the intro
     intro_music_.play();
     
     ofSetColor(0, 200, 0); // green
-    title_font_.drawString("WELCOME TO PACMAN!", ofGetWidth()/8, ofGetHeight()/8);
-    
+    std::string introduction_title = "WELCOME TO PACMAN!";
+    const int kTitleDivider = 4; // proportions - title
+    title_font_.drawStringCentered(introduction_title, ofGetWidth()/2, ofGetHeight()/8);
+    body_font_.drawStringCentered("Click anywhere to continue.", ofGetWidth()/2, ofGetHeight()/5);
+
     ofSetColor(255, 255, 255); // white
     
-    const int kDivider = 4; // keep track of to center the demo
+    const int kDivider = 2; // keep track of to center the demo, inversely proportional to size of the movie
     demo_movie_.draw(ofGetWidth()/2 - ofGetWidth()/(2 * kDivider), ofGetHeight()/2 - ofGetHeight()/(2 * kDivider), ofGetWidth()/kDivider, ofGetHeight()/kDivider); // play movie
-    body_font_.drawString("Click anywhere to continue.", ofGetWidth()/6, ofGetHeight()/6);
 }
 
 void PacmanGame::DrawInstructions() {
@@ -256,27 +253,23 @@ void PacmanGame::DrawMaze() { // draws the maze
         x_coord = x_index * coord_multiplier_x_;
         for (int y_index = 0; y_index < maze_.GetHeight(); y_index++) {
             y_coord = y_index * coord_multiplier_y_;
-            switch (maze_.GetElementAt(x_index, y_index)) {
-                case Maze::NOTHING: // no wall
-                    ofSetColor(100, 100, 100);
-                    ofDrawRectangle(x_coord + kOneDObjectSize_/2, y_coord + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
-                    break;
-                case Maze::WALL: // wall
-                    ofSetColor(225, 225, 225);
-                    ofDrawRectangle(x_coord + kOneDObjectSize_/2, y_coord + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
-                    break;
-                    
-                case Maze::FOOD: // store indices of food elements
+            
+            auto maze_element = maze_.GetElementAt(x_index, y_index);
+            if (maze_element == Maze::NOTHING || maze_element == Maze::FOOD || maze_element == Maze::COIN) { // want to draw a gray square if it's not a wall
+                ofSetColor(100, 100, 100);
+                ofDrawRectangle(x_coord + one_d_object_size_/2 + horizontial_shift_, y_coord + one_d_object_size_/2 + vertical_shift_, one_d_object_size_, one_d_object_size_);
+                if (maze_element == Maze::FOOD) {
                     food_indices.push_back(std::make_pair(x_index, y_index));
-                    break;
-                    
-                case Maze::COIN: // store indices
+                } else if (maze_element == Maze::COIN) {
                     coin_indices.push_back(std::make_pair(x_index, y_index));
-                    break;
+                }
+            } else if (maze_element == Maze::WALL) {
+                ofSetColor(225, 225, 225);
+                ofDrawRectangle(x_coord + one_d_object_size_/2 + horizontial_shift_, y_coord + one_d_object_size_/2 + vertical_shift_, one_d_object_size_, one_d_object_size_);
             }
         }
     }
-    for (auto food_index : food_indices) {
+    for (auto food_index : food_indices) { // then draw food/coin items on top
         DrawFood(food_index.first, food_index.second);
     }
     for (auto coin_index : coin_indices) {
@@ -287,19 +280,19 @@ void PacmanGame::DrawMaze() { // draws the maze
 void PacmanGame::DrawFood(int x_index, int y_index) {
     ofImage food_image_; // image that correpsonds with a food object
     food_image_.load(kFoodImagePath_);
-    food_image_.draw(x_index * coord_multiplier_x_ + kOneDObjectSize_/2, y_index * coord_multiplier_y_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
+    food_image_.draw(x_index * coord_multiplier_x_ + one_d_object_size_/2 + horizontial_shift_, y_index * coord_multiplier_y_ + one_d_object_size_/2 + + vertical_shift_, one_d_object_size_, one_d_object_size_);
 }
 
 void PacmanGame::DrawCoin(int x_index, int y_index) {
     ofImage coin_image; // image that correpsonds with a food object
     coin_image.load(kCoinImagePath_);
-    coin_image.draw(x_index * coord_multiplier_x_ + kOneDObjectSize_/2, y_index * coord_multiplier_y_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
+    coin_image.draw(x_index * coord_multiplier_x_ + one_d_object_size_/2 + horizontial_shift_, y_index * coord_multiplier_y_ + one_d_object_size_/2 + + vertical_shift_, one_d_object_size_, one_d_object_size_);
 }
 
 void PacmanGame::DrawGhosts() { // just make sizes all the same for simplicity
     for (Ghost& current_ghost : all_ghosts_) {
         ofVec2f pos = current_ghost.GetMazePosition();
-        current_ghost.GetGhostImage().draw(pos.x * coord_multiplier_x_ + kOneDObjectSize_/2, pos.y * coord_multiplier_y_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
+        current_ghost.GetGhostImage().draw(pos.x * coord_multiplier_x_ + one_d_object_size_/2 + horizontial_shift_, pos.y * coord_multiplier_y_ + one_d_object_size_/2 + + vertical_shift_, one_d_object_size_, one_d_object_size_);
     }
 }
 
@@ -307,16 +300,17 @@ void PacmanGame::DrawPacman() {
     ofVec2f& pos = game_pacman_.GetMazePosition();
     game_pacman_.GetPacmanImage().rotate90(game_pacman_.GetNumRotations());
     
-    game_pacman_.GetPacmanImage().draw(pos.x * coord_multiplier_x_ + kOneDObjectSize_/2, pos.y * coord_multiplier_y_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
+    game_pacman_.GetPacmanImage().draw(pos.x * coord_multiplier_x_ + one_d_object_size_/2 + horizontial_shift_, pos.y * coord_multiplier_y_ + one_d_object_size_/2 + vertical_shift_, one_d_object_size_, one_d_object_size_);
     game_pacman_.ClearNumRotations(); // set back to 0 to prevent the pacman from spinning into oblivion
 }
 
 void PacmanGame::DrawScoreboard() {
     std::string current_score = "Current score: " + std::to_string(game_pacman_.GetNumPoints());
     
+    ofSetColor(10, 10, 10, 240);
+    body_font_.drawCenteredBoundingBox(current_score, ofGetWidth()/1.2, ofGetHeight()/1.2);
     ofSetColor(255, 255, 255);
-    body_font_.drawString(current_score, ofGetWidth() - ofGetWidth() * 0.8, ofGetHeight() - ofGetHeight() * 0.8);
-    //ofDrawBitmapString(current_score, ofGetWidth() - 150, ofGetHeight() - 150);
+    body_font_.drawStringCentered(current_score, ofGetWidth()/1.2, ofGetHeight()/1.2);
 }
 
 void PacmanGame::DrawGameOver() {
@@ -326,7 +320,7 @@ void PacmanGame::DrawGameOver() {
 
 void PacmanGame::DrawGamePaused() {
     ofSetColor(255, 255, 255);
-    ofDrawBitmapString("P to Unpause!", ofGetWindowWidth() / 1.5, ofGetWindowHeight() / 1.5);
+    ofDrawBitmapString("P to Unpause!", ofGetWidth() / 1.5, ofGetHeight() / 1.5);
 }
 
 // Adapted from OF-SNAKE MP: https://github.com/uiuc-sp18-cs126/of-snake-ElizWang (mostly just structural stuff)
@@ -415,7 +409,8 @@ void PacmanGame::Reset() { // resets everything
     for (Ghost& current_ghost : all_ghosts_) {
         current_ghost.SetInitialRandomPosition();
     }
-    current_state_ = IN_PROGRESS;
+    //current_state_ = IN_PROGRESS;
+    current_state_ = DISPLAYING_INSTRUCTIONS;
     maze_.Reset(); // clears all leftover food items and redraws food items
 }
 
@@ -424,4 +419,10 @@ void PacmanGame::windowResized(int w, int h){
         current_ghost.resize(w, h);
     }
     game_pacman_.resize(w, h);
+    
+    space_between_objects_ = 0.01 * w + 0.01 * h;
+    coord_multiplier_x_ = ((float) w) / maze_.GetWidth(); // center
+    coord_multiplier_y_ = ((float) h) / maze_.GetHeight();
+    vertical_shift_ = h - one_d_object_size_ * maze_.GetHeight() * 1.05;
+    horizontial_shift_ = w - one_d_object_size_ * maze_.GetWidth();
 }

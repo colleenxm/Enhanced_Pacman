@@ -9,7 +9,7 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "ofxOpenCv.h"
-
+#include "header_addons/ofxCenteredTrueTypeFont.h" // centering font
 #include "maze.h"
 #include "pacman.h"
 #include "ghost.h"
@@ -50,8 +50,8 @@ private:
     ofSoundPlayer coin_collection_; // ka-ching
     
     // FOR INTRODUCTION PANEL
-    ofTrueTypeFont title_font_; // sets font, used to print titles
-    ofTrueTypeFont body_font_; // sets font, used to print more text
+    ofxCenteredTrueTypeFont title_font_; // sets font, used to print centered titles
+    ofxCenteredTrueTypeFont body_font_; // sets font, used to print centered text
 
     GameState current_state_ = NOT_STARTED; // The current state of the game, used to determine possible actions
     ofVideoPlayer demo_movie_; // demo of what the game looks like
@@ -72,16 +72,19 @@ private:
     std::vector<Ghost> all_ghosts_;
 
     // OBJECT PROPERTIES - CONSTANTS
-    const int kNumGhosts_ = 10;
-    const int kNumFoodItems_ = 10; // food items to put in map - can change
+    const int kNumGhosts_ = 20;
+    const int kNumFoodItems_ = 20; // food items to put in map - can change
     const int kFoodPointsWorth_ = 1; // how many points a food object is worth
-    const int kNumCoins_ = 5; // coins to put in map - can change
+    const int kNumCoins_ = 10; // coins to put in map - can change
     const int kCoinPointsWorth_ = 8; // coins are worth more point b/c there's less of them
-    const int kOneDObjectSize_ = 20; // standardized size for all the objects (to prevent the bigger ones from "leaving" the maze)
+    int one_d_object_size_; // standardized size for all the objects (to prevent the bigger ones from "leaving" the maze). Calculated from window dimensions in setup().
     
     // MULTIPLIERS - convert coordinates on the maze matrix to coordinates on a coordinate plane
     float coord_multiplier_x_;
     float coord_multiplier_y_;
+    float space_between_objects_; // constant space between objects, just for format
+    float vertical_shift_; // to shift the maze to the bottom of the screen
+    float horizontial_shift_; // center horizontally
     
     bool should_update_ = true;     // A flag boolean used in the update() function.
     
@@ -94,7 +97,7 @@ private:
 
     // COLLISIONS
     void ManageObjectCollisons(); // contains logic for objects eating each other rename later
-    void ManagePacmanGhostCollisions(Ghost& current_ghost); // interactions between the pacman and the ghost
+    bool DoesPacmanEatGhost(Ghost& current_ghost); // interactions between the pacman and the ghost
     
     // METHODS FOR RENDERING
     void DrawIntroduction();
