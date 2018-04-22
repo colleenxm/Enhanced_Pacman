@@ -22,19 +22,29 @@
 * Removed restrictions on the directions the pacman can travel
 * Got both the pacman and the ghost objects to detect and stay away from walls (maze logic)
 
+### 4/21/18
+* Fixed bug in drawing food items - need to draw the food items AFTER drawing the entire maze. Originally, I was drawing each item as I went through the maze, so I ended up inadvertently covering portions of the food items with maze blocks (which explains why the apples looked so squished at first …). Ended of storing the food indices in a vector so I can directly iterate through the vector instead of having to go through the maze twice.
+* Spent 6 hours on figuring out why the ghost was jumping through walls. Turns out, I made a typo (swapped the x multiplier for the y multiplier).
+* Added sound effects
+* Finished code for webcam and facial recognition - just need to integrate
+* Finished extremely rough working version
+* Added coins as an extra feature
+* Added instructions
+* Removed buttons (I don’t like how they look) and replaced them with clicks (aka “click anywhere”)
 
-###TO DO
+### TO DO
 * Add in sprites
-* ROTATE IMAGES BASED ON DIRECTION	 (which is why direction is stored)
 * Remove all absolute paths
 * Rethink how I’m keeping track of the maze - shouldn’t have to create a separate copy per object
 * Need to allow user to input maze data
 * Get scoreboard working
-* Turn rand() to dist()
+* add other options for inputting data
+* add powerful ghosts (that you can’t fight) to the screen
+* Polish UI
+* resize - kind of ???
+* add + (# points) animation if time permits
+* wins if you eat all the pieces on the board
+* keep track of the highest scores
 
-
-
-###QUESTIONS
-SHOULD YOU MAKE A CONST PUBLIC?
-FORMATTING ISSUES?
-DESIGN QUESTION - SHOULD I MAKE THE ENUMS WITHIN THE CLASS OR OUTSIDE OF THE CLASS (aka should each class have its own direction enum or should there be a global one shared among the classes)
+### Note
+something weird going on with pacman/ghost interactions - sometimes, they skip over each other, other times they dont 
