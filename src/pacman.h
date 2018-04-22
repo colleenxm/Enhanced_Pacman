@@ -15,9 +15,11 @@ private:
     ofVec2f maze_position_; // x, y position of the maze - important: this corresponds to the MAZE ELEMENT and NOT to the actual coordinates in the coordinatep lane
 
     ofImage pacman_image_; // image that correpsonds with the pacman
+    ofImage original_face_image_; // saves original face image for reset method - rotate method changes the image so we need to be able to reset it 
     std::string kImagePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/image_files/pacman.png";
     
     bool is_eaten_ = false; // dies if eaten
+    bool is_using_face_image_ = false; // true if using an image of a face - used to reset the pacman to the face rather than the default obj
     
     Maze maze_; // keeps track of the maze - to check if position is valid, same maze as the one in the game
     
@@ -29,7 +31,7 @@ public:
     // Methods to use adapted from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
     ofVec2f& GetMazePosition();
     
-    void SetFacialImage(ofImage& facial_image); // replaces the default yellow pacman
+    void SetFacialImage(ofImage facial_image); // replaces the default yellow pacman
     ofImage& GetPacmanImage(); // gets image
     
     Direction GetDirection() const; // Gets the current direction

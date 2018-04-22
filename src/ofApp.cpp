@@ -9,8 +9,9 @@ void PacmanGame::setup(){
     // LOADING FROM PATH
     string_font_.load(kTextPath_, 32, true, false, true, 0.1);
     intro_music_.load(kIntroMusicPath_);
-    pacman_eating_sound_.load(kPacmanEating_);
-    pacman_death_sound_.load(kDeathSoundPath_);
+    crunch_.load(kPacmanEating_);
+    coin_collection_.load(kCoinCollection_);
+    wilhelm_scream_.load(kWilhelmScreamPath_);
     demo_movie_.load(kDemoMoviePath_);
     
     // BUTTONS SETUP
@@ -35,7 +36,8 @@ void PacmanGame::setup(){
     }
 
     maze_.PopulateWithFood(kNumFoodItems_);
-    
+    maze_.PopulateWithCoins(kNumCoins_);
+
     coord_multiplier_x_ = ((float) ofGetWindowWidth()) / maze_.GetWidth(); // bug here - doesn't take into account the size of the object - causes ovelap
     coord_multiplier_y_ = ((float) ofGetWindowHeight()) / maze_.GetHeight();
 }
@@ -126,10 +128,14 @@ void PacmanGame::ManageObjectCollisons() { // contains logic for having objects 
 
     if (maze_.GetElementAt(pacman_pos.x, pacman_pos.y) == Maze::FOOD) { // food
         maze_.RemoveFoodAt(pacman_pos.x, pacman_pos.y);
-        pacman_eating_sound_.play();
+        crunch_.play();
         game_pacman_.EatObject(kFoodPointsWorth_); // add some sort of sound effect here
+        
+    } else if (maze_.GetElementAt(pacman_pos.x, pacman_pos.y) == Maze::COIN) { // coin
+        maze_.RemoveCoinAt(pacman_pos.x, pacman_pos.y);
+        coin_collection_.play();
+        game_pacman_.EatObject(kCoinPointsWorth_); // add some sort of sound effect here
     }
-    
     for (Ghost& current_ghost : all_ghosts_) { // ghost
         ofVec2f ghost_pos = current_ghost.GetMazePosition();
         ofRectangle ghost_rect = ofRectangle(ghost_pos.x * coord_multiplier_x_ + kOneDObjectSize_/2, ghost_pos.y * coord_multiplier_y_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
@@ -159,13 +165,13 @@ void PacmanGame::ManagePacmanGhostCollisions(Ghost& current_ghost) { // responsi
             
         } else { // ghost eats the pacman if both objects are pointing in the same direction and the ghost is behind the pacman
             game_pacman_.GetsEaten(); // pacman dies
-            pacman_death_sound_.play();
+            wilhelm_scream_.play();
         }
     } else { // ghost eats the pacman if the objects are pointing in different directions
         if ((pacman_direction == NORTH && ghost_direction == SOUTH) || (pacman_direction == SOUTH && ghost_direction == NORTH)
             || (pacman_direction == WEST && ghost_direction == EAST) || (pacman_direction == EAST && ghost_direction == WEST)) {
             game_pacman_.GetsEaten(); // pacman dies
-            pacman_death_sound_.play();
+            wilhelm_scream_.play();
         }
     }
 }
@@ -201,6 +207,136 @@ void PacmanGame::draw(){ // is called over and over again
     } else if(current_state_ == FINISHED) {
         DrawGameOver(); // draw another panel later
     }
+}
+
+void PacmanGame::DrawIntroduction() { // everything to do with the intro
+    ofSetBackgroundColor(0, 0, 0); // set background as black
+    
+    intro_music_.setLoop(true); // plays over and over again
+    intro_music_.play();
+    
+    ofSetColor(0, 200, 0); // green
+    string_font_.drawString("WELCOME TO PACMAN!", ofGetWidth()/8, ofGetHeight()/8);
+    
+    ofSetColor(255, 255, 255); // white
+    demo_movie_.draw(ofGetWidth()/4, ofGetHeight()/5, 400, 200); // play movie
+    
+    ofDrawBitmapString("Click anywhere to continue", ofGetWidth()/6, ofGetHeight()/6);
+}
+
+void PacmanGame::DrawWebcamUI() { // everything to do with the webcam
+    ofClear(0);
+    photo_taking_button_.draw();
+    webcam_.draw(ofGetWidth() - ofGetWidth()/1.1, ofGetHeight() - ofGetHeight()/1.1, ofGetWidth()/1.1, ofGetHeight()/1.1);
+}
+
+void PacmanGame::DrawFacialDetectionPhoto() {
+    // DERIVED FROM http://openframeworks.cc/documentation/ofxOpenCv/ofxCvHaarFinder/#show_findHaarObjects
+    if (facial_detector_.blobs.size() > 0) { // takes the first face found - change later?
+        ofDrawBitmapString("Click the button to proceed to the game. Your face will be used as the pacman", ofGetWidth()/2, ofGetHeight()/2);
+        face_approval_button_.draw();
+
+        ofRectangle facial_frame = facial_detector_.blobs[0].boundingRect;
+        photo_taken_.drawSubsection(ofGetWidth()/2, ofGetHeight()/2, facial_frame.getWidth(), facial_frame.getHeight(), facial_frame.getX(), facial_frame.getY()); // draws out the part of the photo corresponding to the face the haar cascade detected
+    } else {
+        ofDrawBitmapString("ERROR - face not found", ofGetWidth()/2, ofGetHeight()/2); // loop back
+        current_state_ = TAKING_PHOTO;
+    }
+    
+    /*for(int i = 0; i < facial_detector_.blobs.size(); i++) {
+        ofRectangle facial_frame = facial_detector_.blobs[i].boundingRect;
+        photo_taken_.drawSubsection(ofGetWidth()/2, ofGetHeight()/2, facial_frame.getWidth(), facial_frame.getHeight(), facial_frame.getX(), facial_frame.getY()); // draws out the part of the photo corresponding to the face the haar cascade detected
+    }*/
+}
+
+void PacmanGame::DrawMaze() { // draws the maze
+    std::vector<std::pair<int, int> > food_indices; // use to store the indices of the food elements - so I can just directly iterate through this vector and draw the food items rathe than having to go through the maze again
+    std::vector<std::pair<int, int> > coin_indices;
+    
+    float x_coord;
+    float y_coord; // debug
+    
+    for (int x_index = 0; x_index < maze_.GetWidth(); x_index++) { // draw the maze first and THEN draw apples over the maze to prevent the apples from being covered by maze blocks (which would make them look squished)
+        x_coord = x_index * coord_multiplier_x_;
+        for (int y_index = 0; y_index < maze_.GetHeight(); y_index++) {
+            y_coord = y_index * coord_multiplier_y_;
+            switch (maze_.GetElementAt(x_index, y_index)) {
+                case Maze::NOTHING: // no wall
+                    ofSetColor(100, 100, 100);
+                    ofDrawRectangle(x_coord + kOneDObjectSize_/2, y_coord + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
+                    break;
+                case Maze::WALL: // wall
+                    ofSetColor(225, 225, 225);
+                    ofDrawRectangle(x_coord + kOneDObjectSize_/2, y_coord + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
+                    break;
+                    
+                case Maze::FOOD: // store indices of food elements
+                    food_indices.push_back(std::make_pair(x_index, y_index));
+                    break;
+                    
+                case Maze::COIN: // store indices
+                    coin_indices.push_back(std::make_pair(x_index, y_index));
+                    break;
+            }
+        }
+    }
+    /*for (int i = 0; i < food_indices.size(); i++) { // draw food AFTER drawing the maze to prevent overlap
+        std::pair<int, int>& indices = food_indices[i];
+        DrawFood(indices.first, indices.second);
+    }*/
+    
+    for (auto food_index : food_indices) {
+        DrawFood(food_index.first, food_index.second);
+    }
+    for (auto coin_index : coin_indices) {
+        DrawCoin(coin_index.first, coin_index.second);
+    }
+}
+
+void PacmanGame::DrawFood(int x_index, int y_index) {
+    ofImage food_image_; // image that correpsonds with a food object
+    food_image_.load(kFoodImagePath_);
+    food_image_.draw(x_index * coord_multiplier_x_ + kOneDObjectSize_/2, y_index * coord_multiplier_y_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
+}
+
+void PacmanGame::DrawCoin(int x_index, int y_index) {
+    ofImage coin_image; // image that correpsonds with a food object
+    coin_image.load(kCoinImagePath_);
+    coin_image.draw(x_index * coord_multiplier_x_ + kOneDObjectSize_/2, y_index * coord_multiplier_y_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
+}
+
+void PacmanGame::DrawGhosts() { // just make sizes all the same for simplicity
+    for (Ghost& current_ghost : all_ghosts_) {
+        ofVec2f pos = current_ghost.GetMazePosition();
+        current_ghost.GetGhostImage().draw(pos.x * coord_multiplier_x_ + kOneDObjectSize_/2, pos.y * coord_multiplier_y_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
+    }
+}
+
+void PacmanGame::DrawPacman() {
+    ofVec2f& pos = game_pacman_.GetMazePosition();
+    game_pacman_.GetPacmanImage().rotate90(game_pacman_.GetNumRotations());
+    
+    game_pacman_.GetPacmanImage().draw(pos.x * coord_multiplier_x_ + kOneDObjectSize_/2, pos.y * coord_multiplier_y_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
+    game_pacman_.ClearNumRotations(); // set back to 0 to prevent the pacman from spinning into oblivion
+}
+
+void PacmanGame::DrawScoreboard() {
+    std::string current_score = "Current score: " + std::to_string(game_pacman_.GetNumPoints());
+    
+    ofSetColor(200, 200, 200);
+    ofDrawBitmapString(current_score, ofGetWidth() - 200, ofGetHeight() - 200);
+    //string_font_.drawString(current_score, ofGetWidth() - 200, ofGetHeight() - 200);
+}
+
+void PacmanGame::DrawGameOver() {
+    ofSetBackgroundColor(0, 0, 0); // set background as black
+    string_font_.drawString("YOU LOST!", ofGetWidth()/1.5, ofGetHeight()/1.5);
+}
+
+void PacmanGame::DrawGamePaused() {
+    std::string pause_message = "P to Unpause!";
+    ofSetColor(0, 0, 0);
+    ofDrawBitmapString(pause_message, ofGetWindowWidth() / 1.5, ofGetWindowHeight() / 1.5);
 }
 
 // Adapted from OF-SNAKE MP: https://github.com/uiuc-sp18-cs126/of-snake-ElizWang (mostly just structural stuff)
@@ -268,14 +404,13 @@ void PacmanGame::mousePressed(int x, int y, int button){
 }
 
 void PacmanGame::Reset() { // resets everything
-    //game_pacman_.reset();
-    game_pacman_ = Pacman();
+    game_pacman_.reset();
     
     for (Ghost& current_ghost : all_ghosts_) {
         current_ghost.SetInitialRandomPosition();
     }
-    current_state_ = IN_PROGRESS;    
-    maze_.Reset(); // clears all leftover food items and redraws food items    
+    current_state_ = IN_PROGRESS;
+    maze_.Reset(); // clears all leftover food items and redraws food items
 }
 
 void PacmanGame::windowResized(int w, int h){
@@ -284,115 +419,3 @@ void PacmanGame::windowResized(int w, int h){
     }
     game_pacman_.resize(w, h);
 }
-
-void PacmanGame::DrawIntroduction() { // everything to do with the intro
-    ofSetBackgroundColor(0, 0, 0); // set background as black
-    
-    intro_music_.setLoop(true); // plays over and over again
-    intro_music_.play();
-    
-    ofSetColor(0, 200, 0); // green
-    string_font_.drawString("WELCOME TO PACMAN!", ofGetWidth()/8, ofGetHeight()/8);
-    
-    ofSetColor(255, 255, 255); // white
-    demo_movie_.draw(ofGetWidth()/4, ofGetHeight()/5, 400, 200); // play movie
-    
-    ofDrawBitmapString("Click anywhere to continue", ofGetWidth()/6, ofGetHeight()/6);
-}
-
-void PacmanGame::DrawWebcamUI() { // everything to do with the webcam
-    ofClear(0);
-    photo_taking_button_.draw();
-    webcam_.draw(ofGetWidth() - ofGetWidth()/1.1, ofGetHeight() - ofGetHeight()/1.1, ofGetWidth()/1.1, ofGetHeight()/1.1);
-}
-
-void PacmanGame::DrawFacialDetectionPhoto() {
-    // DERIVED FROM http://openframeworks.cc/documentation/ofxOpenCv/ofxCvHaarFinder/#show_findHaarObjects
-    if (facial_detector_.blobs.size() > 0) { // takes the first face found - change later?
-        ofDrawBitmapString("Click the button to proceed to the game. Your face will be used as the pacman", ofGetWidth()/2, ofGetHeight()/2);
-        face_approval_button_.draw();
-
-        ofRectangle facial_frame = facial_detector_.blobs[0].boundingRect;
-        photo_taken_.drawSubsection(ofGetWidth()/2, ofGetHeight()/2, facial_frame.getWidth(), facial_frame.getHeight(), facial_frame.getX(), facial_frame.getY()); // draws out the part of the photo corresponding to the face the haar cascade detected
-    } else {
-        ofDrawBitmapString("ERROR - face not found", ofGetWidth()/2, ofGetHeight()/2); // loop back
-        current_state_ = TAKING_PHOTO;
-    }
-    
-    /*for(int i = 0; i < facial_detector_.blobs.size(); i++) {
-        ofRectangle facial_frame = facial_detector_.blobs[i].boundingRect;
-        photo_taken_.drawSubsection(ofGetWidth()/2, ofGetHeight()/2, facial_frame.getWidth(), facial_frame.getHeight(), facial_frame.getX(), facial_frame.getY()); // draws out the part of the photo corresponding to the face the haar cascade detected
-    }*/
-}
-
-void PacmanGame::DrawMaze() { // draws the maze
-    std::vector<std::pair<int, int> > food_indices; // use to store the indices of the food elements - so I can just directly iterate through this vector and draw the food items rathe than having to go through the maze again
-    
-    float x_coord;
-    float y_coord; // debug
-    for (int x_index = 0; x_index < maze_.GetWidth(); x_index++) { // draw the maze first and THEN draw apples over the maze to prevent the apples from being covered by maze blocks (which would make them look squished)
-        x_coord = x_index * coord_multiplier_x_;
-        for (int y_index = 0; y_index < maze_.GetHeight(); y_index++) {
-            y_coord = y_index * coord_multiplier_y_;
-            switch (maze_.GetElementAt(x_index, y_index)) {
-                case Maze::NOTHING: // no wall
-                    ofSetColor(100, 100, 100);
-                    ofDrawRectangle(x_coord + kOneDObjectSize_/2, y_coord + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
-                    break;
-                case Maze::WALL: // wall
-                    ofSetColor(225, 225, 225);
-                    ofDrawRectangle(x_coord + kOneDObjectSize_/2, y_coord + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
-                    break;
-                case Maze::FOOD: // store indices of food elements
-                    food_indices.push_back(std::make_pair(x_index, y_index));
-            }
-        }
-    }
-    
-    for (int i = 0; i < food_indices.size(); i++) { // draw food AFTER drawing the maze to prevent overlap
-        std::pair<int, int>& indices = food_indices[i];
-        DrawFood(indices.first, indices.second);
-    }
-}
-
-void PacmanGame::DrawFood(int x_index, int y_index) {
-    ofImage food_image_; // image that correpsonds with a food object
-    food_image_.load(kFoodImagePath_);
-    food_image_.draw(x_index * coord_multiplier_x_ + kOneDObjectSize_/2, y_index * coord_multiplier_y_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
-
-}
-
-void PacmanGame::DrawGhosts() { // just make sizes all the same for simplicity
-    for (Ghost& current_ghost : all_ghosts_) {
-        ofVec2f pos = current_ghost.GetMazePosition();
-        current_ghost.GetGhostImage().draw(pos.x * coord_multiplier_x_ + kOneDObjectSize_/2, pos.y * coord_multiplier_y_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
-    }
-}
-
-void PacmanGame::DrawPacman() {
-    ofVec2f& pos = game_pacman_.GetMazePosition();
-    game_pacman_.GetPacmanImage().rotate90(game_pacman_.GetNumRotations());
-    
-    game_pacman_.GetPacmanImage().draw(pos.x * coord_multiplier_x_ + kOneDObjectSize_/2, pos.y * coord_multiplier_y_ + kOneDObjectSize_/2, kOneDObjectSize_, kOneDObjectSize_);
-    game_pacman_.ClearNumRotations(); // set back to 0 to prevent the pacman from spinning into oblivion
-}
-
-void PacmanGame::DrawScoreboard() {
-    std::string current_score = "Current score: " + std::to_string(game_pacman_.GetNumPoints());
-    
-    ofSetColor(200, 200, 200);
-    ofDrawBitmapString(current_score, ofGetWidth() - 200, ofGetHeight() - 200);
-    //string_font_.drawString(current_score, ofGetWidth() - 200, ofGetHeight() - 200);
-}
-
-void PacmanGame::DrawGameOver() {
-    ofSetBackgroundColor(0, 0, 0); // set background as black
-    string_font_.drawString("YOU LOST!", ofGetWidth()/1.5, ofGetHeight()/1.5);
-}
-
-void PacmanGame::DrawGamePaused() {
-    std::string pause_message = "P to Unpause!";
-    ofSetColor(0, 0, 0);
-    ofDrawBitmapString(pause_message, ofGetWindowWidth() / 1.5, ofGetWindowHeight() / 1.5);
-}
-

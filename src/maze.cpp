@@ -57,17 +57,34 @@ void Maze::PopulateWithFood(int num_food_items) { // populate the maze with food
     std::uniform_int_distribution<> dist_x_ = std::uniform_int_distribution<>(0, raw_maze_.size() - 1);
     std::uniform_int_distribution<> dist_y_ = std::uniform_int_distribution<>(0, raw_maze_[0].size() - 1);
     
-    int num_items_created = 0;
-    while (num_items_created < num_food_items) {
-        int x = dist_x_(generator_);
-        int y = dist_y_(generator_);
-        
-        if (raw_maze_[x][y] == NOTHING) { // can only change if it's a wall - can't change wall to food
-            raw_maze_[x][y] = FOOD;
-            num_items_created++;
+    int num_food_items_created = 0;
+    while (num_food_items_created < num_food_items) {
+        int food_x = dist_x_(generator_);
+        int food_y = dist_y_(generator_);
+        if (raw_maze_[food_x][food_y] == NOTHING) { // can only change if it's a wall - can't change wall to food
+            raw_maze_[food_x][food_y] = FOOD;
+            num_food_items_created++;
         }
     }
     num_food_items_ = num_food_items; // store after - note: didn't use constructor because I didn't want to use magic numbers in ofapp
+}
+
+void Maze::PopulateWithCoins(int num_coins) {
+    std::mt19937 generator_; // pseudorandom number generation
+    generator_ = std::mt19937(rand());
+    std::uniform_int_distribution<> dist_x_ = std::uniform_int_distribution<>(0, raw_maze_.size() - 1);
+    std::uniform_int_distribution<> dist_y_ = std::uniform_int_distribution<>(0, raw_maze_[0].size() - 1);
+    
+    int num_coins_created = 0;
+    while (num_coins_created < num_coins) { // save time - add both types of objects in one while loop
+        int coin_x = dist_x_(generator_);
+        int coin_y = dist_y_(generator_);
+        if (raw_maze_[coin_x][coin_y] == NOTHING) { // can only change if it's a wall - can't change wall to coin
+            raw_maze_[coin_x][coin_y] = COIN;
+            num_coins_created++;
+        }
+    }
+    num_coins_ = num_coins;
 }
 
 int Maze::GetElementAt(int x_pos, int y_pos) { // returns the element at a specified position
@@ -81,15 +98,21 @@ bool Maze::IsLegalPosition(int x_pos, int y_pos) { // true if the position is le
 }
 
 bool Maze::IsEmptyPosition(int x_pos, int y_pos) { // true if the position isn't on a part of the wall and isn't out of bounds
-    return IsLegalPosition(x_pos, y_pos) && raw_maze_[x_pos][y_pos] == 0; // 0 = not a part of the wall, 1 = part of the wall
+    return IsLegalPosition(x_pos, y_pos) && raw_maze_[x_pos][y_pos] == NOTHING;
 }
 
-bool Maze::IsValidPacmanPosition(int x_pos, int y_pos) { // true if it's empty or has a piece of food on it, false otherwise
-    return IsLegalPosition(x_pos, y_pos) && (raw_maze_[x_pos][y_pos] == 0 || raw_maze_[x_pos][y_pos] == 2); // 0 = not a part of the wall, 2 = food
+bool Maze::IsValidPacmanPosition(int x_pos, int y_pos) { // true if it's empty or has a piece of food or a coin on it, false otherwise
+    return IsLegalPosition(x_pos, y_pos) && raw_maze_[x_pos][y_pos] != WALL;
 }
 
 void Maze::RemoveFoodAt(int x_pos, int y_pos) { // removes the food item (checks if it's a food item first and swaps the 2 at that location with a 0)
     if (raw_maze_[x_pos][y_pos] == FOOD) {
+        raw_maze_[x_pos][y_pos] = NOTHING;
+    }
+}
+
+void Maze::RemoveCoinAt(int x_pos, int y_pos) { // removes the coin (checks if it's a coin first and swaps the 2 at that location with a 0)
+    if (raw_maze_[x_pos][y_pos] == COIN) {
         raw_maze_[x_pos][y_pos] = NOTHING;
     }
 }
@@ -102,14 +125,15 @@ int Maze::GetHeight() {
     return raw_maze_[0].size();
 }
 
-void Maze::Reset() { // clears all remaining food items and redraws food from the stored number of food items
+void Maze::Reset() { // clears all remaining items and redraws items from the stored number of food items and coins
     for (int x = 0; x < raw_maze_.size(); x++) {
         for (int y = 0; y < raw_maze_[x].size(); y++) {
-            if (raw_maze_[x][y] == FOOD) {
+            if (raw_maze_[x][y] == FOOD || raw_maze_[x][y] == COIN) {
                 raw_maze_[x][y] = NOTHING; // clear food item
             }
         }
     }
     PopulateWithFood(num_food_items_);
+    PopulateWithCoins(num_coins_);
 }
 

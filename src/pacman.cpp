@@ -20,7 +20,10 @@ ofVec2f& Pacman::GetMazePosition() {
     return maze_position_;
 }
 
-void Pacman::SetFacialImage(ofImage& facial_image) { // replaces the default yellow pacman with the user's face
+void Pacman::SetFacialImage(ofImage facial_image) { // replaces the default yellow pacman with the user's face, note: can't have a reference (must copy) because we need to save the original face iamge
+    is_using_face_image_ = true;
+    
+    original_face_image_ = facial_image; // store original image for reset method
     pacman_image_ = facial_image;
 }
 
@@ -137,5 +140,9 @@ void Pacman::reset() { // back to original state
     is_eaten_ = false;
     num_rotations_ = 0;
     
-    pacman_image_.load(kImagePath_); // reload the picture - rotating actually CHANGES the picture and reset should set everything back to its original orientaiton
+    if (is_using_face_image_) { // revert to original orientation
+        
+    } else {
+        pacman_image_.load(kImagePath_); // reload the picture - rotating actually CHANGES the picture and reset should set everything back to its original orientaiton
+    }
 }

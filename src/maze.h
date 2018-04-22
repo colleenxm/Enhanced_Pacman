@@ -21,17 +21,19 @@ public:
     enum MazeObject {
         NOTHING = 0, // 0 - just an empty square, objects can be placed/move here
         WALL = 1, // 1 - objects can't be placed/move here
-        FOOD = 2 // 2 - note: will just randomly generating the food here and drawing them in ofapp instead
-        // of even having separate objects for each
+        FOOD = 2, // 2 - note: will just randomly generating the food here and drawing them in ofapp instead of having separate objects for each
+        COIN = 3 // 3 - like food but worth more
     };
 
 private:
     std::array<std::array<MazeObject, 33>, 37> raw_maze_;
     int num_food_items_ = 0; // num food items to randomly place inside
+    int num_coins_ = 0;
     
 public:
     Maze(); // constructs the maze
     void PopulateWithFood(int num_food_items); // populate the maze with food objects in random, non-wall places - swaps num_items number of 0's with that number of 2's, where 2 = food object. Note: Will end up doing this instead of having actual food objects - can get rid of the logic needed to remove the food objects, don't have to worry about if two food objects overlap, makes life easier
+    void PopulateWithCoins(int num_coins);
     
     int GetElementAt(int x_pos, int y_pos); // returns the element at a specified position
     
@@ -40,6 +42,7 @@ public:
     bool IsValidPacmanPosition(int x_pos, int y_pos); // true if the position is empty or has a piece of food on it
     
     void RemoveFoodAt(int x_pos, int y_pos); // removes the food item (checks if it's a food item first and swaps the 2 at that location with a 0)
+    void RemoveCoinAt(int x_pos, int y_pos);
     
     int GetWidth();
     int GetHeight();
