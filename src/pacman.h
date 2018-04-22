@@ -16,7 +16,7 @@ private:
 
     ofImage pacman_image_; // image that correpsonds with the pacman
     ofImage original_face_image_; // saves original face image for reset method - rotate method changes the image so we need to be able to reset it 
-    std::string kImagePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/image_files/pacman.png";
+    static const std::string kImagePath_;
     
     bool is_eaten_ = false; // dies if eaten
     bool is_using_face_image_ = false; // true if using an image of a face - used to reset the pacman to the face rather than the default obj

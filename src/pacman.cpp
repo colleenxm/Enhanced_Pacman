@@ -2,7 +2,9 @@
 
 //const float Pacman::kbody_size_modifier_ = 0.05; // all objects should be the same sizes
 
-// Adapted from OF-SNAKE MP (Snake class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
+// Very loosely dapted from OF-SNAKE MP (Snake class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
+
+const std::string Pacman::kImagePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/image_files/pacman.png";
 
 Pacman::Pacman() {
     int width = ofGetWindowWidth();

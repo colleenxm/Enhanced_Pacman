@@ -7,6 +7,9 @@
 
 #include "maze.h"
 
+const int Maze::kFoodPointsWorth_ = 1; // how many points a food object is worth
+const int Maze::kCoinPointsWorth_ = 8; // coins are worth more point b/c there's less of them
+
 Maze::Maze() { // intializes raw maze
     raw_maze_ = {
         {
@@ -46,7 +49,7 @@ Maze::Maze() { // intializes raw maze
             {WALL, NOTHING, NOTHING, NOTHING, WALL, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, WALL, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, WALL, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, WALL},
             {WALL, NOTHING, NOTHING, WALL, WALL, WALL, WALL, WALL, NOTHING, NOTHING, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, NOTHING, NOTHING, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL},
             {WALL, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, WALL, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, NOTHING, WALL},
-            {WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, FOOD, FOOD, WALL}
+            {WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL}
         }
     };
 }
@@ -103,6 +106,17 @@ bool Maze::IsEmptyPosition(int x_pos, int y_pos) { // true if the position isn't
 
 bool Maze::IsValidPacmanPosition(int x_pos, int y_pos) { // true if it's empty or has a piece of food or a coin on it, false otherwise
     return IsLegalPosition(x_pos, y_pos) && raw_maze_[x_pos][y_pos] != WALL;
+}
+
+bool Maze::ContainsConsumableObjects() { // true if maze contains at least one coin or piece of food, false otherwise - note that walls do not count as "objects"
+    for (int x = 0; x < raw_maze_.size(); x++) {
+        for (int y = 0; y < raw_maze_[x].size(); y++) {
+            if (raw_maze_[x][y] == FOOD || raw_maze_[x][y] == COIN) { // contains food/coin
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 void Maze::RemoveFoodAt(int x_pos, int y_pos) { // removes the food item (checks if it's a food item first and swaps the 2 at that location with a 0)

@@ -32,19 +32,21 @@
 * Added instructions
 * Removed buttons (I don’t like how they look) and replaced them with clicks (aka “click anywhere”)
 
-### TO DO
+### 4/22/18
+* Simplified pacman/ghost collision logic - the pacman eats the ghost if they’re pointing in the same direction and the opposite happens if the two objects are pointing in the opposite directions
+* Added translucent panel for un-pausing game
+* Polished UI - adjusted sizes, wrote instructions
+* (Accidentally) got resizing to work
+* Changed theme
+* Added logic for winning (if the pacman eats all consumable objects on the board)
+
+### TO DO - EXTRA FEATURES
 * Add in sprites
 * Remove all absolute paths
 * Rethink how I’m keeping track of the maze - shouldn’t have to create a separate copy per object
 * Need to allow user to input maze data
-* Get scoreboard working
 * add other options for inputting data
 * add powerful ghosts (that you can’t fight) to the screen
-* Polish UI
-* resize - kind of ???
 * add + (# points) animation if time permits
-* wins if you eat all the pieces on the board
 * keep track of the highest scores
 
-### Note
-something weird going on with pacman/ghost interactions - sometimes, they skip over each other, other times they dont 

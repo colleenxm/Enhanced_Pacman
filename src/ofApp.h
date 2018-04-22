@@ -27,7 +27,8 @@ private:
         DISPLAYING_PHOTO,
         IN_PROGRESS,
         PAUSED,
-        FINISHED
+        WON_GAME,
+        LOST_GAME
     };
     
     // SOUND PATHS
@@ -35,7 +36,7 @@ private:
     std::string kPacmanEating_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/sound_files/eating_sound.mp3";
     std::string kCoinCollection_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/sound_files/coin_collection.mp3";
     std::string kWilhelmScreamPath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/sound_files/wilhelmscream.mp3";
-    std::string kDemoMoviePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/demos/raw_screencast_demo.mov";
+    std::string kDemoMoviePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/demos/demo_purple_theme.mov";
     
     // MISC PATHS
     std::string kTextPath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/font_files/roboto_black.ttf";
@@ -69,14 +70,12 @@ private:
     // OBJECTS
     Maze maze_; // object that stores the maze, created a class for this to protect the maze from being modified and to allow the other objects to access the maze (to check for valid positions)
     Pacman game_pacman_; // The object that represents the user controlled snake
-    std::vector<Ghost> all_ghosts_;
+    std::vector<Ghost> ghosts_;
 
     // OBJECT PROPERTIES - CONSTANTS
-    const int kNumGhosts_ = 20;
-    const int kNumFoodItems_ = 20; // food items to put in map - can change
-    const int kFoodPointsWorth_ = 1; // how many points a food object is worth
+    const int kNumGhosts_ = 10;
+    const int kNumFoodItems_ = 10; // food items to put in map - can change
     const int kNumCoins_ = 10; // coins to put in map - can change
-    const int kCoinPointsWorth_ = 8; // coins are worth more point b/c there's less of them
     int one_d_object_size_; // standardized size for all the objects (to prevent the bigger ones from "leaving" the maze). Calculated from window dimensions in setup().
     
     // MULTIPLIERS - convert coordinates on the maze matrix to coordinates on a coordinate plane
@@ -104,14 +103,18 @@ private:
     void DrawInstructions();
     void DrawWebcamUI();
     void DrawFacialDetectionPhoto();
+    //void DrawTitle();
+    void DrawMaze();
     void DrawFood(int x_index, int y_index);
     void DrawCoin(int x_index, int y_index);
-    void DrawMaze();
     void DrawGhosts();
     void DrawPacman();
     void DrawScoreboard();
-    void DrawGameOver();
     void DrawGamePaused();
+    void DrawGameOver();
+    
+    // Checks if pacman won - if it ate every consumable item on the board
+    bool DidPacmanWin();
     
     // Resets the game objects to their original state.
     void Reset();
