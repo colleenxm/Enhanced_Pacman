@@ -50,8 +50,9 @@ private:
     GameState current_state_ = NOT_STARTED; // The current state of the game, used to determine possible actions
     ofVideoPlayer demo_movie_; // demo of what the game looks like
     
-    // EVERYTHING TO DO WITH THE WEBCAM (and taking photos)
+    // EVERYTHING TO DO WITH THE WEBCAM (,taking photos, and the general UI)
     ofxButton photo_taking_button_; // button to press to take the photo
+    ofxButton face_approval_button_; // button to press to set face as sprite and move on to the game
     ofVideoGrabber webcam_; // turns on webcam and gets webcam video feed
     ofImage photo_taken_; // stores the photo taken
     bool show_webcam_ = true; // to show the webcam
@@ -80,7 +81,8 @@ private:
     
     // METHODS
     // FOR INTRODUCTIONARY PARTS
-    void PhotoButtonPressed(); // listener - called when the button is pressed
+    void PhotoButtonPressed(); // listener - takes photo when button is pressed
+    void ApprovalButtonPressed(); // listener - sets face as sprite and moves on to the game when button is pressed
     void DetectFacesInPhoto(); // use haar cascade to detect faces
     
     // COLLISIONS

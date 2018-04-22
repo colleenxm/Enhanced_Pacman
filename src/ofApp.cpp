@@ -13,10 +13,14 @@ void PacmanGame::setup(){
     pacman_death_sound_.load(kDeathSoundPath_);
     demo_movie_.load(kDemoMoviePath_);
     
-    // WEBCAM SETUP
+    // BUTTONS SETUP
     photo_taking_button_.addListener(this, &PacmanGame::PhotoButtonPressed);
+    face_approval_button_.addListener(this, &PacmanGame::ApprovalButtonPressed);
     photo_taking_button_.setup("TAKE PHOTO");
-    webcam_.setup(2000, 2000); // set up the webcam separately from the pane
+    face_approval_button_.setup("APPROVE AND PROCEED");
+    
+    // WEBCAM SETUP
+    webcam_.setup(2000, 2000);
 
     // HAAR CASCADER SETUP
     facial_detector_.setup(kFacialCascadePath_);
@@ -39,6 +43,11 @@ void PacmanGame::setup(){
 void PacmanGame::PhotoButtonPressed() { // listener - takes picture when button is pressed
     photo_taken_.setFromPixels(webcam_.getPixels()); // take the picture
     current_state_ = DISPLAYING_PHOTO;
+}
+
+void PacmanGame::ApprovalButtonPressed() { // listener - sets face as sprite and moves on to the game when button is pressed
+    // something here
+    current_state_ = IN_PROGRESS;
 }
 
 /*
@@ -168,24 +177,6 @@ void PacmanGame::draw(){ // is called over and over again
         
     } else if (current_state_ == DISPLAYING_PHOTO) {
         DrawFacialDetectionPhoto();
-    }
-    /*if (current_state_ == NOT_STARTED) {
-        ofSetBackgroundColor(0, 0, 0); // set background as black
-        
-        intro_music_.setLoop(true); // plays over and over again
-        intro_music_.play();
-        
-        ofSetColor(0, 200, 0); // green
-        string_font_.drawString("WELCOME TO PACMAN!", ofGetWidth()/8, ofGetHeight()/8);
-
-        ofSetColor(255, 255, 255); // white
-        demo_movie_.draw(ofGetWidth()/4, ofGetHeight()/5, 400, 200); // play movie
-        
-        ofDrawBitmapString("Click anywhere to continue", ofGetWidth()/6, ofGetHeight()/6);
-        
-    } else if (current_state_ == PHOTO_TAKING) {
-        DrawWebcamUI(); // draw everything to do with the webcam
-        current_state_ = IN_PROGRESS;
         
     } else if (current_state_ == IN_PROGRESS) {
         DrawMaze();
@@ -201,7 +192,7 @@ void PacmanGame::draw(){ // is called over and over again
         
     } else if(current_state_ == FINISHED) {
         DrawGameOver(); // draw another panel later
-    }*/
+    }
 }
 
 // Adapted from OF-SNAKE MP: https://github.com/uiuc-sp18-cs126/of-snake-ElizWang (mostly just structural stuff)
@@ -309,12 +300,21 @@ void PacmanGame::DrawWebcamUI() { // everything to do with the webcam
 
 void PacmanGame::DrawFacialDetectionPhoto() {
     // DERIVED FROM http://openframeworks.cc/documentation/ofxOpenCv/ofxCvHaarFinder/#show_findHaarObjects
-    //photo_taken_.draw(0, 0, photo_taken_.getWidth(), photo_taken_.getHeight());
-    for(int i = 0; i < facial_detector_.blobs.size(); i++) {
-        ofRectangle facial_frame = facial_detector_.blobs[i].boundingRect;
-        //ofDrawRectangle(rect);
-        photo_taken_.drawSubsection(0, 0, facial_frame.getWidth(), facial_frame.getHeight(), facial_frame.getX(), facial_frame.getY()); // draws out the part of the photo corresponding to the face the haar cascade detected
+    if (facial_detector_.blobs.size() > 0) { // takes the first face found - change later?
+        ofDrawBitmapString("Click the button to proceed to the game. Your face will be used as the pacman", ofGetWidth()/2, ofGetHeight()/2);
+        face_approval_button_.draw();
+
+        ofRectangle facial_frame = facial_detector_.blobs[0].boundingRect;
+        photo_taken_.drawSubsection(ofGetWidth()/2, ofGetHeight()/2, facial_frame.getWidth(), facial_frame.getHeight(), facial_frame.getX(), facial_frame.getY()); // draws out the part of the photo corresponding to the face the haar cascade detected
+    } else {
+        ofDrawBitmapString("ERROR - face not found", ofGetWidth()/2, ofGetHeight()/2); // loop back
+        current_state_ = TAKING_PHOTO;
     }
+    
+    /*for(int i = 0; i < facial_detector_.blobs.size(); i++) {
+        ofRectangle facial_frame = facial_detector_.blobs[i].boundingRect;
+        photo_taken_.drawSubsection(ofGetWidth()/2, ofGetHeight()/2, facial_frame.getWidth(), facial_frame.getHeight(), facial_frame.getX(), facial_frame.getY()); // draws out the part of the photo corresponding to the face the haar cascade detected
+    }*/
 }
 
 void PacmanGame::DrawMaze() { // draws the maze
