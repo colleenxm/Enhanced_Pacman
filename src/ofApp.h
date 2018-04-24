@@ -57,7 +57,7 @@ private:
     GameState current_state_ = NOT_STARTED; // The current state of the game, used to determine possible actions
     ofVideoPlayer demo_movie_; // demo of what the game looks like
     
-    // EVERYTHING TO DO WITH THE WEBCAM (,taking photos, and the general UI)
+    // EVERYTHING TO DO WITH THE WEBCAM (taking photos and the general UI)
     ofVideoGrabber webcam_; // turns on webcam and gets webcam video feed
     ofImage photo_taken_; // stores the photo taken
     bool show_webcam_ = true; // to show the webcam
@@ -67,6 +67,13 @@ private:
     ofxCvColorImage temp_color_img; // temp color img
     ofxCvGrayscaleImage grayscale_img_; // need to convert from regular iamge to ofxCvColorImage to ofxCvGrayscaleImage in order to use the haar cascader
     
+    // BUTTONS - using ofxCenteredTrueTypeFont and the bounding rectangle
+    std::string default_button_message_;
+    ofRectangle default_button;
+    int button_width_divider_;
+    int button_height_divider_;
+    int button_height_;
+
     // OBJECTS
     Maze maze_; // object that stores the maze, created a class for this to protect the maze from being modified and to allow the other objects to access the maze (to check for valid positions)
     Pacman game_pacman_; // The object that represents the user controlled snake

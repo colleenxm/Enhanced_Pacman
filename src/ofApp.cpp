@@ -48,6 +48,16 @@ void PacmanGame::setup(){
     
     vertical_shift_ = 0; //ofGetHeight() - rectangular_height + 1.15 * one_d_object_size_;
     horizontial_shift_ = 0; //ofGetWidth()/2 - rectangular_width/2.5;  //+ 1.5 * one_d_object_size_;
+    
+    // SETTING UP BUTTONS
+    default_button_message_ = "DEFAULT PACMAN";
+    int width = 200;
+    int height = 50;
+    button_width_divider_ = 2;
+    button_height_divider_ = 8;
+    button_height_ = ofGetHeight() - 1.75*height;
+    //default_button.set(ofGetWidth()/button_width_divider_ - width/2, ofGetHeight()/button_height_divider_ - height/2, width, height);
+    default_button.set(ofGetWidth()/button_width_divider_ - width/2, button_height_, width, height);
 }
 
 void PacmanGame::SetFaceAsPacman() { // cuts the face out and uses it as pacman
@@ -223,7 +233,7 @@ void PacmanGame::DrawInstructions() {
     intro_music_.setLoop(true); // plays over and over again
     intro_music_.play();
     
-    ofSetColor(100, 0, 200); // green
+    ofSetColor(100, 0, 200); // purple
     title_font_.drawString("INSTRUCTIONS", ofGetWidth()/6, ofGetHeight()/10);
 
     ofSetColor(255, 255, 255); // white
@@ -234,7 +244,14 @@ void PacmanGame::DrawInstructions() {
 
 void PacmanGame::DrawWebcamUI() { // everything to do with the webcam
     ofClear(0);
-    body_font_.drawStringCentered("Click anywhere to take a picture.\nMake sure your face is clearly visible.\n", ofGetWidth()/2, ofGetHeight()/9);
+    
+    ofSetColor(100, 0, 200, 100); // purple
+    ofDrawRectRounded(default_button, 20);
+    ofSetColor(150, 150, 150); // white
+    body_font_.drawStringCentered(default_button_message_, ofGetWidth()/button_width_divider_, button_height_*1.025);
+    
+    ofSetColor(255, 255, 255); // white
+    body_font_.drawStringCentered("Click anywhere to take a picture\nor click the button to use the default pacman.\nMake sure your face is clearly visible.\n", ofGetWidth()/2, ofGetHeight()/9);
     webcam_.draw(ofGetWidth()/2 - ofGetWidth()/5, ofGetHeight()/2 - ofGetHeight()/5, ofGetWidth()/2.5, ofGetHeight()/2.5);
 }
 
@@ -394,7 +411,6 @@ void PacmanGame::keyPressed(int key){
             game_pacman_.SetDirection(SOUTH);
             update();
             should_update_ = false;
-            
         } else if (upper_key == 'D') {
             game_pacman_.CalculateNumRotations(EAST);
             game_pacman_.SetDirection(EAST);
@@ -420,8 +436,14 @@ void PacmanGame::mousePressed(int x, int y, int button){
         current_state_ = TAKING_PHOTO;
         
     } else if (current_state_ == TAKING_PHOTO) {
-        photo_taken_.setFromPixels(webcam_.getPixels()); // take the picture
-        current_state_ = DISPLAYING_PHOTO;
+        if(default_button.inside(x, y)) {
+        //if (default_pacman_button_frame_.inside(x, y)) {
+            //photo_taken_ = game_pacman_.GetPacmanImage(); // not sure if this works
+            current_state_ = IN_PROGRESS;
+        } else {
+            photo_taken_.setFromPixels(webcam_.getPixels()); // take the picture
+            current_state_ = DISPLAYING_PHOTO;
+        }
         
     } else if (current_state_ == DISPLAYING_PHOTO) {
         SetFaceAsPacman();
