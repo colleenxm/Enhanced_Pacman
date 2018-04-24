@@ -84,11 +84,20 @@ private:
     std::string hard_level_message_;
     ofRectangle hard_level_button_;
 
+    // calculated - for scaling
     int button_width_divider_;
     int button_height_divider_;
     int data_button_y_;
     int level_button_y_;
+    
+    ofColor default_pacman_button_color_ = ofColor(100, 0, 200, 100); // to make the buttons light up - keep track of color
+    ofColor user_image_pacman_button_color_ = ofColor(100, 0, 200, 100);
+    ofColor easy_level_button_color_ = ofColor(100, 0, 200, 100);
+    ofColor medium_level_button_color_ = ofColor(100, 0, 200, 100);
+    ofColor hard_level_button_color_ = ofColor(100, 0, 200, 100);
 
+    // BUTTON STUFF ENDS HERE
+    
     // OBJECTS
     Maze maze_; // object that stores the maze, created a class for this to protect the maze from being modified and to allow the other objects to access the maze (to check for valid positions)
     Pacman game_pacman_; // The object that represents the user controlled snake
@@ -114,7 +123,7 @@ private:
     void SetUpObjects();
     void SetUpButtons();
     void DetectFacesInPhoto(); // use haar cascade to detect faces
-    
+
     // FACIAL PROCESSING
     void SetFaceAsPacman(); // cuts the face out and uses it as pacman
 
@@ -122,6 +131,8 @@ private:
     void ManageObjectCollisons(); // contains logic for objects eating each other rename later
     bool DoesPacmanEatGhost(Ghost& current_ghost); // interactions between the pacman and the ghost
     
+    void LightenColor(ofColor& color); // helper method to mouse pressed to lighten the color of the button that's pressed
+
     // METHODS FOR RENDERING
     void DrawIntroduction();
     void DrawInstructions();

@@ -275,7 +275,7 @@ void PacmanGame::DrawSettings() { // difficulty level
     title_font_.drawStringCentered("SETTINGS", ofGetWidth()/2, ofGetHeight()/12);
 
     ofSetColor(255, 255, 255); // white
-    std::string instructions = "Choose your difficulty level and image input method. Click anywhere to continue.\nIf you do not choose, everything will be set to default.\n";
+    std::string instructions = "Choose your difficulty level and image input method. Click anywhere to continue.\n";
     body_font_.drawStringCentered(instructions, ofGetWidth()/2, ofGetHeight()/7);
     
     ofxCenteredTrueTypeFont subtitle_font_; // sets font, used to print centered text
@@ -283,23 +283,27 @@ void PacmanGame::DrawSettings() { // difficulty level
     ofSetColor(100, 0, 200); // purple
     subtitle_font_.drawStringCentered("DIFFICULTY LEVEL", ofGetWidth()/2, ofGetHeight()/4);
     
-    ofSetColor(100, 0, 200, 100); // purple
+    ofSetColor(easy_level_button_color_); // buttons light up once you choose them
     ofDrawRectRounded(easy_level_button_, 20);
+    ofSetColor(medium_level_button_color_);
     ofDrawRectRounded(medium_level_button_, 20);
+    ofSetColor(hard_level_button_color_);
     ofDrawRectRounded(hard_level_button_, 20);
 
-    ofSetColor(150, 150, 150); // white - inc x
+    ofSetColor(255, 255, 255); // white
     body_font_.drawString(easy_level_message_, 0.55*ofGetWidth()/button_width_divider_, level_button_y_*1.15);
     body_font_.drawString(medium_level_message_, 1.30*ofGetWidth()/button_width_divider_, level_button_y_*1.15);
     body_font_.drawString(hard_level_message_, 2.05*ofGetWidth()/button_width_divider_, level_button_y_*1.15);
 
     ofSetColor(100, 0, 200); // purple
     subtitle_font_.drawStringCentered("IMAGE INPUT METHOD", ofGetWidth()/2, ofGetHeight()/2);
-    ofSetColor(100, 0, 200, 100); // purple
+    
+    ofSetColor(default_pacman_button_color_);
     ofDrawRectRounded(default_pacman_button_, 20);
+    ofSetColor(user_image_pacman_button_color_);
     ofDrawRectRounded(user_image_pacman_button_, 20);
 
-    ofSetColor(150, 150, 150); // white - dec x
+    ofSetColor(255, 255, 255); // white
     body_font_.drawStringCentered(default_pacman_message_, 0.95*ofGetWidth()/button_width_divider_, data_button_y_*1.15);
     body_font_.drawStringCentered(user_image_message_, 0.95*2*ofGetWidth()/button_width_divider_, data_button_y_*1.15);
 }
@@ -487,6 +491,21 @@ void GetUserImage() {
     
 }
 
+void PacmanGame::LightenColor(ofColor& color) { // helper method to mouse pressed to lighten the color of the button that's pressed
+    int color_adjustment = 50;
+    int color_max = 255;
+    
+    if (color.r + color_adjustment <= color_max) {
+        color.r += color_adjustment;
+    }
+    if (color.g + color_adjustment <= color_max) {
+        color.g += color_adjustment;
+    }
+    if (color.b + color_adjustment <= color_max) {
+        color.b += color_adjustment;
+    }
+}
+
 void PacmanGame::mousePressed(int x, int y, int button){
     if (current_state_ == NOT_STARTED) {
         current_state_ = DISPLAYING_INSTRUCTIONS;
@@ -500,24 +519,29 @@ void PacmanGame::mousePressed(int x, int y, int button){
             num_ghosts_ = 5;
             num_food_items = 20;
             num_coins_ = 20;
+            LightenColor(easy_level_button_color_);
             
         } else if (medium_level_button_.inside(x, y)) {
             num_ghosts_ = 10;
             num_food_items = 15;
             num_coins_ = 5;
-            
+            LightenColor(medium_level_button_color_);
+
         } else if (hard_level_button_.inside(x, y)) {
             num_ghosts_ = 25;
             num_food_items = 15;
             num_coins_ = 15;
+            LightenColor(hard_level_button_color_);
         }
         
         SetUpObjects(); // initialize everything here
         
         if (user_image_pacman_button_.inside(x, y)) {
+            LightenColor(user_image_pacman_button_color_);
             current_state_ = TAKING_PHOTO;
             
         } else if (default_pacman_button_.inside(x, y)){ // covers all other options
+            LightenColor(default_pacman_button_color_);
             current_state_ = IN_PROGRESS;
         }
         
