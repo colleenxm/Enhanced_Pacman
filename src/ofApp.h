@@ -23,6 +23,7 @@ private:
     enum GameState {
         NOT_STARTED = 0,
         DISPLAYING_INSTRUCTIONS,
+        SETTINGS,
         TAKING_PHOTO,
         DISPLAYING_PHOTO,
         IN_PROGRESS,
@@ -45,7 +46,7 @@ private:
     std::string kFacialCascadePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/haar_cascades/haarcascade_frontalface_alt.xml";
     
     // ALL SOUNDS
-    ofSoundPlayer intro_music_; // plays music
+    ofSoundPlayer background_music_; // plays music
     ofSoundPlayer wilhelm_scream_; // wilhem scream
     ofSoundPlayer crunch_; // cartoonish crunch
     ofSoundPlayer coin_collection_; // ka-ching
@@ -68,8 +69,10 @@ private:
     ofxCvGrayscaleImage grayscale_img_; // need to convert from regular iamge to ofxCvColorImage to ofxCvGrayscaleImage in order to use the haar cascader
     
     // BUTTONS - using ofxCenteredTrueTypeFont and the bounding rectangle
-    std::string default_button_message_;
-    ofRectangle default_button;
+    std::string default_pacman_message_;
+    ofRectangle default_pacman_button_;
+    std::string user_image_message_;
+    ofRectangle user_image_pacman_button_;
     int button_width_divider_;
     int button_height_divider_;
     int button_height_;
@@ -80,9 +83,9 @@ private:
     std::vector<Ghost> ghosts_;
 
     // OBJECT PROPERTIES - CONSTANTS
-    const int kNumGhosts_ = 10;
-    const int kNumFoodItems_ = 10; // food items to put in map - can change
-    const int kNumCoins_ = 10; // coins to put in map - can change
+    int num_ghosts_ = 10;
+    int num_food_items = 10; // food items to put in map - can change
+    int num_coins_ = 10; // coins to put in map - can change
     int one_d_object_size_; // standardized size for all the objects (to prevent the bigger ones from "leaving" the maze). Calculated from window dimensions in setup().
     
     // MULTIPLIERS - convert coordinates on the maze matrix to coordinates on a coordinate plane
@@ -108,9 +111,9 @@ private:
     // METHODS FOR RENDERING
     void DrawIntroduction();
     void DrawInstructions();
+    void DrawSettings(); // difficulty level, data input
     void DrawWebcamUI();
     void DrawFacialDetectionPhoto();
-    //void DrawTitle();
     void DrawMaze();
     void DrawFood(int x_index, int y_index);
     void DrawCoin(int x_index, int y_index);

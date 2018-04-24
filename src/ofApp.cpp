@@ -10,7 +10,7 @@ void PacmanGame::setup(){
     title_font_.load(kTextPath_, 32);
     body_font_.load(kTextPath_, 16);
 
-    intro_music_.load(kIntroMusicPath_);
+    background_music_.load(kIntroMusicPath_);
     crunch_.load(kPacmanEating_);
     coin_collection_.load(kCoinCollection_);
     wilhelm_scream_.load(kWilhelmScreamPath_);
@@ -23,15 +23,15 @@ void PacmanGame::setup(){
     facial_detector_.setup(kFacialCascadePath_);
 
     // OBJECTS SETUP
-    for (int current_num_ghosts = 0; current_num_ghosts < kNumGhosts_; current_num_ghosts++) {
+    for (int current_num_ghosts = 0; current_num_ghosts < num_ghosts_; current_num_ghosts++) {
         Ghost ghost;
         ghost.SetInitialRandomPosition();
         ghosts_.push_back(ghost);
                 
         // make sure ghosts aren't all at the same spot
     }
-    maze_.PopulateWithFood(kNumFoodItems_);
-    maze_.PopulateWithCoins(kNumCoins_);
+    maze_.PopulateWithFood(num_food_items);
+    maze_.PopulateWithCoins(num_coins_);
 
     // CALCULATING DIMENSIONS
     space_between_objects_ = 8; //0.0075 * ofGetWidth() + 0.0075 * ofGetHeight();
@@ -50,14 +50,18 @@ void PacmanGame::setup(){
     horizontial_shift_ = 0; //ofGetWidth()/2 - rectangular_width/2.5;  //+ 1.5 * one_d_object_size_;
     
     // SETTING UP BUTTONS
-    default_button_message_ = "DEFAULT PACMAN";
+    default_pacman_message_ = "DEFAULT PACMAN";
+    user_image_message_ = "MY IMAGE";
     int width = 200;
-    int height = 50;
-    button_width_divider_ = 2;
+    int height = 150;
+    button_width_divider_ = 3.5;
     button_height_divider_ = 8;
     button_height_ = ofGetHeight() - 1.75*height;
-    //default_button.set(ofGetWidth()/button_width_divider_ - width/2, ofGetHeight()/button_height_divider_ - height/2, width, height);
-    default_button.set(ofGetWidth()/button_width_divider_ - width/2, button_height_, width, height);
+    default_pacman_button_.set(0.75*ofGetWidth()/button_width_divider_, button_height_, width, height);
+    user_image_pacman_button_.set(2*ofGetWidth()/button_width_divider_, button_height_, width, height);
+    
+    background_music_.setLoop(true); // plays over and over again
+    background_music_.play();
 }
 
 void PacmanGame::SetFaceAsPacman() { // cuts the face out and uses it as pacman
@@ -183,6 +187,9 @@ void PacmanGame::draw(){ // is called over and over again
     } else if (current_state_ == DISPLAYING_INSTRUCTIONS) {
         DrawInstructions();
         
+    } else if (current_state_ == SETTINGS) {
+        DrawSettings();
+        
     } else if (current_state_ == TAKING_PHOTO) {
         DrawWebcamUI(); // draw everything to do with the webcam
         
@@ -212,8 +219,8 @@ void PacmanGame::draw(){ // is called over and over again
 void PacmanGame::DrawIntroduction() { // everything to do with the intro
     ofSetBackgroundColor(0, 0, 0); // set background as black
     
-    intro_music_.setLoop(true); // plays over and over again
-    intro_music_.play();
+    background_music_.setLoop(true); // plays over and over again
+    background_music_.play();
     
     ofSetColor(100, 0, 200); // green
     std::string introduction_title = "WELCOME TO PACMAN!";
@@ -230,9 +237,6 @@ void PacmanGame::DrawIntroduction() { // everything to do with the intro
 void PacmanGame::DrawInstructions() {
     ofSetBackgroundColor(0, 0, 0); // set background as black
     
-    intro_music_.setLoop(true); // plays over and over again
-    intro_music_.play();
-    
     ofSetColor(100, 0, 200); // purple
     title_font_.drawString("INSTRUCTIONS", ofGetWidth()/6, ofGetHeight()/10);
 
@@ -242,13 +246,36 @@ void PacmanGame::DrawInstructions() {
     body_font_.drawString(instructions, ofGetWidth()/15, ofGetHeight()/3);
 }
 
+void PacmanGame::DrawSettings() { // difficulty level
+    ofSetBackgroundColor(0, 0, 0); // set background as black
+    // difficulty level - slider
+    
+    ofSetColor(100, 0, 200); // purple
+    title_font_.drawStringCentered("SETTINGS", ofGetWidth()/2, ofGetHeight()/12);
+
+    ofSetColor(255, 255, 255); // white
+    std::string instructions = "Choose your difficulty level and image input method. Click anywhere to continue.\nIf you do not choose, everything will be set to default.\n";
+    body_font_.drawStringCentered(instructions, ofGetWidth()/2, ofGetHeight()/7);
+    
+    ofxCenteredTrueTypeFont subtitle_font_; // sets font, used to print centered text
+    subtitle_font_.load(kTextPath_, 25);
+    ofSetColor(100, 0, 200); // purple
+    subtitle_font_.drawStringCentered("DIFFICULTY LEVEL", ofGetWidth()/2, ofGetHeight()/4);
+    
+    // somt input here
+    
+    subtitle_font_.drawStringCentered("IMAGE INPUT METHOD", ofGetWidth()/2, ofGetHeight()/2);
+    ofSetColor(100, 0, 200, 100); // purple
+    ofDrawRectRounded(default_pacman_button_, 20);
+    ofDrawRectRounded(user_image_pacman_button_, 20);
+
+    ofSetColor(150, 150, 150); // white
+    body_font_.drawStringCentered(default_pacman_message_, 1.15*ofGetWidth()/button_width_divider_, button_height_*1.15);
+    body_font_.drawStringCentered(user_image_message_, 1.15*2*ofGetWidth()/button_width_divider_, button_height_*1.15);
+}
+
 void PacmanGame::DrawWebcamUI() { // everything to do with the webcam
     ofClear(0);
-    
-    ofSetColor(100, 0, 200, 100); // purple
-    ofDrawRectRounded(default_button, 20);
-    ofSetColor(150, 150, 150); // white
-    body_font_.drawStringCentered(default_button_message_, ofGetWidth()/button_width_divider_, button_height_*1.025);
     
     ofSetColor(255, 255, 255); // white
     body_font_.drawStringCentered("Click anywhere to take a picture\nor click the button to use the default pacman.\nMake sure your face is clearly visible.\n", ofGetWidth()/2, ofGetHeight()/9);
@@ -268,12 +295,6 @@ void PacmanGame::DrawFacialDetectionPhoto() {
         current_state_ = TAKING_PHOTO;
     }
 }
-
-/*void PacmanGame::DrawTitle() { // draws title - only when the game is being played
-    ofSetColor(0, 200, 0); // green
-    std::string title = "ENHANCED PACMAN";
-    title_font_.drawStringCentered(title, ofGetWidth()/2, ofGetHeight()/10);
-}*/
 
 void PacmanGame::DrawMaze() { // draws the maze
     std::vector<std::pair<int, int> > food_indices; // use to store the indices of the food elements - so I can just directly iterate through this vector and draw the food items rathe than having to go through the maze again
@@ -433,17 +454,18 @@ void PacmanGame::mousePressed(int x, int y, int button){
         current_state_ = DISPLAYING_INSTRUCTIONS;
         
     } else if (current_state_ == DISPLAYING_INSTRUCTIONS) {
-        current_state_ = TAKING_PHOTO;
+        current_state_ = SETTINGS;
+        
+    } else if (current_state_ == SETTINGS) {
+        if (user_image_pacman_button_.inside(x, y)) {
+            current_state_ = TAKING_PHOTO;
+        } else { // covers all other options
+            current_state_ = IN_PROGRESS;
+        }
         
     } else if (current_state_ == TAKING_PHOTO) {
-        if(default_button.inside(x, y)) {
-        //if (default_pacman_button_frame_.inside(x, y)) {
-            //photo_taken_ = game_pacman_.GetPacmanImage(); // not sure if this works
-            current_state_ = IN_PROGRESS;
-        } else {
-            photo_taken_.setFromPixels(webcam_.getPixels()); // take the picture
-            current_state_ = DISPLAYING_PHOTO;
-        }
+        photo_taken_.setFromPixels(webcam_.getPixels()); // take the picture
+        current_state_ = DISPLAYING_PHOTO;
         
     } else if (current_state_ == DISPLAYING_PHOTO) {
         SetFaceAsPacman();
