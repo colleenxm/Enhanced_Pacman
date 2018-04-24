@@ -21,47 +21,68 @@ void PacmanGame::setup(){
 
     // HAAR CASCADER SETUP
     facial_detector_.setup(kFacialCascadePath_);
-
-    // OBJECTS SETUP
-    for (int current_num_ghosts = 0; current_num_ghosts < num_ghosts_; current_num_ghosts++) {
-        Ghost ghost;
-        ghost.SetInitialRandomPosition();
-        ghosts_.push_back(ghost);
-                
-        // make sure ghosts aren't all at the same spot
-    }
-    maze_.PopulateWithFood(num_food_items);
-    maze_.PopulateWithCoins(num_coins_);
-
+    
     // CALCULATING DIMENSIONS
     space_between_objects_ = 8; //0.0075 * ofGetWidth() + 0.0075 * ofGetHeight();
     one_d_object_size_ = 0.02 * ofGetWidth() + 0.02 * ofGetHeight(); //shouldn't be a fixed const nor should it be dependent on the number of objects there are
     coord_multiplier_x_ = ((float) ofGetWidth()) / maze_.GetWidth(); // center
     coord_multiplier_y_ = ((float) ofGetHeight()) / maze_.GetHeight();
-    
     //vertical_shift_ = ofGetHeight() - one_d_object_size_ * maze_.GetHeight() * 1.05;
     //horizontial_shift_ = ofGetWidth() - one_d_object_size_ * maze_.GetWidth();
     float rectangular_width = maze_.GetWidth() * one_d_object_size_;
     float rectangular_height = maze_.GetHeight() * one_d_object_size_;
     float starting_x = ofGetWidth()/2 - rectangular_width/2;
     float starting_y = ofGetHeight() - rectangular_height;
-    
     vertical_shift_ = 0; //ofGetHeight() - rectangular_height + 1.15 * one_d_object_size_;
     horizontial_shift_ = 0; //ofGetWidth()/2 - rectangular_width/2.5;  //+ 1.5 * one_d_object_size_;
     
-    // SETTING UP BUTTONS
-    default_pacman_message_ = "DEFAULT PACMAN";
-    user_image_message_ = "MY IMAGE";
-    int width = 200;
-    int height = 150;
-    button_width_divider_ = 3.5;
-    button_height_divider_ = 8;
-    button_height_ = ofGetHeight() - 1.75*height;
-    default_pacman_button_.set(0.75*ofGetWidth()/button_width_divider_, button_height_, width, height);
-    user_image_pacman_button_.set(2*ofGetWidth()/button_width_divider_, button_height_, width, height);
-    
+    // DEFAULT SETTINGS
+    int num_ghosts_ = 10;
+    int num_food_items = 10; // food items to put in map - can change
+    int num_coins_ = 10; // coins to put in map - can change
+
+    // SET BACKGROUND MUSIC
     background_music_.setLoop(true); // plays over and over again
     background_music_.play();
+    
+    SetUpButtons();
+    SetUpObjects();
+}
+
+void PacmanGame::SetUpObjects() {
+    // OBJECTS SETUP
+    for (int current_num_ghosts = 0; current_num_ghosts < num_ghosts_; current_num_ghosts++) {
+        Ghost ghost;
+        ghost.SetInitialRandomPosition();
+        ghosts_.push_back(ghost);
+        
+        // make sure ghosts aren't all at the same spot
+    }
+    maze_.PopulateWithFood(num_food_items);
+    maze_.PopulateWithCoins(num_coins_);
+}
+
+void PacmanGame::SetUpButtons() { // for readability
+    default_pacman_message_ = "DEFAULT PACMAN";
+    user_image_message_ = "MY IMAGE";
+    easy_level_message_ = "EASY";
+    medium_level_message_ = "MEDIUM";
+    hard_level_message_ = "HARD";
+    
+    int data_button_width = 200;
+    int data_button_height = 150;
+    button_width_divider_ = 3.5;
+    button_height_divider_ = 8;
+    data_button_y_ = ofGetHeight() - 1.75*data_button_height;
+    default_pacman_button_.set(0.5*ofGetWidth()/button_width_divider_, data_button_y_, data_button_width, data_button_height);
+    user_image_pacman_button_.set(1.5*ofGetWidth()/button_width_divider_, data_button_y_, data_button_width, data_button_height);
+    
+    level_button_y_ = ofGetHeight()/3.5;
+    int level_button_width = 150; // different bc there's more of them
+    int level_button_height = 100;
+    easy_level_button_.set(0.5*ofGetWidth()/button_width_divider_, level_button_y_, level_button_width, level_button_height);
+    medium_level_button_.set(1.25*ofGetWidth()/button_width_divider_, level_button_y_, level_button_width, level_button_height);
+    hard_level_button_.set(2*ofGetWidth()/button_width_divider_, level_button_y_, level_button_width, level_button_height);
 }
 
 void PacmanGame::SetFaceAsPacman() { // cuts the face out and uses it as pacman
@@ -262,16 +283,25 @@ void PacmanGame::DrawSettings() { // difficulty level
     ofSetColor(100, 0, 200); // purple
     subtitle_font_.drawStringCentered("DIFFICULTY LEVEL", ofGetWidth()/2, ofGetHeight()/4);
     
-    // somt input here
-    
+    ofSetColor(100, 0, 200, 100); // purple
+    ofDrawRectRounded(easy_level_button_, 20);
+    ofDrawRectRounded(medium_level_button_, 20);
+    ofDrawRectRounded(hard_level_button_, 20);
+
+    ofSetColor(150, 150, 150); // white - inc x
+    body_font_.drawString(easy_level_message_, 0.55*ofGetWidth()/button_width_divider_, level_button_y_*1.15);
+    body_font_.drawString(medium_level_message_, 1.30*ofGetWidth()/button_width_divider_, level_button_y_*1.15);
+    body_font_.drawString(hard_level_message_, 2.05*ofGetWidth()/button_width_divider_, level_button_y_*1.15);
+
+    ofSetColor(100, 0, 200); // purple
     subtitle_font_.drawStringCentered("IMAGE INPUT METHOD", ofGetWidth()/2, ofGetHeight()/2);
     ofSetColor(100, 0, 200, 100); // purple
     ofDrawRectRounded(default_pacman_button_, 20);
     ofDrawRectRounded(user_image_pacman_button_, 20);
 
-    ofSetColor(150, 150, 150); // white
-    body_font_.drawStringCentered(default_pacman_message_, 1.15*ofGetWidth()/button_width_divider_, button_height_*1.15);
-    body_font_.drawStringCentered(user_image_message_, 1.15*2*ofGetWidth()/button_width_divider_, button_height_*1.15);
+    ofSetColor(150, 150, 150); // white - dec x
+    body_font_.drawStringCentered(default_pacman_message_, 0.95*ofGetWidth()/button_width_divider_, data_button_y_*1.15);
+    body_font_.drawStringCentered(user_image_message_, 0.95*2*ofGetWidth()/button_width_divider_, data_button_y_*1.15);
 }
 
 void PacmanGame::DrawWebcamUI() { // everything to do with the webcam
@@ -449,6 +479,14 @@ void PacmanGame::keyPressed(int key){
     }
 }
 
+void GetUserLevel() {
+    
+}
+
+void GetUserImage() {
+    
+}
+
 void PacmanGame::mousePressed(int x, int y, int button){
     if (current_state_ == NOT_STARTED) {
         current_state_ = DISPLAYING_INSTRUCTIONS;
@@ -456,12 +494,34 @@ void PacmanGame::mousePressed(int x, int y, int button){
     } else if (current_state_ == DISPLAYING_INSTRUCTIONS) {
         current_state_ = SETTINGS;
         
-    } else if (current_state_ == SETTINGS) {
+    } else if (current_state_ == SETTINGS) { // make sure both are clicked
+        // 3 level buttons - can only choose 1
+        if (easy_level_button_.inside(x, y)) {
+            num_ghosts_ = 5;
+            num_food_items = 20;
+            num_coins_ = 20;
+            
+        } else if (medium_level_button_.inside(x, y)) {
+            num_ghosts_ = 10;
+            num_food_items = 15;
+            num_coins_ = 5;
+            
+        } else if (hard_level_button_.inside(x, y)) {
+            num_ghosts_ = 25;
+            num_food_items = 15;
+            num_coins_ = 15;
+        }
+        
+        SetUpObjects(); // initialize everything here
+        
         if (user_image_pacman_button_.inside(x, y)) {
             current_state_ = TAKING_PHOTO;
-        } else { // covers all other options
+            
+        } else if (default_pacman_button_.inside(x, y)){ // covers all other options
             current_state_ = IN_PROGRESS;
         }
+        
+        // logic when the user clicks outside of the box
         
     } else if (current_state_ == TAKING_PHOTO) {
         photo_taken_.setFromPixels(webcam_.getPixels()); // take the picture

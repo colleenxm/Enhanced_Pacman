@@ -71,11 +71,23 @@ private:
     // BUTTONS - using ofxCenteredTrueTypeFont and the bounding rectangle
     std::string default_pacman_message_;
     ofRectangle default_pacman_button_;
+    
     std::string user_image_message_;
     ofRectangle user_image_pacman_button_;
+    
+    std::string easy_level_message_;
+    ofRectangle easy_level_button_;
+    
+    std::string medium_level_message_;
+    ofRectangle medium_level_button_;
+
+    std::string hard_level_message_;
+    ofRectangle hard_level_button_;
+
     int button_width_divider_;
     int button_height_divider_;
-    int button_height_;
+    int data_button_y_;
+    int level_button_y_;
 
     // OBJECTS
     Maze maze_; // object that stores the maze, created a class for this to protect the maze from being modified and to allow the other objects to access the maze (to check for valid positions)
@@ -83,9 +95,9 @@ private:
     std::vector<Ghost> ghosts_;
 
     // OBJECT PROPERTIES - CONSTANTS
-    int num_ghosts_ = 10;
-    int num_food_items = 10; // food items to put in map - can change
-    int num_coins_ = 10; // coins to put in map - can change
+    int num_ghosts_;
+    int num_food_items; // food items to put in map - can change
+    int num_coins_; // coins to put in map - can change
     int one_d_object_size_; // standardized size for all the objects (to prevent the bigger ones from "leaving" the maze). Calculated from window dimensions in setup().
     
     // MULTIPLIERS - convert coordinates on the maze matrix to coordinates on a coordinate plane
@@ -99,6 +111,8 @@ private:
     
     // METHODS
     // FOR INTRODUCTIONARY PARTS
+    void SetUpObjects();
+    void SetUpButtons();
     void DetectFacesInPhoto(); // use haar cascade to detect faces
     
     // FACIAL PROCESSING
