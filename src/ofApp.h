@@ -96,6 +96,13 @@ private:
     ofColor medium_level_button_color_ = ofColor(100, 0, 200, 100);
     ofColor hard_level_button_color_ = ofColor(100, 0, 200, 100);
 
+    bool is_level_button_clicked_;
+    bool is_user_image_button_clicked_;
+    bool is_pacman_button_clicked_; // keeps track of the buttons that are are clicked - so that the screen only changes after all buttons are clicked  (and shows the highlighted buttons for a brief amount of time)
+    
+    void ResetPacmanButtonColors();
+    void ResetLevelButtonColors(); // resets the colors if multiple buttons are clicked and then released or if the game is reset
+
     // BUTTON STUFF ENDS HERE
     
     // OBJECTS
@@ -152,6 +159,7 @@ private:
     bool DidPacmanWin();
     
     // Resets the game objects to their original state.
+    void ClearGhosts();
     void Reset();
     
 public:

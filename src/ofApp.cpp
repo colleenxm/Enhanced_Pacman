@@ -36,11 +36,6 @@ void PacmanGame::setup(){
     vertical_shift_ = 0; //ofGetHeight() - rectangular_height + 1.15 * one_d_object_size_;
     horizontial_shift_ = 0; //ofGetWidth()/2 - rectangular_width/2.5;  //+ 1.5 * one_d_object_size_;
     
-    // DEFAULT SETTINGS
-    int num_ghosts_ = 10;
-    int num_food_items = 10; // food items to put in map - can change
-    int num_coins_ = 10; // coins to put in map - can change
-
     // SET BACKGROUND MUSIC
     background_music_.setLoop(true); // plays over and over again
     background_music_.play();
@@ -83,6 +78,10 @@ void PacmanGame::SetUpButtons() { // for readability
     easy_level_button_.set(0.5*ofGetWidth()/button_width_divider_, level_button_y_, level_button_width, level_button_height);
     medium_level_button_.set(1.25*ofGetWidth()/button_width_divider_, level_button_y_, level_button_width, level_button_height);
     hard_level_button_.set(2*ofGetWidth()/button_width_divider_, level_button_y_, level_button_width, level_button_height);
+    
+    is_level_button_clicked_ = false;
+    is_pacman_button_clicked_ = false;
+    is_user_image_button_clicked_ = false;
 }
 
 void PacmanGame::SetFaceAsPacman() { // cuts the face out and uses it as pacman
@@ -275,7 +274,7 @@ void PacmanGame::DrawSettings() { // difficulty level
     title_font_.drawStringCentered("SETTINGS", ofGetWidth()/2, ofGetHeight()/12);
 
     ofSetColor(255, 255, 255); // white
-    std::string instructions = "Choose your difficulty level and image input method. Click anywhere to continue.\n";
+    std::string instructions = "Choose your difficulty level and image input method. Afterwards, click anywhere to continue.\n";
     body_font_.drawStringCentered(instructions, ofGetWidth()/2, ofGetHeight()/7);
     
     ofxCenteredTrueTypeFont subtitle_font_; // sets font, used to print centered text
@@ -516,18 +515,24 @@ void PacmanGame::mousePressed(int x, int y, int button){
     } else if (current_state_ == SETTINGS) { // make sure both are clicked
         // 3 level buttons - can only choose 1
         if (easy_level_button_.inside(x, y)) {
-            num_ghosts_ = 5;
-            num_food_items = 20;
-            num_coins_ = 20;
+            is_level_button_clicked_ = true;
+            ResetLevelButtonColors(); // need to reset all colors in case the user selects a button and then changes his/her mind
+            num_ghosts_ = 5; // level's being set but it doesn't stay???
+            num_food_items = 5;
+            num_coins_ = 5;
             LightenColor(easy_level_button_color_);
             
         } else if (medium_level_button_.inside(x, y)) {
+            is_level_button_clicked_ = true;
+            ResetLevelButtonColors();
             num_ghosts_ = 10;
             num_food_items = 15;
             num_coins_ = 5;
             LightenColor(medium_level_button_color_);
 
         } else if (hard_level_button_.inside(x, y)) {
+            is_level_button_clicked_ = true;
+            ResetLevelButtonColors();
             num_ghosts_ = 25;
             num_food_items = 15;
             num_coins_ = 15;
@@ -537,15 +542,23 @@ void PacmanGame::mousePressed(int x, int y, int button){
         SetUpObjects(); // initialize everything here
         
         if (user_image_pacman_button_.inside(x, y)) {
+            is_user_image_button_clicked_ = true;
+            ResetPacmanButtonColors();
             LightenColor(user_image_pacman_button_color_);
-            current_state_ = TAKING_PHOTO;
             
-        } else if (default_pacman_button_.inside(x, y)){ // covers all other options
+        } else if (default_pacman_button_.inside(x, y)) { // covers all other options
+            is_pacman_button_clicked_ = true;
+            ResetPacmanButtonColors();
             LightenColor(default_pacman_button_color_);
-            current_state_ = IN_PROGRESS;
         }
         
-        // logic when the user clicks outside of the box
+        if (is_user_image_button_clicked_ && is_level_button_clicked_) { // make sure all the buttons are actually selected
+            current_state_ = TAKING_PHOTO;
+        }
+        
+        if (is_pacman_button_clicked_ && is_level_button_clicked_) {
+            current_state_ = IN_PROGRESS;
+        }
         
     } else if (current_state_ == TAKING_PHOTO) {
         photo_taken_.setFromPixels(webcam_.getPixels()); // take the picture
@@ -557,15 +570,43 @@ void PacmanGame::mousePressed(int x, int y, int button){
     }
 }
 
+void PacmanGame::ResetPacmanButtonColors()  {
+    // reset the button colors
+    default_pacman_button_color_ = ofColor(100, 0, 200, 100); // to make the buttons light up - keep track of color
+    user_image_pacman_button_color_ = ofColor(100, 0, 200, 100);
+}
+
+void PacmanGame::ResetLevelButtonColors()  {
+    easy_level_button_color_ = ofColor(100, 0, 200, 100);
+    medium_level_button_color_ = ofColor(100, 0, 200, 100);
+    hard_level_button_color_ = ofColor(100, 0, 200, 100);
+}
+
+void PacmanGame::ClearGhosts() { // clear ghosts from the vector
+    
+}
+
 void PacmanGame::Reset() { // resets everything
     game_pacman_.reset();
     
     for (Ghost& current_ghost : ghosts_) {
         current_ghost.SetInitialRandomPosition();
     }
-    //current_state_ = IN_PROGRESS;
     current_state_ = DISPLAYING_INSTRUCTIONS;
     maze_.Reset(); // clears all leftover food items and redraws food items
+    
+    ResetPacmanButtonColors();
+    ResetLevelButtonColors();
+    
+    is_level_button_clicked_ = false; // unclicked
+    is_pacman_button_clicked_ = false;
+    is_user_image_button_clicked_ = false;
+    
+    num_ghosts_ = 0;
+    num_food_items = 0;
+    num_coins_ = 0;
+    
+    ghosts_ = std::vector<Ghost>(); // clear the ghosts!!!
 }
 
 void PacmanGame::windowResized(int w, int h){

@@ -142,10 +142,10 @@ void Pacman::reset() { // back to original state
     is_eaten_ = false;
     num_rotations_ = 0;
     
-    if (is_using_face_image_) { // revert to original orientation
+    /*if (is_using_face_image_) { // revert to original orientation
         pacman_image_ = original_face_image_;
         
-    } else {
-        pacman_image_.load(kImagePath_); // reload the picture - rotating actually CHANGES the picture and reset should set everything back to its original orientaiton
-    }
+    } else {*/
+        pacman_image_.load(kImagePath_); // reload the original image - rotating actually CHANGES the picture and reset should set everything back to its original orientaiton
+    //}
 }
