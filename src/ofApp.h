@@ -110,6 +110,7 @@ private:
     ofColor easy_level_button_color_ = ofColor(100, 0, 200, 100);
     ofColor medium_level_button_color_ = ofColor(100, 0, 200, 100);
     ofColor hard_level_button_color_ = ofColor(100, 0, 200, 100);
+    ofColor clicked_button_color = ofColor(230, 230, 230, 100);
 
     bool is_level_button_clicked_; // has at least one level button been clicked?
     bool is_data_input_button_clicked_; // has at least one data input button been clicked?
@@ -145,6 +146,7 @@ private:
     // FOR INTRODUCTIONARY PARTS
     void SetUpGameObjects();
     void SetUpButtons();
+    void CalculateDimensions();
     void DetectFacesInPhoto(); // use haar cascade to detect faces
 
     // FACIAL PROCESSING
@@ -172,6 +174,9 @@ private:
     // For setting the game based on the user input
     void SetGameLevel(); // setting the finalized game level (called after the user clicks to move on)
     void SetInputMethod(); // setting the finalized input method (called after the user clicks to move on)
+
+    void ManageUserInputtedLevel(int x, int y); // contains code for managing what the user inputs for the level - helper to mousepressed
+    void ManageDataInputChoice(int x, int y); // contains code for managing what the user wants to input as data for the pacman - for settings panel, helper to mousepressed
 
     // Checks if pacman won - if it ate every consumable item on the board
     bool DidPacmanWin();

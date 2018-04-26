@@ -16,25 +16,14 @@ void PacmanGame::setup(){
     wilhelm_scream_.load(kWilhelmScreamPath_);
     demo_movie_.load(kDemoMoviePath_);
     
+    // CALCULATING DIMENSIONS
+    CalculateDimensions();
+    
     // WEBCAM SETUP
     webcam_.setup(2000, 2000);
 
     // HAAR CASCADER SETUP
     facial_detector_.setup(kFacialCascadePath_);
-    
-    // CALCULATING DIMENSIONS
-    space_between_objects_ = 8; //0.0075 * ofGetWidth() + 0.0075 * ofGetHeight();
-    one_d_object_size_ = 0.02 * ofGetWidth() + 0.02 * ofGetHeight(); //shouldn't be a fixed const nor should it be dependent on the number of objects there are
-    coord_multiplier_x_ = ((float) ofGetWidth()) / maze_.GetWidth(); // center
-    coord_multiplier_y_ = ((float) ofGetHeight()) / maze_.GetHeight();
-    //vertical_shift_ = ofGetHeight() - one_d_object_size_ * maze_.GetHeight() * 1.05;
-    //horizontial_shift_ = ofGetWidth() - one_d_object_size_ * maze_.GetWidth();
-    float rectangular_width = maze_.GetWidth() * one_d_object_size_;
-    float rectangular_height = maze_.GetHeight() * one_d_object_size_;
-    float starting_x = ofGetWidth()/2 - rectangular_width/2;
-    float starting_y = ofGetHeight() - rectangular_height;
-    vertical_shift_ = 0; //ofGetHeight() - rectangular_height + 1.15 * one_d_object_size_;
-    horizontial_shift_ = 0; //ofGetWidth()/2 - rectangular_width/2.5;  //+ 1.5 * one_d_object_size_;
     
     // SET BACKGROUND MUSIC
     background_music_.setLoop(true); // plays over and over again
@@ -42,6 +31,24 @@ void PacmanGame::setup(){
     
     SetUpButtons();
     SetUpGameObjects();
+}
+
+void PacmanGame::CalculateDimensions() {
+    space_between_objects_ = 8; //0.0075 * ofGetWidth() + 0.0075 * ofGetHeight();
+    one_d_object_size_ = 0.02 * ofGetWidth() + 0.02 * ofGetHeight(); //shouldn't be a fixed const nor should it be dependent on the number of objects there are
+    coord_multiplier_x_ = ((float) ofGetWidth()) / maze_.GetWidth(); // center
+    coord_multiplier_y_ = ((float) ofGetHeight()) / maze_.GetHeight();
+    
+    //vertical_shift_ = ofGetHeight() - one_d_object_size_ * maze_.GetHeight() * 1.05;
+    //horizontial_shift_ = ofGetWidth() - one_d_object_size_ * maze_.GetWidth();
+    
+    float rectangular_width = maze_.GetWidth() * one_d_object_size_;
+    float rectangular_height = maze_.GetHeight() * one_d_object_size_;
+    float starting_x = ofGetWidth()/2 - rectangular_width/2;
+    float starting_y = ofGetHeight() - rectangular_height;
+    
+    vertical_shift_ = 0; //ofGetHeight() - rectangular_height + 1.15 * one_d_object_size_;
+    horizontial_shift_ = 0; //ofGetWidth()/2 - rectangular_width/2.5;  //+ 1.5 * one_d_object_size_;
 }
 
 void PacmanGame::SetUpGameObjects() {
@@ -216,20 +223,14 @@ void PacmanGame::draw(){ // is called over and over again
     } else if (current_state_ == DISPLAYING_PHOTO) {
         DrawFacialDetectionPhoto();
         
-    } else if (current_state_ == IN_PROGRESS) {
-        //DrawTitle();
+    } else if (current_state_ == IN_PROGRESS || current_state_ == PAUSED) {
         DrawMaze();
         DrawGhosts();
         DrawPacman();
         DrawScoreboard();
-        
-    } else if(current_state_ == PAUSED) {
-        //DrawTitle();
-        DrawMaze();
-        DrawGhosts();
-        DrawPacman();
-        DrawScoreboard();
-        DrawGamePaused();
+        if (current_state_ == PAUSED) {
+            DrawGamePaused();
+        }
        
     } else if (current_state_ == WON_GAME || current_state_ == LOST_GAME) {
         DrawGameOver();
@@ -274,7 +275,7 @@ void PacmanGame::DrawSettings() { // difficulty level
     title_font_.drawStringCentered("SETTINGS", ofGetWidth()/2, ofGetHeight()/12);
 
     ofSetColor(255, 255, 255); // white
-    std::string instructions = "Choose your difficulty level and image input method. Afterwards, click anywhere to continue.\n";
+    std::string instructions = "Choose your difficulty level and image input method. \nAfterwards, click anywhere to continue.\n";
     body_font_.drawStringCentered(instructions, ofGetWidth()/2, ofGetHeight()/7);
     
     ofxCenteredTrueTypeFont subtitle_font_; // sets font, used to print centered text
@@ -510,6 +511,60 @@ void PacmanGame::SetInputMethod() { // setting the finalized input method (calle
     }
 }
 
+void PacmanGame::ManageUserInputtedLevel(int x, int y) { // contains code for managing what the user inputs for the level - helper to mousepressed    
+    if (easy_level_button_.inside(x, y)) { // Note: Should have separate if statements because the user should be able to select a level/input method and then change his/her mind
+        is_level_button_clicked_ = true;
+        ResetLevelButtonColors(); // need to reset all colors in case the user selects a button and then changes his/her mind
+        easy_level_button_color_.set(clicked_button_color);
+        current_level_ = EASY;
+    }
+    
+    if (medium_level_button_.inside(x, y)) {
+        is_level_button_clicked_ = true;
+        ResetLevelButtonColors();
+        medium_level_button_color_.set(clicked_button_color);
+        current_level_ = MEDIUM;
+    }
+    
+    if (hard_level_button_.inside(x, y)) {
+        is_level_button_clicked_ = true;
+        ResetLevelButtonColors();
+        hard_level_button_color_.set(clicked_button_color);
+        current_level_ = HARD;
+    }
+    
+}
+void PacmanGame::ManageDataInputChoice(int x, int y) { // contains code for managing what the user wants to input as data for the pacman - for settings panel, helper to mousepressed
+    if (default_pacman_button_.inside(x, y)) { // covers all other options
+        ResetPacmanButtonColors();
+        is_data_input_button_clicked_ = true;
+        default_pacman_button_color_.set(clicked_button_color);
+        data_input_method_ = DEFAULT_PACMAN;
+    }
+    
+    if (user_image_pacman_button_.inside(x, y)) {
+        ResetPacmanButtonColors();
+        is_data_input_button_clicked_ = true;
+        user_image_pacman_button_color_.set(clicked_button_color);
+        data_input_method_ = USER_HEADSHOT;
+    }
+    
+    if (is_level_button_clicked_ && is_data_input_button_clicked_ && !easy_level_button_.inside(x, y) && !medium_level_button_.inside(x, y) && !hard_level_button_.inside(x, y) && !user_image_pacman_button_.inside(x, y) && !default_pacman_button_.inside(x, y)) { // not in any of the buttons - clicked screen - need to make sure that both types of buttons have been clicked
+        is_screen_clicked_ = true;
+        SetGameLevel(); // finalize game level and method
+        SetInputMethod();
+        SetUpGameObjects(); // initialize everything here - AFTER
+    }
+    
+    if (is_user_image_button_clicked_ && is_level_button_clicked_ && is_screen_clicked_) { // make sure all the buttons are actually selected
+        current_state_ = TAKING_PHOTO;
+    }
+    
+    if (is_pacman_button_clicked_ && is_level_button_clicked_ && is_screen_clicked_) {
+        current_state_ = IN_PROGRESS;
+    }
+}
+
 void PacmanGame::mousePressed(int x, int y, int button){
     if (current_state_ == NOT_STARTED) {
         current_state_ = DISPLAYING_INSTRUCTIONS;
@@ -518,72 +573,9 @@ void PacmanGame::mousePressed(int x, int y, int button){
         current_state_ = SETTINGS;
         
     } else if (current_state_ == SETTINGS) { // make sure both are clicked
-        ofColor clicked_button_color(230, 230, 230);
-        
-        if (easy_level_button_.inside(x, y)) { // Note: Should have separate if statements because the user should be able to select a level/input method and then change his/her mind
-            is_level_button_clicked_ = true;
-            ResetLevelButtonColors(); // need to reset all colors in case the user selects a button and then changes his/her mind
-            easy_level_button_color_.set(clicked_button_color);
-            current_level_ = EASY;
-            
-            /*num_ghosts_ = 5;
-            num_food_items = 5;
-            num_coins_ = 5;*/
-        }
-        
-        if (medium_level_button_.inside(x, y)) {
-            is_level_button_clicked_ = true;
-            ResetLevelButtonColors();
-            medium_level_button_color_.set(clicked_button_color);
-            current_level_ = MEDIUM;
-            
-            /*num_ghosts_ = 10;
-            num_food_items = 15;
-            num_coins_ = 5;*/
-        }
-        
-        if (hard_level_button_.inside(x, y)) {
-            is_level_button_clicked_ = true;
-            ResetLevelButtonColors();
-            hard_level_button_color_.set(clicked_button_color);
-            current_level_ = HARD;
-            
-            /*num_ghosts_ = 25;
-            num_food_items = 15;
-            num_coins_ = 15;*/
-        }
-        
-        if (default_pacman_button_.inside(x, y)) { // covers all other options
-            ResetPacmanButtonColors();
-            is_data_input_button_clicked_ = true;
-            default_pacman_button_color_.set(clicked_button_color);
-            data_input_method_ = DEFAULT_PACMAN;
-            //is_pacman_button_clicked_ = true;
-        }
-        
-        if (user_image_pacman_button_.inside(x, y)) {
-            ResetPacmanButtonColors();
-            is_data_input_button_clicked_ = true;
-            user_image_pacman_button_color_.set(clicked_button_color);
-            data_input_method_ = USER_HEADSHOT;
-            //is_user_image_button_clicked_ = true;
-        }
-        
-        if (is_level_button_clicked_ && is_data_input_button_clicked_ && !easy_level_button_.inside(x, y) && !medium_level_button_.inside(x, y) && !hard_level_button_.inside(x, y) && !user_image_pacman_button_.inside(x, y) && !default_pacman_button_.inside(x, y)) { // not in any of the buttons - clicked screen - need to make sure that both types of buttons have been clicked
-            is_screen_clicked_ = true;
-            SetGameLevel(); // finalize game level and method
-            SetInputMethod();
-            SetUpGameObjects(); // initialize everything here - AFTER
-        }
-        
-        if (is_user_image_button_clicked_ && is_level_button_clicked_ && is_screen_clicked_) { // make sure all the buttons are actually selected
-            current_state_ = TAKING_PHOTO;
-        }
-        
-        if (is_pacman_button_clicked_ && is_level_button_clicked_ && is_screen_clicked_) {
-            current_state_ = IN_PROGRESS;
-        }
-        
+        ManageUserInputtedLevel(x, y); // broken up for clarity
+        ManageDataInputChoice(x, y);
+
     } else if (current_state_ == TAKING_PHOTO) {
         photo_taken_.setFromPixels(webcam_.getPixels()); // take the picture
         current_state_ = DISPLAYING_PHOTO;
