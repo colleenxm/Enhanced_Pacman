@@ -40,13 +40,13 @@
 * Changed theme
 * Added logic for winning (if the pacman eats all consumable objects on the board)
 
-### TO DO - EXTRA FEATURES
-* Add in sprites
-* Remove all absolute paths
-* Rethink how I’m keeping track of the maze - shouldn’t have to create a separate copy per object
-* Need to allow user to input maze data
-* add other options for inputting data
-* add powerful ghosts (that you can’t fight) to the screen
-* add + (# points) animation if time permits
-* keep track of the highest scores
+### 4/24/18
+* Added more user options - the user can chose the difficulty level and whether to use the default pacman or not
+* Buttons change color when the user clicks on them
 
+### 4/24/18
+* Fixed bug in code - resetted ghost array 
+
+### 4/26/18
+* Fixed major bugs in settings panel and added an extra feature. User can now change his/her mind and choose another level/data input method. Changed code so that the final game settings are set to the LAST setting the user chose, rather than the first. 
+* Cleaned up code
