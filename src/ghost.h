@@ -21,8 +21,7 @@ private:
     ofImage ghost_image_; // image that correpsonds with a ghost object
 
     static const std::string kImagePath_;
-    static const std::string kGifdPath_; 
-
+    
     Maze maze_; // keeps track of the maze - to check if position is valid, same maze as the one in the game
     
 public:
