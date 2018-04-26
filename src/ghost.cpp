@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "ghost.h"
 
-const std::string Ghost::kImagePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/image_files/pacman_ghost.png";
+const std::string Ghost::kImagePath_ = "image_files/pacman_ghost.png";
 
 // Adapted and modified from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
 Ghost::Ghost() {

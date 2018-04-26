@@ -45,17 +45,17 @@ private:
     };
 
     // SOUND PATHS
-    std::string kIntroMusicPath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/sound_files/intro_music.mp3";
-    std::string kPacmanEating_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/sound_files/eating_sound.mp3";
-    std::string kCoinCollection_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/sound_files/coin_collection.mp3";
-    std::string kWilhelmScreamPath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/sound_files/wilhelmscream.mp3";
-    std::string kDemoMoviePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/demos/demo_purple_theme.mov";
+    std::string kIntroMusicPath_ = "sound_files/intro_music.mp3"; // Default dir = <proj dir>/bin/data
+    std::string kPacmanEating_ = "sound_files/eating_sound.mp3";
+    std::string kCoinCollection_ = "sound_files/coin_collection.mp3";
+    std::string kWilhelmScreamPath_ = "sound_files/wilhelmscream.mp3";
+    std::string kDemoMoviePath_ = "demos/demo_purple_theme.mov";
     
     // MISC PATHS
-    std::string kTextPath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/font_files/roboto_black.ttf";
-    std::string kFoodImagePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/image_files/apple.png";
-    std::string kCoinImagePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/image_files/coin.png";
-    std::string kFacialCascadePath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/haar_cascades/haarcascade_frontalface_alt.xml";
+    std::string kTextPath_ = "font_files/roboto_black.ttf";
+    std::string kFoodImagePath_ = "image_files/apple.png";
+    std::string kCoinImagePath_ = "image_files/coin.png";
+    std::string kFacialCascadePath_ = "haar_cascades/haarcascade_frontalface_alt.xml";
     
     // ALL SOUNDS
     ofSoundPlayer background_music_; // plays music
