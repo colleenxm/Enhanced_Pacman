@@ -31,7 +31,19 @@ private:
         WON_GAME,
         LOST_GAME
     };
-    
+
+    //NOTE: Need to have 2 enums and then set the actual level/input method after the user clicks the screen because the user can select one button and then unselect it again
+    enum Level { // corresponds to the user-selected level
+        EASY = 0,
+        MEDIUM,
+        HARD
+    };
+
+    enum DataInputMethod { // corresponds to the user-selected data input method
+        DEFAULT_PACMAN = 0,
+        USER_HEADSHOT,
+    };
+
     // SOUND PATHS
     std::string kIntroMusicPath_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/sound_files/intro_music.mp3";
     std::string kPacmanEating_ = "/Users/elizabeth/CS126-FINAL-PROJECT/final-project-ElizWang/bin/data/sound_files/eating_sound.mp3";
@@ -56,8 +68,11 @@ private:
     ofxCenteredTrueTypeFont body_font_; // sets font, used to print centered text
 
     GameState current_state_ = NOT_STARTED; // The current state of the game, used to determine possible actions
+    Level current_level_ = MEDIUM; // default
+    DataInputMethod data_input_method_ = DEFAULT_PACMAN; // default - doesn't really matter because it's being set later
+
     ofVideoPlayer demo_movie_; // demo of what the game looks like
-    
+
     // EVERYTHING TO DO WITH THE WEBCAM (taking photos and the general UI)
     ofVideoGrabber webcam_; // turns on webcam and gets webcam video feed
     ofImage photo_taken_; // stores the photo taken
@@ -96,13 +111,14 @@ private:
     ofColor medium_level_button_color_ = ofColor(100, 0, 200, 100);
     ofColor hard_level_button_color_ = ofColor(100, 0, 200, 100);
 
-    bool is_level_button_clicked_;
+    bool is_level_button_clicked_; // has at least one level button been clicked?
+    bool is_data_input_button_clicked_; // has at least one data input button been clicked?
     bool is_user_image_button_clicked_;
     bool is_pacman_button_clicked_; // keeps track of the buttons that are are clicked - so that the screen only changes after all buttons are clicked  (and shows the highlighted buttons for a brief amount of time)
+    bool is_screen_clicked_; // user needs to click a third time to progress to the next screen
     
     void ResetPacmanButtonColors();
     void ResetLevelButtonColors(); // resets the colors if multiple buttons are clicked and then released or if the game is reset
-
     // BUTTON STUFF ENDS HERE
     
     // OBJECTS
@@ -127,7 +143,7 @@ private:
     
     // METHODS
     // FOR INTRODUCTIONARY PARTS
-    void SetUpObjects();
+    void SetUpGameObjects();
     void SetUpButtons();
     void DetectFacesInPhoto(); // use haar cascade to detect faces
 
@@ -138,8 +154,6 @@ private:
     void ManageObjectCollisons(); // contains logic for objects eating each other rename later
     bool DoesPacmanEatGhost(Ghost& current_ghost); // interactions between the pacman and the ghost
     
-    void LightenColor(ofColor& color); // helper method to mouse pressed to lighten the color of the button that's pressed
-
     // METHODS FOR RENDERING
     void DrawIntroduction();
     void DrawInstructions();
@@ -155,11 +169,14 @@ private:
     void DrawGamePaused();
     void DrawGameOver();
     
+    // For setting the game based on the user input
+    void SetGameLevel(); // setting the finalized game level (called after the user clicks to move on)
+    void SetInputMethod(); // setting the finalized input method (called after the user clicks to move on)
+
     // Checks if pacman won - if it ate every consumable item on the board
     bool DidPacmanWin();
     
     // Resets the game objects to their original state.
-    void ClearGhosts();
     void Reset();
     
 public:

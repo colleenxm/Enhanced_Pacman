@@ -17,7 +17,7 @@ private:
     ofImage pacman_image_; // image that correpsonds with the pacman
     ofImage original_face_image_; // saves original face image for reset method - rotate method changes the image so we need to be able to reset it 
     static const std::string kImagePath_;
-    
+
     bool is_eaten_ = false; // dies if eaten
     bool is_using_face_image_ = false; // true if using an image of a face - used to reset the pacman to the face rather than the default obj
     
@@ -30,10 +30,9 @@ public:
     
     // Methods to use adapted from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
     ofVec2f& GetMazePosition();
-    
     void SetFacialImage(ofImage facial_image); // replaces the default yellow pacman
     ofImage& GetPacmanImage(); // gets image
-    
+
     Direction GetDirection() const; // Gets the current direction
     void SetDirection(Direction new_direction); // Sets the current direction
     

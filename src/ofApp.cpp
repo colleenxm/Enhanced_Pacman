@@ -41,10 +41,10 @@ void PacmanGame::setup(){
     background_music_.play();
     
     SetUpButtons();
-    SetUpObjects();
+    SetUpGameObjects();
 }
 
-void PacmanGame::SetUpObjects() {
+void PacmanGame::SetUpGameObjects() {
     // OBJECTS SETUP
     for (int current_num_ghosts = 0; current_num_ghosts < num_ghosts_; current_num_ghosts++) {
         Ghost ghost;
@@ -384,11 +384,12 @@ void PacmanGame::DrawGhosts() { // just make sizes all the same for simplicity
     }
 }
 
-void PacmanGame::DrawPacman() {
+void PacmanGame::DrawPacman() { // need to add an enum here
     ofVec2f& pos = game_pacman_.GetMazePosition();
-    game_pacman_.GetPacmanImage().rotate90(game_pacman_.GetNumRotations());
+        ofImage& pacman_image = game_pacman_.GetPacmanImage();
+        pacman_image.rotate90(game_pacman_.GetNumRotations());
     
-    game_pacman_.GetPacmanImage().draw(pos.x * coord_multiplier_x_ + one_d_object_size_/2 + horizontial_shift_, pos.y * coord_multiplier_y_ + one_d_object_size_/2 + vertical_shift_, one_d_object_size_, one_d_object_size_);
+        pacman_image.draw(pos.x * coord_multiplier_x_ + one_d_object_size_/2 + horizontial_shift_, pos.y * coord_multiplier_y_ + one_d_object_size_/2 + vertical_shift_, one_d_object_size_, one_d_object_size_);
     game_pacman_.ClearNumRotations(); // set back to 0 to prevent the pacman from spinning into oblivion
 }
 
@@ -482,26 +483,30 @@ void PacmanGame::keyPressed(int key){
     }
 }
 
-void GetUserLevel() {
-    
+void PacmanGame::SetGameLevel() { // setting the finalized game level (called after the user clicks to move on)
+    if (current_level_ == EASY) {
+        num_ghosts_ = 5;
+        num_food_items = 5;
+        num_coins_ = 5;
+
+    } else if (current_level_ == MEDIUM) {
+        num_ghosts_ = 10;
+        num_food_items = 15;
+        num_coins_ = 5;
+
+    } else if (current_level_ == HARD) {
+        num_ghosts_ = 50;
+        num_food_items = 25;
+        num_coins_ = 15;
+    }
 }
 
-void GetUserImage() {
-    
-}
+void PacmanGame::SetInputMethod() { // setting the finalized input method (called after the user clicks to move on)
+    if (data_input_method_ == DEFAULT_PACMAN) {
+        is_pacman_button_clicked_ = true;
 
-void PacmanGame::LightenColor(ofColor& color) { // helper method to mouse pressed to lighten the color of the button that's pressed
-    int color_adjustment = 50;
-    int color_max = 255;
-    
-    if (color.r + color_adjustment <= color_max) {
-        color.r += color_adjustment;
-    }
-    if (color.g + color_adjustment <= color_max) {
-        color.g += color_adjustment;
-    }
-    if (color.b + color_adjustment <= color_max) {
-        color.b += color_adjustment;
+    } else if (data_input_method_ == USER_HEADSHOT) {
+        is_user_image_button_clicked_ = true;
     }
 }
 
@@ -513,50 +518,69 @@ void PacmanGame::mousePressed(int x, int y, int button){
         current_state_ = SETTINGS;
         
     } else if (current_state_ == SETTINGS) { // make sure both are clicked
-        // 3 level buttons - can only choose 1
-        if (easy_level_button_.inside(x, y)) {
+        ofColor clicked_button_color(230, 230, 230);
+        
+        if (easy_level_button_.inside(x, y)) { // Note: Should have separate if statements because the user should be able to select a level/input method and then change his/her mind
             is_level_button_clicked_ = true;
             ResetLevelButtonColors(); // need to reset all colors in case the user selects a button and then changes his/her mind
-            num_ghosts_ = 5; // level's being set but it doesn't stay???
-            num_food_items = 5;
-            num_coins_ = 5;
-            LightenColor(easy_level_button_color_);
+            easy_level_button_color_.set(clicked_button_color);
+            current_level_ = EASY;
             
-        } else if (medium_level_button_.inside(x, y)) {
-            is_level_button_clicked_ = true;
-            ResetLevelButtonColors();
-            num_ghosts_ = 10;
-            num_food_items = 15;
-            num_coins_ = 5;
-            LightenColor(medium_level_button_color_);
-
-        } else if (hard_level_button_.inside(x, y)) {
-            is_level_button_clicked_ = true;
-            ResetLevelButtonColors();
-            num_ghosts_ = 25;
-            num_food_items = 15;
-            num_coins_ = 15;
-            LightenColor(hard_level_button_color_);
+            /*num_ghosts_ = 5;
+            num_food_items = 5;
+            num_coins_ = 5;*/
         }
         
-        SetUpObjects(); // initialize everything here
+        if (medium_level_button_.inside(x, y)) {
+            is_level_button_clicked_ = true;
+            ResetLevelButtonColors();
+            medium_level_button_color_.set(clicked_button_color);
+            current_level_ = MEDIUM;
+            
+            /*num_ghosts_ = 10;
+            num_food_items = 15;
+            num_coins_ = 5;*/
+        }
+        
+        if (hard_level_button_.inside(x, y)) {
+            is_level_button_clicked_ = true;
+            ResetLevelButtonColors();
+            hard_level_button_color_.set(clicked_button_color);
+            current_level_ = HARD;
+            
+            /*num_ghosts_ = 25;
+            num_food_items = 15;
+            num_coins_ = 15;*/
+        }
+        
+        if (default_pacman_button_.inside(x, y)) { // covers all other options
+            ResetPacmanButtonColors();
+            is_data_input_button_clicked_ = true;
+            default_pacman_button_color_.set(clicked_button_color);
+            data_input_method_ = DEFAULT_PACMAN;
+            //is_pacman_button_clicked_ = true;
+        }
         
         if (user_image_pacman_button_.inside(x, y)) {
-            is_user_image_button_clicked_ = true;
             ResetPacmanButtonColors();
-            LightenColor(user_image_pacman_button_color_);
-            
-        } else if (default_pacman_button_.inside(x, y)) { // covers all other options
-            is_pacman_button_clicked_ = true;
-            ResetPacmanButtonColors();
-            LightenColor(default_pacman_button_color_);
+            is_data_input_button_clicked_ = true;
+            user_image_pacman_button_color_.set(clicked_button_color);
+            data_input_method_ = USER_HEADSHOT;
+            //is_user_image_button_clicked_ = true;
         }
         
-        if (is_user_image_button_clicked_ && is_level_button_clicked_) { // make sure all the buttons are actually selected
+        if (is_level_button_clicked_ && is_data_input_button_clicked_ && !easy_level_button_.inside(x, y) && !medium_level_button_.inside(x, y) && !hard_level_button_.inside(x, y) && !user_image_pacman_button_.inside(x, y) && !default_pacman_button_.inside(x, y)) { // not in any of the buttons - clicked screen - need to make sure that both types of buttons have been clicked
+            is_screen_clicked_ = true;
+            SetGameLevel(); // finalize game level and method
+            SetInputMethod();
+            SetUpGameObjects(); // initialize everything here - AFTER
+        }
+        
+        if (is_user_image_button_clicked_ && is_level_button_clicked_ && is_screen_clicked_) { // make sure all the buttons are actually selected
             current_state_ = TAKING_PHOTO;
         }
         
-        if (is_pacman_button_clicked_ && is_level_button_clicked_) {
+        if (is_pacman_button_clicked_ && is_level_button_clicked_ && is_screen_clicked_) {
             current_state_ = IN_PROGRESS;
         }
         
@@ -582,10 +606,6 @@ void PacmanGame::ResetLevelButtonColors()  {
     hard_level_button_color_ = ofColor(100, 0, 200, 100);
 }
 
-void PacmanGame::ClearGhosts() { // clear ghosts from the vector
-    
-}
-
 void PacmanGame::Reset() { // resets everything
     game_pacman_.reset();
     
@@ -599,9 +619,11 @@ void PacmanGame::Reset() { // resets everything
     ResetLevelButtonColors();
     
     is_level_button_clicked_ = false; // unclicked
+    is_data_input_button_clicked_ = false;
     is_pacman_button_clicked_ = false;
     is_user_image_button_clicked_ = false;
-    
+    is_screen_clicked_ = false;
+
     num_ghosts_ = 0;
     num_food_items = 0;
     num_coins_ = 0;

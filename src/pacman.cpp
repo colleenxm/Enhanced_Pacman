@@ -147,5 +147,6 @@ void Pacman::reset() { // back to original state
         
     } else {*/
         pacman_image_.load(kImagePath_); // reload the original image - rotating actually CHANGES the picture and reset should set everything back to its original orientaiton
+    //pacman_gif_.load(kGifPath_);
     //}
 }
