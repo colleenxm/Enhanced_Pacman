@@ -11,7 +11,7 @@
 - Citations: https://www.flaticon.com/free-icons/apple-fruit, http://iconbug.com/detail/icon/2508/floating-ghost/, https://findicons.com/search/pacman
 * Worked on predator-prey logic - ghosts and pacmen can eat each other, ghosts jump over food objects, pacmen can eat food objects
 
-### 4/20/18 :) 
+### 4/20/18
 * Changed directions enum to make it global and made the starting direction of all moving objects right instead of a special field (so that the objects can share the same global enum - makes more sense and repeats less code)
 * Finished code for having the pacman and ghost eat each other 
 * Wrote and visualized a hard-coded maze - will use some sort of random maze generator to actually create a real maze if I have time (none of the generators I used worked …). Drew different colored rectangles to represent the maze.
