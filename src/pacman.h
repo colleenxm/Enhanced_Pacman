@@ -44,7 +44,7 @@ public:
     // MODIFIER METHODS
     bool IsDead();
     void GetsEaten(); // pacman is eaten
-    void SetPosition(int x_pos, int y_pos); // adds x_incr to the x component of the maze position and y_incr to the y component of the maze position. Note that this method doesn't check if the new position is valid.
+    void SetPosition(int x_pos, int y_pos); // Sets the maze position to the corresponding x and y coords. Note that this method doesn't check if the new position is valid.
     void EatObject(int points_gained); // gains points by eating objects - note that only the number of points gained is passed in rather than a reference to the object itself (so this method can work for both food and ghost objects)
     
     void reset(); // clears everything

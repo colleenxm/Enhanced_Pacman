@@ -52,11 +52,26 @@ void PacmanGame::SetUpGameObjects() {
     // OBJECTS SETUP
     for (int current_num_ghosts = 0; current_num_ghosts < num_ghosts_; current_num_ghosts++) {
         Ghost ghost;
-        ghost.SetInitialRandomPosition();
+        SetUpInitialGhostPositions(ghost);
         ghosts_.push_back(ghost);
     }
     maze_.PopulateWithFood(num_food_items);
     maze_.PopulateWithCoins(num_coins_);
+}
+
+void PacmanGame::SetUpInitialGhostPositions(Ghost& ghost) { // Places each ghost at a random position on the maze. Done in ofapp instead of ghost.cpp because the ghost class doesn't have access to the maze.
+    std::mt19937 generator_ = std::mt19937(rand()); // pseudorandom number generation
+    std::uniform_int_distribution<> dist_x = std::uniform_int_distribution<>(0, maze_.GetWidth() - 1);
+    std::uniform_int_distribution<> dist_y = std::uniform_int_distribution<>(0, maze_.GetHeight() - 1);
+    
+    int x = dist_x(generator_);
+    int y = dist_y(generator_);
+    
+    while (!maze_.IsEmptyPosition(x, y)) { // can only start off on a blank square
+        x = dist_x(generator_);
+        y = dist_y(generator_);
+    }
+    ghost.SetPosition(x, y);
 }
 
 void PacmanGame::SetUpButtons() { // for readability
@@ -69,12 +84,11 @@ void PacmanGame::SetUpButtons() { // for readability
     int data_button_width = 200;
     int data_button_height = 150;
     button_width_divider_ = 3.5;
-    button_height_divider_ = 8;
     data_button_y_ = ofGetHeight() - 1.75*data_button_height;
     default_pacman_button_.set(0.5*ofGetWidth()/button_width_divider_, data_button_y_, data_button_width, data_button_height);
     user_image_pacman_button_.set(1.5*ofGetWidth()/button_width_divider_, data_button_y_, data_button_width, data_button_height);
     
-    level_button_y_ = ofGetHeight()/3.5;
+    level_button_y_ = ofGetHeight()/3;
     int level_button_width = 150; // different bc there's more of them
     int level_button_height = 100;
     easy_level_button_.set(0.5*ofGetWidth()/button_width_divider_, level_button_y_, level_button_width, level_button_height);
@@ -118,7 +132,7 @@ void PacmanGame::update() {
         } else if (current_state_ == IN_PROGRESS) {
             ManageObjectCollisons();
             
-            ofVec2f new_position = FindNewPositionValid(game_pacman_.GetDirection(), game_pacman_.GetMazePosition()); // Calculates object's new position if its valid. Returns <-1, -1> if the position is not valid.
+            ofVec2f new_position = FindNewPositionValid(game_pacman_.GetDirection(), game_pacman_.GetMazePosition());
             if (new_position.x != -1 && new_position.y != -1) { // valid new position
                 game_pacman_.SetPosition(new_position.x, new_position.y);
             }
@@ -132,10 +146,14 @@ void PacmanGame::update() {
             // do with the ghost is in the ghost class for the sake of OOP (and because the
             // Pacman game has >1 ghosts ...)
             for (Ghost& current_ghost : ghosts_) {
-                if (current_ghost.GetNumStepsTaken() % current_ghost.kNumStepsBeforeDirectionChange_) {
+                if (current_ghost.GetNumStepsTaken()
+                    % current_ghost.kNumStepsBeforeDirectionChange_) {
                     current_ghost.FindRandomDirection();
                 }
-                current_ghost.MoveInNewDirection();
+                ofVec2f new_position = FindNewPositionValid(current_ghost.GetDirection(), current_ghost.GetMazePosition());
+                if (new_position.x != -1 && new_position.y != -1) {
+                    current_ghost.SetPosition(new_position.x, new_position.y);
+                }
                 current_ghost.IncrNumStepsTaken();
             }
             if (DidPacmanWin()) {
@@ -307,19 +325,18 @@ void PacmanGame::DrawInstructions() {
 
 void PacmanGame::DrawSettings() { // difficulty level
     ofSetBackgroundColor(0, 0, 0); // set background as black
-    // difficulty level - slider
     
     ofSetColor(100, 0, 200); // purple
-    title_font_.drawStringCentered("SETTINGS", ofGetWidth()/2, ofGetHeight()/12);
+    title_font_.drawStringCentered("SETTINGS", ofGetWidth()/2, ofGetHeight()/11);
 
     ofSetColor(255, 255, 255); // white
     std::string instructions = "Choose your difficulty level and image input method. \nAfterwards, click anywhere to continue.\n";
-    body_font_.drawStringCentered(instructions, ofGetWidth()/2, ofGetHeight()/7);
+    body_font_.drawStringCentered(instructions, ofGetWidth()/2, ofGetHeight()/6);
     
     ofxCenteredTrueTypeFont subtitle_font_; // sets font, used to print centered text
     subtitle_font_.load(kTextPath_, 25);
     ofSetColor(100, 0, 200); // purple
-    subtitle_font_.drawStringCentered("DIFFICULTY LEVEL", ofGetWidth()/2, ofGetHeight()/4);
+    subtitle_font_.drawStringCentered("DIFFICULTY LEVEL", ofGetWidth()/2, ofGetHeight()/3.5);
     
     ofSetColor(easy_level_button_color_); // buttons light up once you choose them
     ofDrawRectRounded(easy_level_button_, 20);
@@ -334,7 +351,7 @@ void PacmanGame::DrawSettings() { // difficulty level
     body_font_.drawString(hard_level_message_, 2.05*ofGetWidth()/button_width_divider_, level_button_y_*1.15);
 
     ofSetColor(100, 0, 200); // purple
-    subtitle_font_.drawStringCentered("IMAGE INPUT METHOD", ofGetWidth()/2, ofGetHeight()/2);
+    subtitle_font_.drawStringCentered("IMAGE INPUT METHOD", ofGetWidth()/2, ofGetHeight()/1.75);
     
     ofSetColor(default_pacman_button_color_);
     ofDrawRectRounded(default_pacman_button_, 20);
@@ -423,7 +440,7 @@ void PacmanGame::DrawGhosts() { // just make sizes all the same for simplicity
     }
 }
 
-void PacmanGame::DrawPacman() { // need to add an enum here
+void PacmanGame::DrawPacman() {
     ofVec2f& pos = game_pacman_.GetMazePosition();
     ofImage& pacman_image = game_pacman_.GetPacmanImage();
     pacman_image.rotate90(game_pacman_.GetNumRotations());
@@ -435,7 +452,7 @@ void PacmanGame::DrawPacman() { // need to add an enum here
 void PacmanGame::DrawScoreboard() {
     std::string current_score = "Current score: " + std::to_string(game_pacman_.GetNumPoints());
     
-    ofSetColor(0, 0, 0); // translucent
+    ofSetColor(0, 0, 0, 200); // translucent
     title_font_.drawCenteredBoundingBox(current_score, ofGetWidth()/1.3, ofGetHeight()/60);
     ofSetColor(255, 255, 255);
     title_font_.drawStringCentered(current_score, ofGetWidth()/1.3, ofGetHeight()/60);
@@ -525,7 +542,7 @@ void PacmanGame::keyPressed(int key){
 void PacmanGame::SetGameLevel() { // setting the finalized game level (called after the user clicks to move on)
     if (current_level_ == EASY) {
         num_ghosts_ = 5;
-        num_food_items = 5;
+        num_food_items = 15;
         num_coins_ = 5;
 
     } else if (current_level_ == MEDIUM) {
@@ -535,8 +552,8 @@ void PacmanGame::SetGameLevel() { // setting the finalized game level (called af
 
     } else if (current_level_ == HARD) {
         num_ghosts_ = 50;
-        num_food_items = 25;
-        num_coins_ = 15;
+        num_food_items = 15;
+        num_coins_ = 5;
     }
 }
 
@@ -640,7 +657,7 @@ void PacmanGame::Reset() { // resets everything
     game_pacman_.reset();
     
     for (Ghost& current_ghost : ghosts_) {
-        current_ghost.SetInitialRandomPosition();
+        SetUpInitialGhostPositions(current_ghost);
     }
     current_state_ = DISPLAYING_INSTRUCTIONS;
     maze_.Reset(); // clears all leftover food items and redraws food items

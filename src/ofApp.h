@@ -101,7 +101,6 @@ private:
 
     // calculated - for scaling
     int button_width_divider_;
-    int button_height_divider_;
     int data_button_y_;
     int level_button_y_;
     
@@ -146,10 +145,11 @@ private:
     // FOR INTRODUCTIONARY PARTS
     void SetUpGameObjects();
     void SetUpButtons();
+    void SetUpInitialGhostPositions(Ghost& ghost); // Places each ghost at a random position on the maze. Done in ofapp instead of ghost.cpp because the ghost class doesn't have access to the maze.
     void CalculateDimensions();
-    void DetectFacesInPhoto(); // use haar cascade to detect faces
 
     // FACIAL PROCESSING
+    void DetectFacesInPhoto(); // use haar cascade to detect faces
     void SetFaceAsPacman(); // cuts the face out and uses it as pacman
 
     // COLLISIONS

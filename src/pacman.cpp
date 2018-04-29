@@ -1,8 +1,6 @@
 #include "pacman.h"
 
-//const float Pacman::kbody_size_modifier_ = 0.05; // all objects should be the same sizes
-
-// Very loosely dapted from OF-SNAKE MP (Snake class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
+// Very loosely adapted from OF-SNAKE MP (Snake class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
 
 const std::string Pacman::kImagePath_ = "image_files/pacman.png";
 
@@ -33,7 +31,7 @@ ofImage& Pacman::GetPacmanImage() { // gets image
     return pacman_image_;
 }
 
-void Pacman::SetPosition(int x_pos, int y_pos) { // adds x_incr to the x component of the maze position and y_incr to the y component of the maze position. Note that this method doesn't check if the new position is valid.
+void Pacman::SetPosition(int x_pos, int y_pos) { // Sets the maze position to the corresponding x and y coords. Note that this method doesn't check if the new position is valid.
     maze_position_.x = x_pos;
     maze_position_.y = y_pos;
 }

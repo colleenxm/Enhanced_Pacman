@@ -13,20 +13,6 @@ Ghost::Ghost() {
     ghost_image_.load(kImagePath_); // loading image
 }
 
-void Ghost::SetInitialRandomPosition() { // intial random pos - cannot be on a wall or on top of a piece of food
-    std::uniform_int_distribution<> dist_x = std::uniform_int_distribution<>(0, maze_.GetWidth() - 1);
-    std::uniform_int_distribution<> dist_y = std::uniform_int_distribution<>(0, maze_.GetHeight() - 1);
-    
-    int x = dist_x(generator_);
-    int y = dist_y(generator_);
-    
-    while (!maze_.IsEmptyPosition(x, y)) { // can only start off on a blank square
-        x = dist_x(generator_);
-        y = dist_y(generator_);
-    }
-    maze_position_.set(x, y);
-}
-
 // Method adapted and modified from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
 void Ghost::resize(int w, int h) {
     window_dims_.set(w, h);
@@ -36,7 +22,7 @@ void Ghost::SetDirection(Direction newDirection) {
     current_direction_ = newDirection;
 }
 
-ofVec2f Ghost::GetMazePosition() {
+ofVec2f& Ghost::GetMazePosition() {
     return maze_position_;
 }
 
@@ -61,35 +47,8 @@ void Ghost::FindRandomDirection() { // chooses a random direction - separated fr
     current_direction_ = static_cast<Direction>(dist_direction(generator_) % kNumDirections_);
 }
 
-void Ghost::ModifyPosition(int x_incr, int y_incr) { // adds x_incr to the x component of the maze position and y_incr to the y component of the maze position. Note that this method doesn't check if the new position is valid.
-    maze_position_.x += x_incr;
-    maze_position_.y += y_incr;
-}
 
-void Ghost::MoveInNewDirection() { // moves in that direction - jumps over food items, cannot go through walls - should remove all the logic having to do with the maze
-    int x = maze_position_.x;
-    int y = maze_position_.y;
-    
-    switch (current_direction_) {
-        case NORTH:
-            if (maze_.IsLegalPosition(x, y - 1) && maze_.IsValidPacmanPosition(x, y - 1)) {
-                maze_position_.set(x, y - 1);
-            }
-            break;
-        case SOUTH:
-            if (maze_.IsLegalPosition(x, y + 1) && maze_.IsValidPacmanPosition(x, y + 1)) {
-                maze_position_.set(x, y + 1);
-            }
-            break;
-        case WEST:
-            if (maze_.IsLegalPosition(x - 1, y) && maze_.IsValidPacmanPosition(x - 1, y)) {
-                maze_position_.set(x - 1, y);
-            }
-            break;
-        case EAST:
-            if (maze_.IsLegalPosition(x + 1, y) && maze_.IsValidPacmanPosition(x + 1, y)) {
-                maze_position_.set(x + 1, y);
-            }
-            break;
-    }
+void Ghost::SetPosition(int x_pos, int y_pos) { // Sets the maze position to the corresponding x and y coords. Note that this method doesn't check if the new position is valid.
+    maze_position_.x = x_pos;
+    maze_position_.y = y_pos;
 }

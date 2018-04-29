@@ -23,9 +23,7 @@ private:
     // GHOST IMAGE
     ofImage ghost_image_; // image that correpsonds with a ghost object
     static const std::string kImagePath_;
-    
-    Maze maze_; // keeps track of the maze - to check if position is valid, same maze as the one in the game
-    
+        
 public:
     static const int kNumStepsBeforeDirectionChange_ = 20; // number of steps to take in the new  direction before changing direction. Note that this is used in ofApp so each step can be drawn out (else the ghost would jump around). No point in hiding this - will need a getter anyways
     static const int kPointsWorth_ = 10; // worth 10 points (b/c it's riskier to eat a ghost since the ghost can turn around and eat you)
@@ -33,9 +31,8 @@ public:
     Ghost(); // Default constructor, sets up generator devices and rarndomly places food at a valid location
     
     // GETTERS AND SETTERS
-    void SetInitialRandomPosition(); // intial random pos
     void SetDirection(Direction newDirection);
-    ofVec2f GetMazePosition();
+    ofVec2f& GetMazePosition();
     ofImage& GetGhostImage(); // gets image
     int GetNumStepsTaken(); // gets the number of steps taken
     void IncrNumStepsTaken(); // increments the number of steps taken
@@ -44,9 +41,8 @@ public:
     // CALCULATING RANDOM DIRECTION AND MOVING IN IT
     void Update();
     void FindRandomDirection(); // finds new direction
-    void MoveInNewDirection(); // moves in that random direction - note that this method is called more than choose_random_direction so the ghost can actually move before changing directions (will look like it's jumping around otherwise)
-    void ModifyPosition(int x_incr, int y_incr); // adds x_incr to the x component of the maze position and y_incr to the y component of the maze position. Note that this method doesn't check if the new position is valid.
-    
+    void SetPosition(int x_pos, int y_pos); // Sets the maze position to the corresponding x and y coords. Note that this method doesn't check if the new position is valid.
+
     void resize(int w, int h); // Called by application resize, resizes to new window dimensions
 };
 

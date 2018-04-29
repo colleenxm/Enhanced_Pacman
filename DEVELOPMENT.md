@@ -50,3 +50,7 @@
 ### 4/26/18
 * Fixed major bugs in settings panel and added an extra feature. User can now change his/her mind and choose another level/data input method. Changed code so that the final game settings are set to the LAST setting the user chose, rather than the first. 
 * Cleaned up code
+
+### 4/28/18
+* Cleaned up code - removed all commented-out code
+* Changed logic to only have one copy of the maze per game rather than one coy of the maze per pacman/ghost. Had to move most of the logic pertaining to the validity of a new position to the game class (because the object classes don’t have their own copies of maze anymore). 
