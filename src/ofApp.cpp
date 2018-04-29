@@ -117,9 +117,11 @@ void PacmanGame::update() {
             
         } else if (current_state_ == IN_PROGRESS) {
             ManageObjectCollisons();
-            game_pacman_.Update(); // gets new location for the pacman and draws in the next tick - need to change the code over here
             
-            IsNewPositionValid();
+            ofVec2f new_position = FindNewPositionValid(game_pacman_.GetDirection(), game_pacman_.GetMazePosition()); // Calculates object's new position if its valid. Returns <-1, -1> if the position is not valid.
+            if (new_position.x != -1 && new_position.y != -1) { // valid new position
+                game_pacman_.SetPosition(new_position.x, new_position.y);
+            }
             
             // Explanation: We want the ghost to take a number of steps in its current
             // direction before changing directions so it won't look like it's just going in
@@ -157,8 +159,36 @@ void PacmanGame::DetectFacesInPhoto() { // using haar cascader (opencv) to detec
     facial_detector_.findHaarObjects(grayscale_img_);
 }
 
-bool PacmanGame::IsNewPositionValid() { // checks if the object's new position is valid - in ofapp instead of pacman/ghost to avoid having to create multiple copies of maze
+ofVec2f PacmanGame::FindNewPositionValid(Direction current_direction, ofVec2f& position) { // Calculates object's new position if its valid. Returns <-1, -1> if the position is not valid. Can't BOTH return a boolean and change the object's position because the method doesn't know which object's position to change.
     
+    ofVec2f new_position;
+    new_position.set(-1, -1);
+    
+    int x = position.x; // because pos.x and pos.y are being used multiple times
+    int y = position.y;
+    switch (current_direction) {
+        case NORTH:
+            if (maze_.IsLegalPosition(x, y - 1) && maze_.IsValidPacmanPosition(x, y - 1)) {
+                new_position.set(x, y - 1);
+            }
+            break;
+        case SOUTH:
+            if (maze_.IsLegalPosition(x, y + 1) && maze_.IsValidPacmanPosition(x, y + 1)) {
+                new_position.set(x, y + 1);
+            }
+            break;
+        case WEST:
+            if (maze_.IsLegalPosition(x - 1, y) && maze_.IsValidPacmanPosition(x - 1, y)) {
+                new_position.set(x - 1, y);
+            }
+            break;
+        case EAST:
+            if (maze_.IsLegalPosition(x + 1, y) && maze_.IsValidPacmanPosition(x + 1, y)) {
+                new_position.set(x + 1, y);
+            }
+            break;
+    }
+    return new_position;
 }
 
 void PacmanGame::ManageObjectCollisons() { // contains logic for having objects eat each other, should probably rename the method

@@ -33,32 +33,9 @@ ofImage& Pacman::GetPacmanImage() { // gets image
     return pacman_image_;
 }
 
-void Pacman::Update() { // move logic should be in ofapp - should either pass maze_ in as a reference or not pass it in at all
-    int x = maze_position_.x;
-    int y = maze_position_.y;
-    
-    switch (current_direction_) {
-        case NORTH:
-            if (maze_.IsLegalPosition(x, y - 1) && maze_.IsValidPacmanPosition(x, y - 1)) {
-                maze_position_.set(x, y - 1); 
-            }
-            break;
-        case SOUTH:
-            if (maze_.IsLegalPosition(x, y + 1) && maze_.IsValidPacmanPosition(x, y + 1)) {
-                maze_position_.set(x, y + 1);
-            }
-            break;
-        case WEST:
-            if (maze_.IsLegalPosition(x - 1, y) && maze_.IsValidPacmanPosition(x - 1, y)) {
-                maze_position_.set(x - 1, y);
-            }
-            break;
-        case EAST:
-            if (maze_.IsLegalPosition(x + 1, y) && maze_.IsValidPacmanPosition(x + 1, y)) {
-                maze_position_.set(x + 1, y);
-            }
-            break;
-    }
+void Pacman::SetPosition(int x_pos, int y_pos) { // adds x_incr to the x component of the maze position and y_incr to the y component of the maze position. Note that this method doesn't check if the new position is valid.
+    maze_position_.x = x_pos;
+    maze_position_.y = y_pos;
 }
 
 bool Pacman::IsDead() { // eaten - doesn't make sense for the pacman to be able to go off the map

@@ -157,7 +157,7 @@ private:
     bool DoesPacmanEatGhost(Ghost& current_ghost); // interactions between the pacman and the ghost
     
     // CHECK IF THE OBJECT'S NEW POSITION IS VALID
-    bool IsNewPositionValid(); // in ofapp instead of pacman/ghost to avoid having to create multiple copies of maze
+    ofVec2f FindNewPositionValid(Direction current_direction, ofVec2f& position); // Calculates object's new position if its valid. Returns <-1, -1> if the position is not valid.
 
     // METHODS FOR RENDERING
     void DrawIntroduction();
