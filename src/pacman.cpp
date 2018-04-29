@@ -33,14 +33,14 @@ ofImage& Pacman::GetPacmanImage() { // gets image
     return pacman_image_;
 }
 
-void Pacman::Update() {    
+void Pacman::Update() { // move logic should be in ofapp - should either pass maze_ in as a reference or not pass it in at all
     int x = maze_position_.x;
     int y = maze_position_.y;
     
     switch (current_direction_) {
         case NORTH:
             if (maze_.IsLegalPosition(x, y - 1) && maze_.IsValidPacmanPosition(x, y - 1)) {
-                maze_position_.set(x, y - 1);
+                maze_position_.set(x, y - 1); 
             }
             break;
         case SOUTH:
@@ -62,7 +62,7 @@ void Pacman::Update() {
 }
 
 bool Pacman::IsDead() { // eaten - doesn't make sense for the pacman to be able to go off the map
-    return is_eaten_;  /*|| is_offscreen();*/
+    return is_eaten_;
 }
 
 void Pacman::GetsEaten() { // pacman is eaten
@@ -95,21 +95,12 @@ void Pacman::SetDirection(Direction new_direction) {
 
 void Pacman::CalculateNumRotations(Direction new_direction) { // calculates the number of clockwise 90 degree rotations needed, note: pacman can't actually be rotated in this class - has to be rotated in the game
     
-    int index_difference = GetIndex(new_direction) - GetIndex(current_direction_); // difference in indices of directions
-
+    int index_difference = (int)new_direction - (int)current_direction_;
     if (index_difference >= 0) { // then the number of clockwise 90 degree rotations = the index difference
         num_rotations_ = index_difference;
     } else { // rotating counterclockwise
         const int kNumDirections = 4;
         num_rotations_ = kNumDirections + index_difference;
-        /*switch (index_difference) {
-            case -1:
-                num_rotations_ = 3;
-            case -2: // not sure about the logic here
-                return 2;
-            case -3:
-                return 1;
-        }*/
     }
 }
 
@@ -121,19 +112,6 @@ int Pacman::GetNumRotations() { // returns the number of rotations
     return num_rotations_;
 }
 
-int Pacman::GetIndex(Direction direction) { // put in a method later
-    switch(direction) {
-        case NORTH:
-            return 0;
-        case EAST:
-            return 1;
-        case SOUTH:
-            return 2;
-        case WEST:
-            return 3;
-    }
-}
-
 void Pacman::reset() { // back to original state
     current_direction_ = EAST; 
     maze_position_.set(1, 1); // starting point
@@ -142,11 +120,5 @@ void Pacman::reset() { // back to original state
     is_eaten_ = false;
     num_rotations_ = 0;
     
-    /*if (is_using_face_image_) { // revert to original orientation
-        pacman_image_ = original_face_image_;
-        
-    } else {*/
-        pacman_image_.load(kImagePath_); // reload the original image - rotating actually CHANGES the picture and reset should set everything back to its original orientaiton
-    //pacman_gif_.load(kGifPath_);
-    //}
+    pacman_image_.load(kImagePath_); // reload the original image - rotating actually CHANGES the picture and reset should set everything back to its original orientaiton
 }

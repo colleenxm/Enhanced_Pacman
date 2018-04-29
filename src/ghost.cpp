@@ -61,7 +61,12 @@ void Ghost::FindRandomDirection() { // chooses a random direction - separated fr
     current_direction_ = static_cast<Direction>(dist_direction(generator_) % kNumDirections_);
 }
 
-void Ghost::MoveInNewDirection() { // moves in that direction - jumps over food items, cannot go through walls
+void Ghost::ModifyPosition(int x_incr, int y_incr) { // adds x_incr to the x component of the maze position and y_incr to the y component of the maze position. Note that this method doesn't check if the new position is valid.
+    maze_position_.x += x_incr;
+    maze_position_.y += y_incr;
+}
+
+void Ghost::MoveInNewDirection() { // moves in that direction - jumps over food items, cannot go through walls - should remove all the logic having to do with the maze
     int x = maze_position_.x;
     int y = maze_position_.y;
     

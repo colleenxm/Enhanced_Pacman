@@ -7,22 +7,26 @@
 
 class Ghost {
 private:
-    // Next 5 lines adapted from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
+    // FOR GENERATING RANDOM DIRECTIONS
+    // Next 2 lines adapted from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
     ofVec2f window_dims_;
     std::mt19937 generator_; // pseudorandom number generation
     
+    // DIRECTIONS
     static const int kNumDirections_ = 4; // number of real directions, to exclude dummy direction
     Direction current_direction_ = EAST; // starts off going right
     
+    // LOCATION
     int num_steps_taken_ = 0; // keeps track of the number of steps taken in the current direction (so that the direction can be changed once every kNumStepsBeforeDirectionChange_ steps)
-    
     ofVec2f maze_position_; // x, y position of the maze - important: this corresponds to the MAZE ELEMENT and NOT to the actual coordinates in the coordinatep lane. Used as 2 of the 4 dimensions needed to frame the image (to control its position and size)
     
+    // GHOST IMAGE
     ofImage ghost_image_; // image that correpsonds with a ghost object
-
     static const std::string kImagePath_;
     
     Maze maze_; // keeps track of the maze - to check if position is valid, same maze as the one in the game
+    
+    void Ghost::ModifyPosition(int x_incr, int y_incr); // adds x_incr to the x component of the maze position and y_incr to the y component of the maze position. Note that this method doesn't check if the new position is valid.
     
 public:
     static const int kNumStepsBeforeDirectionChange_ = 20; // number of steps to take in the new  direction before changing direction. Note that this is used in ofApp so each step can be drawn out (else the ghost would jump around). No point in hiding this - will need a getter anyways

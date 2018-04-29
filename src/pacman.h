@@ -50,7 +50,6 @@ public:
     void resize(int w, int h); // resizes
     int GetNumPoints() const; // Gets the number of points
     
-    int GetIndex(Direction direction); // get index from direction - need to move this elsewhere
     void reset(); // clears everything
 };
 

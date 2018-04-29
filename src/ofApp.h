@@ -9,7 +9,7 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "ofxOpenCv.h"
-#include "header_addons/ofxCenteredTrueTypeFont.h" // centering font
+#include "header_addons/ofxCenteredTrueTypeFont.h" // cente ring font
 #include "maze.h"
 #include "pacman.h"
 #include "ghost.h"
@@ -156,6 +156,9 @@ private:
     void ManageObjectCollisons(); // contains logic for objects eating each other rename later
     bool DoesPacmanEatGhost(Ghost& current_ghost); // interactions between the pacman and the ghost
     
+    // CHECK IF THE OBJECT'S NEW POSITION IS VALID
+    bool IsNewPositionValid(); // in ofapp instead of pacman/ghost to avoid having to create multiple copies of maze
+
     // METHODS FOR RENDERING
     void DrawIntroduction();
     void DrawInstructions();

@@ -34,21 +34,18 @@ void PacmanGame::setup(){
 }
 
 void PacmanGame::CalculateDimensions() {
-    space_between_objects_ = 8; //0.0075 * ofGetWidth() + 0.0075 * ofGetHeight();
+    space_between_objects_ = 8;
     one_d_object_size_ = 0.02 * ofGetWidth() + 0.02 * ofGetHeight(); //shouldn't be a fixed const nor should it be dependent on the number of objects there are
     coord_multiplier_x_ = ((float) ofGetWidth()) / maze_.GetWidth(); // center
     coord_multiplier_y_ = ((float) ofGetHeight()) / maze_.GetHeight();
-    
-    //vertical_shift_ = ofGetHeight() - one_d_object_size_ * maze_.GetHeight() * 1.05;
-    //horizontial_shift_ = ofGetWidth() - one_d_object_size_ * maze_.GetWidth();
     
     float rectangular_width = maze_.GetWidth() * one_d_object_size_;
     float rectangular_height = maze_.GetHeight() * one_d_object_size_;
     float starting_x = ofGetWidth()/2 - rectangular_width/2;
     float starting_y = ofGetHeight() - rectangular_height;
     
-    vertical_shift_ = 0; //ofGetHeight() - rectangular_height + 1.15 * one_d_object_size_;
-    horizontial_shift_ = 0; //ofGetWidth()/2 - rectangular_width/2.5;  //+ 1.5 * one_d_object_size_;
+    vertical_shift_ = 0;
+    horizontial_shift_ = 0;
 }
 
 void PacmanGame::SetUpGameObjects() {
@@ -57,15 +54,13 @@ void PacmanGame::SetUpGameObjects() {
         Ghost ghost;
         ghost.SetInitialRandomPosition();
         ghosts_.push_back(ghost);
-        
-        // make sure ghosts aren't all at the same spot
     }
     maze_.PopulateWithFood(num_food_items);
     maze_.PopulateWithCoins(num_coins_);
 }
 
 void PacmanGame::SetUpButtons() { // for readability
-    default_pacman_message_ = "DEFAULT PACMAN";
+    default_pacman_message_ = "DEFAULT";
     user_image_message_ = "MY IMAGE";
     easy_level_message_ = "EASY";
     medium_level_message_ = "MEDIUM";
@@ -122,7 +117,9 @@ void PacmanGame::update() {
             
         } else if (current_state_ == IN_PROGRESS) {
             ManageObjectCollisons();
-            game_pacman_.Update(); // gets new location for the pacman and draws in the next tick
+            game_pacman_.Update(); // gets new location for the pacman and draws in the next tick - need to change the code over here
+            
+            IsNewPositionValid();
             
             // Explanation: We want the ghost to take a number of steps in its current
             // direction before changing directions so it won't look like it's just going in
@@ -160,6 +157,10 @@ void PacmanGame::DetectFacesInPhoto() { // using haar cascader (opencv) to detec
     facial_detector_.findHaarObjects(grayscale_img_);
 }
 
+bool PacmanGame::IsNewPositionValid() { // checks if the object's new position is valid - in ofapp instead of pacman/ghost to avoid having to create multiple copies of maze
+    
+}
+
 void PacmanGame::ManageObjectCollisons() { // contains logic for having objects eat each other, should probably rename the method
     ofVec2f pacman_pos = game_pacman_.GetMazePosition();
     ofRectangle pacman_rect = ofRectangle(pacman_pos.x * coord_multiplier_x_ + one_d_object_size_/2, pacman_pos.y * coord_multiplier_y_ + one_d_object_size_/2, one_d_object_size_, one_d_object_size_);
@@ -178,7 +179,14 @@ void PacmanGame::ManageObjectCollisons() { // contains logic for having objects 
         Ghost& current_ghost = ghosts_[ghost_ind];
         ofVec2f ghost_pos = current_ghost.GetMazePosition();
         
-        if (pacman_pos.x == ghost_pos.x && pacman_pos.y == ghost_pos.y) {
+        // make two rectangles here?
+        ofVec2f& game_pos = game_pacman_.GetMazePosition();
+        ofRectangle pacman_frame = ofRectangle(game_pos.x * coord_multiplier_x_ + one_d_object_size_/2 + horizontial_shift_, game_pos.y * coord_multiplier_y_ + one_d_object_size_/2 + vertical_shift_, one_d_object_size_, one_d_object_size_);
+        
+        ofRectangle ghost_frame = ofRectangle(ghost_pos.x * coord_multiplier_x_ + one_d_object_size_/2 + horizontial_shift_, ghost_pos.y * coord_multiplier_y_ + one_d_object_size_/2 + + vertical_shift_, one_d_object_size_, one_d_object_size_);
+
+        //if (pacman_pos.x == ghost_pos.x && pacman_pos.y == ghost_pos.y) { // same position
+        if (pacman_frame.intersects(ghost_frame)) {
             if (DoesPacmanEatGhost(current_ghost)) { // remove the current ghost
                 ghosts_.erase(ghosts_.begin() + ghost_ind); // delete the ghost
             }
@@ -192,7 +200,7 @@ bool PacmanGame::DoesPacmanEatGhost(Ghost& current_ghost) { // responsible for a
         crunch_.play();
         return true;
     }
-    game_pacman_.GetsEaten(); // pacman dies
+    game_pacman_.GetsEaten(); // pacman dies in all other cases
     wilhelm_scream_.play();
     return false;
 }
@@ -304,7 +312,7 @@ void PacmanGame::DrawSettings() { // difficulty level
     ofDrawRectRounded(user_image_pacman_button_, 20);
 
     ofSetColor(255, 255, 255); // white
-    body_font_.drawStringCentered(default_pacman_message_, 0.95*ofGetWidth()/button_width_divider_, data_button_y_*1.15);
+    body_font_.drawStringCentered(default_pacman_message_, 0.95*ofGetWidth()/button_width_divider_, data_button_y_*1.15); // not centered
     body_font_.drawStringCentered(user_image_message_, 0.95*2*ofGetWidth()/button_width_divider_, data_button_y_*1.15);
 }
 
@@ -387,10 +395,10 @@ void PacmanGame::DrawGhosts() { // just make sizes all the same for simplicity
 
 void PacmanGame::DrawPacman() { // need to add an enum here
     ofVec2f& pos = game_pacman_.GetMazePosition();
-        ofImage& pacman_image = game_pacman_.GetPacmanImage();
-        pacman_image.rotate90(game_pacman_.GetNumRotations());
+    ofImage& pacman_image = game_pacman_.GetPacmanImage();
+    pacman_image.rotate90(game_pacman_.GetNumRotations());
     
-        pacman_image.draw(pos.x * coord_multiplier_x_ + one_d_object_size_/2 + horizontial_shift_, pos.y * coord_multiplier_y_ + one_d_object_size_/2 + vertical_shift_, one_d_object_size_, one_d_object_size_);
+    pacman_image.draw(pos.x * coord_multiplier_x_ + one_d_object_size_/2 + horizontial_shift_, pos.y * coord_multiplier_y_ + one_d_object_size_/2 + vertical_shift_, one_d_object_size_, one_d_object_size_);
     game_pacman_.ClearNumRotations(); // set back to 0 to prevent the pacman from spinning into oblivion
 }
 
@@ -631,7 +639,6 @@ void PacmanGame::windowResized(int w, int h){
     
     one_d_object_size_ = 0.02 * w + 0.02 * w; // shouldn't be a fixed const nor should it be dependent on the number of objects there are
 
-    //space_between_objects_ = 0.01 * w + 0.01 * h;
     coord_multiplier_x_ = ((float) w) / maze_.GetWidth(); // center
     coord_multiplier_y_ = ((float) h) / maze_.GetHeight();
     vertical_shift_ = 0; //h - one_d_object_size_ * maze_.GetHeight() * 1.05;
