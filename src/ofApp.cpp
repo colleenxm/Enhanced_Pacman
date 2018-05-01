@@ -49,8 +49,8 @@ void PacmanGame::CalculateDimensions() {
     float starting_x = ofGetWidth()/2 - rectangular_width/2;
     float starting_y = ofGetHeight() - rectangular_height;
     
-    vertical_shift_ = 0;
-    horizontial_shift_ = 0;
+    vertical_shift_ = -10;
+    horizontial_shift_ = -10;
 }
 
 void PacmanGame::SetUpGameObjects() {
@@ -279,7 +279,7 @@ void PacmanGame::draw(){ // is called over and over again
     } else if (current_state_ == DISPLAYING_INSTRUCTIONS) {
         DrawInstructions();
         
-    } else if (current_state_ == SETTINGS) {
+    } else if (current_state_ == DISPLAYING_SETTINGS) {
         DrawSettings();
         
     } else if (current_state_ == TAKING_PHOTO) {
@@ -399,8 +399,7 @@ void PacmanGame::DrawMaze() { // draws the maze
     std::vector<std::pair<int, int> > coin_indices;
     
     float x_coord;
-    float y_coord; // debug
-    
+    float y_coord;
     for (int x_index = 0; x_index < maze_.GetWidth(); x_index++) { // draw the maze first and THEN draw apples over the maze to prevent the apples from being covered by maze blocks (which would make them look squished)
         x_coord = x_index * coord_multiplier_x_;
         for (int y_index = 0; y_index < maze_.GetHeight(); y_index++) {
@@ -410,11 +409,13 @@ void PacmanGame::DrawMaze() { // draws the maze
             if (maze_element == Maze::NOTHING || maze_element == Maze::FOOD || maze_element == Maze::COIN) { // want to draw a gray square if it's not a wall
                 ofSetColor(100, 0, 100); // purple
                 ofDrawRectangle(x_coord + one_d_object_size_/2 + horizontial_shift_, y_coord + one_d_object_size_/2 + vertical_shift_, one_d_object_size_, one_d_object_size_);
+                
                 if (maze_element == Maze::FOOD) {
                     food_indices.push_back(std::make_pair(x_index, y_index));
                 } else if (maze_element == Maze::COIN) {
                     coin_indices.push_back(std::make_pair(x_index, y_index));
                 }
+                
             } else if (maze_element == Maze::WALL) {
                 ofSetColor(100, 100, 100); // gray
                 ofDrawRectangle(x_coord + one_d_object_size_/2 + horizontial_shift_, y_coord + one_d_object_size_/2 + vertical_shift_, one_d_object_size_, one_d_object_size_);
@@ -465,10 +466,8 @@ void PacmanGame::DrawPacman() {
 
 void PacmanGame::DrawScoreboard() {
     std::string current_score = "Current score: " + std::to_string(game_pacman_.GetNumPoints());
-    ofSetColor(0, 0, 0, 200); // translucent
-    title_font_.drawCenteredBoundingBox(current_score, ofGetWidth()/1.3, ofGetHeight()/60);
     ofSetColor(255, 255, 255);
-    title_font_.drawStringCentered(current_score, ofGetWidth()/1.3, ofGetHeight()/60);
+    title_font_.drawString(current_score, ofGetWidth()/1.85, ofGetHeight()/25);
 }
 
 void PacmanGame::DrawGamePaused() { 
@@ -650,9 +649,9 @@ void PacmanGame::mousePressed(int x, int y, int button){
         current_state_ = DISPLAYING_INSTRUCTIONS;
         
     } else if (current_state_ == DISPLAYING_INSTRUCTIONS) {
-        current_state_ = SETTINGS;
+        current_state_ = DISPLAYING_SETTINGS;
         
-    } else if (current_state_ == SETTINGS) { // make sure both are clicked
+    } else if (current_state_ == DISPLAYING_SETTINGS) { // make sure both are clicked
         ManageUserInputtedLevel(x, y); // broken up for clarity
         ManageDataInputChoice(x, y);
 
@@ -684,7 +683,7 @@ void PacmanGame::Reset() { // resets everything
     for (Ghost& current_ghost : ghosts_) {
         SetUpInitialGhostPositions(current_ghost);
     }
-    current_state_ = DISPLAYING_INSTRUCTIONS;
+    current_state_ = DISPLAYING_SETTINGS;
     maze_.Reset(); // clears all leftover food items and redraws food items
     
     ResetPacmanButtonColors();

@@ -10,7 +10,7 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "ofxOpenCv.h"
-#include "header_addons/ofxCenteredTrueTypeFont.h" // cente ring font
+#include "header_addons/ofxCenteredTrueTypeFont.h" // centering font
 #include "maze.h"
 #include "pacman.h"
 #include "ghost.h"
@@ -24,7 +24,7 @@ private:
     enum GameState {
         NOT_STARTED = 0,
         DISPLAYING_INSTRUCTIONS,
-        SETTINGS,
+        DISPLAYING_SETTINGS,
         TAKING_PHOTO,
         DISPLAYING_PHOTO,
         IN_PROGRESS,
