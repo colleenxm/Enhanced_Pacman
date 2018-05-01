@@ -15,7 +15,8 @@ private:
     // DIRECTIONS
     static const int kNumDirections_ = 4; // number of real directions, to exclude dummy direction
     Direction current_direction_ = EAST; // starts off going right
-    
+    int num_rotations_; // keeps track of the number of rotations needed
+
     // LOCATION
     int num_steps_taken_ = 0; // keeps track of the number of steps taken in the current direction
     ofVec2f maze_position_; // x, y position of the maze - important: this corresponds to the MAZE ELEMENT and NOT to the actual coordinates in the coordinatep lane.
@@ -25,7 +26,7 @@ private:
     static const std::string kImagePath_;
         
 public:
-    static const int kNumStepsBeforeDirectionChange_ = 20; // number of steps to take in the new  direction before changing direction. Note that this is used in ofApp so each step can be drawn out (else the ghost would jump around). No point in hiding this - will need a getter anyways
+    static const int kNumStepsBeforeDirectionChange_ = 30; // number of steps to take in the new  direction before changing direction. Note that this is used in ofApp so each step can be drawn out (else the ghost would jump around). No point in hiding this - will need a getter anyways
     static const int kPointsWorth_ = 10; // worth 10 points (b/c it's riskier to eat a ghost since the ghost can turn around and eat you)
     
     Ghost(); // Default constructor, sets up generator devices and rarndomly places food at a valid location
@@ -36,11 +37,16 @@ public:
     ofImage& GetGhostImage(); // gets image
     int GetNumStepsTaken(); // gets the number of steps taken
     void IncrNumStepsTaken(); // increments the number of steps taken
-    Direction& GetDirection(); // gets the current direction - needed to check whether the ghost is eating the pacman or if the pacman is eating the ghost
+    Direction GetDirection(); // gets the current direction - needed to check whether the ghost is eating the pacman or if the pacman is eating the ghost    
+    int GetNumRotations(); // returns the number of rotations
     
+    // KEEPS TRACK OF ROTATIONS - note that rotating the ghosts means that the new direction must be returned first (to calculate the rotations needed) and thus cannot just be set
+    void CalculateNumRotations(Direction new_direction); // calculates the number of clockwise 90 degree rotations needed
+    void ClearNumRotations(); // sets num rotations back to 0, must be called each time an object
+
     // CALCULATING RANDOM DIRECTION AND MOVING IN IT
     void Update();
-    void FindRandomDirection(); // finds new direction
+    Direction FindRandomDirection(); // finds new direction - note that this returns a direction because the new direction and the old direction are both needed to calculate the number of rotation
     void SetPosition(int x_pos, int y_pos); // Sets the maze position to the corresponding x and y coords. Note that this method doesn't check if the new position is valid.
 
     void resize(int w, int h); // Called by application resize, resizes to new window dimensions

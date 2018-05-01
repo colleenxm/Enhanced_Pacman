@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <memory>
 #include <utility>
+#include <functional>
 
 #include "ofMain.h"
 #include "ofxGui.h"
@@ -141,6 +142,10 @@ private:
     
     bool should_update_ = true;     // A flag boolean used in the update() function.
     
+    // MANAGES HIGHEST SCORES
+    const int kNumHighestScores_ = 10; 
+    int highest_scores_[10]; // stores the highest scores
+    
     // METHODS
     // FOR INTRODUCTIONARY PARTS
     void SetUpGameObjects();
@@ -178,6 +183,8 @@ private:
     void SetGameLevel(); // setting the finalized game level (called after the user clicks to move on)
     void SetInputMethod(); // setting the finalized input method (called after the user clicks to move on)
 
+    void UpdateHighestScores(); // updates the highest scores after a game ends
+    
     void ManageUserInputtedLevel(int x, int y); // contains code for managing what the user inputs for the level - helper to mousepressed
     void ManageDataInputChoice(int x, int y); // contains code for managing what the user wants to input as data for the pacman - for settings panel, helper to mousepressed
 

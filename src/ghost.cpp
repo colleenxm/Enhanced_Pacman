@@ -11,6 +11,8 @@ Ghost::Ghost() {
     generator_ = std::mt19937(rand());
     
     ghost_image_.load(kImagePath_); // loading image
+    
+    num_rotations_ = 0;
 }
 
 // Method adapted and modified from OF-SNAKE MP (Food class): https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
@@ -38,13 +40,32 @@ void Ghost::IncrNumStepsTaken() { // increments the number of steps taken
     num_steps_taken_++;
 }
 
-Direction& Ghost::GetDirection() { // gets the current direction - needed to check whether the ghost is eating the pacman or if the pacman is eating the ghost
+void Ghost::CalculateNumRotations(Direction new_direction) { // calculates the number of clockwise 90 degree rotations needed, note: pacman can't actually be rotated in this class - has to be rotated in the game
+    
+    int index_difference = (int)new_direction - (int)current_direction_;
+    if (index_difference >= 0) { // then the number of clockwise 90 degree rotations = the index difference
+        num_rotations_ = index_difference;
+    } else { // rotating counterclockwise
+        const int kNumDirections = 4;
+        num_rotations_ = kNumDirections + index_difference;
+    }
+}
+
+void Ghost::ClearNumRotations() { // sets num rotations back to 0, must be called each time an object finishes rotation
+    num_rotations_ = 0;
+}
+
+int Ghost::GetNumRotations() { // returns the number of rotations
+    return num_rotations_;
+}
+
+Direction Ghost::GetDirection() { // gets the current direction - needed to check whether the ghost is eating the pacman or if the pacman is eating the ghost
     return current_direction_;
 }
 
-void Ghost::FindRandomDirection() { // chooses a random direction - separated from moving because we want the ghost to move for some number of steps (specified in .h file) before changing directions again but we need to hae the loop that causes the ghost to move straight in ofapp to prevent the ghost from jumping around
+Direction Ghost::FindRandomDirection() { // chooses a random direction - separated from moving because we want the ghost to move for some number of steps (specified in .h file) before changing directions again but we need to hae the loop that causes the ghost to move straight in ofapp to prevent the ghost from jumping around
     std::uniform_int_distribution<> dist_direction = std::uniform_int_distribution<>(0, kNumDirections_ - 1);
-    current_direction_ = static_cast<Direction>(dist_direction(generator_) % kNumDirections_);
+    return static_cast<Direction>(dist_direction(generator_) % kNumDirections_);
 }
 
 

@@ -29,6 +29,11 @@ void PacmanGame::setup(){
     background_music_.setLoop(true); // plays over and over again
     background_music_.play();
     
+    // SET UP HIGHEST SCORES
+    for (int i = 0; i < kNumHighestScores_; i++) {
+        highest_scores_[i] = -1; // no highest score availabe
+    }
+    
     SetUpButtons();
     SetUpGameObjects();
 }
@@ -108,17 +113,7 @@ void PacmanGame::SetFaceAsPacman() { // cuts the face out and uses it as pacman
     game_pacman_.SetFacialImage(cropped_face); // need to set as pacman image
 }
 
-/*
- Update function called before every draw
- If the function should update when it is called it will:
- 1. Check to see if the game is in progress, if it is paused or over it should not update.
- 2. Check to see if the current head of the snake intersects the food pellet. If so:
- * The snake should grow by length 1 in its current direction
- * The food should be moved to a new random location
- 3. Update the snake in the current direction it is moving
- 4. Check to see if the snakes new position has resulted in its death and the end of the game
- */
-void PacmanGame::update() {
+void PacmanGame::update() { // updates the function before each draw
     if (should_update_) {
         if (current_state_ == NOT_STARTED) { // play demo
             demo_movie_.update();
@@ -148,7 +143,9 @@ void PacmanGame::update() {
             for (Ghost& current_ghost : ghosts_) {
                 if (current_ghost.GetNumStepsTaken()
                     % current_ghost.kNumStepsBeforeDirectionChange_) {
-                    current_ghost.FindRandomDirection();
+                    Direction new_direction = current_ghost.FindRandomDirection();
+                    current_ghost.CalculateNumRotations(new_direction);
+                    current_ghost.SetDirection(new_direction);
                 }
                 ofVec2f new_position = FindNewPositionValid(current_ghost.GetDirection(), current_ghost.GetMazePosition());
                 if (new_position.x != -1 && new_position.y != -1) {
@@ -157,8 +154,11 @@ void PacmanGame::update() {
                 current_ghost.IncrNumStepsTaken();
             }
             if (DidPacmanWin()) {
+                UpdateHighestScores();
                current_state_ = WON_GAME;
+                
             } else if (game_pacman_.IsDead()) {
+                UpdateHighestScores();
                 current_state_ = LOST_GAME;
             }
         }
@@ -253,8 +253,17 @@ bool PacmanGame::DoesPacmanEatGhost(Ghost& current_ghost) { // responsible for a
     return false;
 }
 
-bool PacmanGame::DidPacmanWin() { // true if the pacman eats everything on the board, false otherwise
-    return !maze_.ContainsConsumableObjects() && (ghosts_.size() == 0); // no consumable objects and no ghosts
+bool PacmanGame::DidPacmanWin() { // true if the pacman eats everything on the board, false otherwise - note that ghosts don't count as consumable objects
+    return !maze_.ContainsConsumableObjects(); // no consumable objects
+}
+
+void PacmanGame::UpdateHighestScores() { // updates the highest scores after a game ends
+    int num_points = game_pacman_.GetNumPoints();
+    if (highest_scores_[kNumHighestScores_ - 1] < num_points) { // pop the lowest score with the score from this game if the lowest is smaller than the current score
+        highest_scores_[kNumHighestScores_ - 1] = num_points;
+    }
+    
+    std::sort(highest_scores_, highest_scores_ + kNumHighestScores_, std::greater< int >()); // sort from greatest to least, derived from https://stackoverflow.com/questions/3908771/sorting-an-array-from-high-to-low
 }
 
 /*
@@ -319,7 +328,7 @@ void PacmanGame::DrawInstructions() {
 
     ofSetColor(255, 255, 255); // white
     
-    std::string instructions = "This game is an enhanced version of Pacman.\n1.You (the pacman) can navigate through the maze using WASD logic \n\t\t\tW = north \n\t\t\tD = east \n\t\t\tS = south \n\t\t\tA = west.\n2.You can also press 'p' to pause and 'r' to reset the game after it ends.\n3.Your goal is to consume apples (1 point)\n and gold coins (8 points).\n4.You may attempt to eat ghosts (10 points), which can also eat you.\n5. You win if you eat all the pieces on the board.\n6. You lose if you're eaten by a ghost.\n\n\n\t\t\tClick anywhere to continue.";
+    std::string instructions = "This game is an enhanced version of Pacman.\n1.You (the pacman) can navigate through the maze using WASD logic \n\t\t\tW = north \n\t\t\tD = east \n\t\t\tS = south \n\t\t\tA = west.\n2.You can also press 'p' to pause and 'r' to reset the game after it ends.\n3.Your goal is to consume apples (1 point) and gold coins (8 points).\n4.You may attempt to eat ghosts (10 points), which can also eat you.\n\tIf you and the ghost are pointing in the same direction,\n you'll eats the ghost and elsewise, the ghost will eat you.\n5. You win if you eat all the food and coins.\n6. You lose if you're eaten by a ghost.\n\n\n\t\t\tClick anywhere to continue.";
     body_font_.drawString(instructions, ofGetWidth()/15, ofGetHeight()/3);
 }
 
@@ -333,10 +342,10 @@ void PacmanGame::DrawSettings() { // difficulty level
     std::string instructions = "Choose your difficulty level and image input method. \nAfterwards, click anywhere to continue.\n";
     body_font_.drawStringCentered(instructions, ofGetWidth()/2, ofGetHeight()/6);
     
-    ofxCenteredTrueTypeFont subtitle_font_; // sets font, used to print centered text
-    subtitle_font_.load(kTextPath_, 25);
+    ofxCenteredTrueTypeFont subtitle_font; // sets font, used to print centered text
+    subtitle_font.load(kTextPath_, 25);
     ofSetColor(100, 0, 200); // purple
-    subtitle_font_.drawStringCentered("DIFFICULTY LEVEL", ofGetWidth()/2, ofGetHeight()/3.5);
+    subtitle_font.drawStringCentered("DIFFICULTY LEVEL", ofGetWidth()/2, ofGetHeight()/3.5);
     
     ofSetColor(easy_level_button_color_); // buttons light up once you choose them
     ofDrawRectRounded(easy_level_button_, 20);
@@ -351,7 +360,7 @@ void PacmanGame::DrawSettings() { // difficulty level
     body_font_.drawString(hard_level_message_, 2.05*ofGetWidth()/button_width_divider_, level_button_y_*1.15);
 
     ofSetColor(100, 0, 200); // purple
-    subtitle_font_.drawStringCentered("IMAGE INPUT METHOD", ofGetWidth()/2, ofGetHeight()/1.75);
+    subtitle_font.drawStringCentered("IMAGE INPUT METHOD", ofGetWidth()/2, ofGetHeight()/1.75);
     
     ofSetColor(default_pacman_button_color_);
     ofDrawRectRounded(default_pacman_button_, 20);
@@ -436,14 +445,19 @@ void PacmanGame::DrawCoin(int x_index, int y_index) {
 void PacmanGame::DrawGhosts() { // just make sizes all the same for simplicity
     for (Ghost& current_ghost : ghosts_) {
         ofVec2f pos = current_ghost.GetMazePosition();
-        current_ghost.GetGhostImage().draw(pos.x * coord_multiplier_x_ + one_d_object_size_/2 + horizontial_shift_, pos.y * coord_multiplier_y_ + one_d_object_size_/2 + + vertical_shift_, one_d_object_size_, one_d_object_size_);
+        
+        ofImage& ghost_image = current_ghost.GetGhostImage();
+        ghost_image.rotate90(current_ghost.GetNumRotations()); // rotate the actual image - note that this modifies the image
+        
+        ghost_image.draw(pos.x * coord_multiplier_x_ + one_d_object_size_/2 + horizontial_shift_, pos.y * coord_multiplier_y_ + one_d_object_size_/2 + + vertical_shift_, one_d_object_size_, one_d_object_size_);
+        current_ghost.ClearNumRotations(); // set back to 0 to prevent the pacman from spinning into oblivion
     }
 }
 
 void PacmanGame::DrawPacman() {
     ofVec2f& pos = game_pacman_.GetMazePosition();
     ofImage& pacman_image = game_pacman_.GetPacmanImage();
-    pacman_image.rotate90(game_pacman_.GetNumRotations());
+    pacman_image.rotate90(game_pacman_.GetNumRotations()); // rotate the actual image - note that this modifies the image
     
     pacman_image.draw(pos.x * coord_multiplier_x_ + one_d_object_size_/2 + horizontial_shift_, pos.y * coord_multiplier_y_ + one_d_object_size_/2 + vertical_shift_, one_d_object_size_, one_d_object_size_);
     game_pacman_.ClearNumRotations(); // set back to 0 to prevent the pacman from spinning into oblivion
@@ -451,18 +465,17 @@ void PacmanGame::DrawPacman() {
 
 void PacmanGame::DrawScoreboard() {
     std::string current_score = "Current score: " + std::to_string(game_pacman_.GetNumPoints());
-    
     ofSetColor(0, 0, 0, 200); // translucent
     title_font_.drawCenteredBoundingBox(current_score, ofGetWidth()/1.3, ofGetHeight()/60);
     ofSetColor(255, 255, 255);
     title_font_.drawStringCentered(current_score, ofGetWidth()/1.3, ofGetHeight()/60);
 }
 
-void PacmanGame::DrawGamePaused() {
+void PacmanGame::DrawGamePaused() { 
     ofSetColor(0, 0, 0, 75);
     std::string pause_message = "Press 'p' to unpause.";
     title_font_.drawCenteredBoundingBox(pause_message, ofGetWidth()/2, ofGetHeight()/2);
-    ofSetColor(0, 200, 0);
+    ofSetColor(0, 200, 0); // green
     title_font_.drawStringCentered(pause_message, ofGetWidth()/2, ofGetHeight()/2);
 }
 
@@ -473,13 +486,25 @@ void PacmanGame::DrawGameOver() {
     std::string game_over_message;
     if (current_state_ == WON_GAME) {
         game_over_message = "YOU WON!";
+        
     } else if (current_state_ == LOST_GAME) {
         game_over_message = "YOU LOST!";
     }
-    title_font_.drawStringCentered(game_over_message, ofGetWidth()/2, ofGetHeight()/3);
+    title_font_.drawStringCentered(game_over_message, ofGetWidth()/2, ofGetHeight()/6);
     ofSetColor(255, 255, 255);
-    body_font_.drawStringCentered("Your final score was: " +std::to_string(game_pacman_.GetNumPoints()), ofGetWidth()/2, ofGetHeight()/2.5);
-    body_font_.drawStringCentered("Press 'r' to restart.", ofGetWidth()/2, ofGetHeight()/1.5);
+    body_font_.drawStringCentered("Your final score was: " +std::to_string(game_pacman_.GetNumPoints()), ofGetWidth()/2, ofGetHeight()/4);
+    
+    std::string highest_scores = "Top " +std::to_string(kNumHighestScores_) +" Scores:\n";
+    for (int i = 0; i < kNumHighestScores_; i++) { // gets all the highest scores
+        highest_scores += std::to_string(i + 1) +". ";
+        if (highest_scores_[i] == -1) { // doesn't exist yet - just a filler
+            highest_scores += "N/A\n";
+        } else {
+            highest_scores += std::to_string(highest_scores_[i]) +"\n";
+        }
+    }
+    body_font_.drawStringCentered(highest_scores, ofGetWidth()/2, ofGetHeight()/2);
+    title_font_.drawStringCentered("Press 'r' to restart.", ofGetWidth()/2, ofGetHeight() - 150);
 }
 
 // Adapted from OF-SNAKE MP: https://github.com/uiuc-sp18-cs126/of-snake-ElizWang (mostly just structural stuff)

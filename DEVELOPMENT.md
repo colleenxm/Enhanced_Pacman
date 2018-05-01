@@ -53,4 +53,8 @@
 
 ### 4/28/18
 * Cleaned up code - removed all commented-out code
-* Changed logic to only have one copy of the maze per game rather than one coy of the maze per pacman/ghost. Had to move most of the logic pertaining to the validity of a new position to the game class (because the object classes don’t have their own copies of maze anymore). 
+* Changed logic to only have one copy of the maze per game rather than one coy of the maze per pacman/ghost. Had to move most of the logic pertaining to the validity of a new position to the game class (because the object classes don’t have their own copies of maze anymore).
+
+### 5/1/18
+* Made ghosts rotate as well. Used similar logic used to make the pacman rotate.
+* Wrote code to store and display the highest scores 
