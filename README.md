@@ -24,7 +24,9 @@ I wrote this code in accordance with the Google C++ Style Guide (https://google.
 
 ## Demo
 Below is a full demo of the photo-taking version of the Pacman. Notice that the user can change his or her setting selection; only the final selected settings go into setting up the game.
-<img src="bin/data/demos/readme_demo.gif" width="450" height="450" />
+<p align="center">
+  <img width="500" height="450" src="bin/data/demos/readme_demo.gif">
+</p>
 
 ## Citations
 I began by modifying the code from of-snake (https://github.com/uiuc-sp18-cs126/of-snake-ElizWang), which was not written by me. However, I only used of-snake as a starting point and added enough code to completely distinguish my projecft from of-snake.
