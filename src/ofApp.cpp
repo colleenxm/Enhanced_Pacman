@@ -38,7 +38,7 @@ void PacmanGame::setup(){
     SetUpGameObjects();
 }
 
-void PacmanGame::CalculateDimensions() {
+void PacmanGame::CalculateDimensions() { // calcualtes the dimensions for the objects
     space_between_objects_ = 8;
     one_d_object_size_ = 0.02 * ofGetWidth() + 0.02 * ofGetHeight();
     coord_multiplier_x_ = ((float) ofGetWidth()) / maze_.GetWidth(); // center
@@ -53,7 +53,7 @@ void PacmanGame::CalculateDimensions() {
     horizontial_shift_ = -10;
 }
 
-void PacmanGame::SetUpGameObjects() {
+void PacmanGame::SetUpGameObjects() { // sets up the game objects
     // OBJECTS SETUP
     for (int current_num_ghosts = 0; current_num_ghosts < num_ghosts_; current_num_ghosts++) {
         Ghost ghost;
@@ -343,7 +343,7 @@ void PacmanGame::DrawInstructions() {
     ofSetBackgroundColor(0, 0, 0); // set background as black
     
     ofSetColor(100, 0, 200); // purple
-    title_font_.drawString("INSTRUCTIONS", ofGetWidth()/6, ofGetHeight()/10);
+    title_font_.drawStringCentered("INSTRUCTIONS", ofGetWidth()/2, ofGetHeight()/8);
 
     ofSetColor(255, 255, 255); // white
     
@@ -397,7 +397,7 @@ void PacmanGame::DrawWebcamUI() { // everything to do with the webcam
     ofClear(0);
     
     ofSetColor(255, 255, 255); // white
-    body_font_.drawStringCentered("Click anywhere to take a picture\nor click the button to use the default pacman.\nMake sure your face is clearly visible.\n",
+    body_font_.drawStringCentered("Click anywhere to take a picture\nMake sure your face is clearly visible.\n",
         ofGetWidth()/2, ofGetHeight()/9);
     webcam_.draw(ofGetWidth()/2 - ofGetWidth()/5, ofGetHeight()/2 - ofGetHeight()/5,
         ofGetWidth()/2.5, ofGetHeight()/2.5);
