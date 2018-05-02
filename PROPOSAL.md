@@ -21,7 +21,7 @@ Instead of using simple spheres to represent the ghosts or the Pacman, I'll allo
 
 I will adapt OpenFramework's video grabber example (https://github.com/openframeworks/openFrameworks/tree/master/examples/video/videoGrabberExample) to access the webcam and take a picture of the user. I plan to use the OpenCV image recognition library (https://opencv.org/) and, in particular, its facial detection algorithm (Cascade Classifier) to detect whether a face even exists in the given image before proceeding to the next steps. If a face is not found, a textbox will prompt the user to input another image. 
 
-I will use OpenCV's haarcascade_frontalface_alt.xlm file to aid in facial detection (https://github.com/opencv/opencv/blob/master/data/haarcascades/haarcascade_frontalface_alt.xml).
+I will use OpenCV's haarcascade_frontalface_alt.xml file to aid in facial detection (https://github.com/opencv/opencv/blob/master/data/haarcascades/haarcascade_frontalface_alt.xml).
 
 ## Libraries Used
 * OpenFrameworks - to create the application, get the image, and display the converted image
