@@ -5,7 +5,7 @@
  * Citations 
 
 ## Overview 
-I created a version of Pacman that takes a headshot of the user and replaces the pacman avatar with the user's face. For more information, see PROPOSAL.md.
+I created a version of Pacman that takes a photo of the user and replaces the pacman avatar with the user's face. This verson of Pacman also has a default version, where the pacman is just the default yellow pacman.
 
 ## Requirements
 * OpenFrameworks version 9.8 or higher. Notice that older versions of OpenFrameworks aren't guaranteed to work, as some versions appear to be quite different. To install OpenFrameworks, follow the instructions at http://openframeworks.cc/download/ 
@@ -18,6 +18,13 @@ Steps:
 1. git clone https://github.com/uiuc-sp18-cs126/final-project-ElizWang
 2. Open in Xcode or a similar IDE through OpenFramework's projectGenerator app.
 3. Run.
+
+## Code Style
+I wrote this code in accordance with the Google C++ Style Guide (https://google.github.io/styleguide/cppguide.html). Note that methods required by OpenFrameworks deviate from this style.
+
+## Demo
+Below is a full demo of the photo-taking version of the Pacman. Notice that the user can change his or her setting selection; only the final selected settings go into setting up the game.
+![Alt Text](bin/data/demos/readme_demo.gif)
 
 ## Citations
 I began by modifying the code from of-snake (https://github.com/uiuc-sp18-cs126/of-snake-ElizWang), which was not written by me. However, I only used of-snake as a starting point and added enough code to completely distinguish my projecft from of-snake.
