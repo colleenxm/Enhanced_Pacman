@@ -16,7 +16,7 @@
 #include "ghost.h"
 #include "food.h"
 
-// LOOSELY adapted from OF-SNAKE MP: https://github.com/uiuc-sp18-cs126/of-snake-ElizWang (mostly just structural stuff)
+// LOOSELY adapted from OF-SNAKE MP: https://github.com/uiuc-sp18-cs126/of-snake-ElizWang
 
 class PacmanGame : public ofBaseApp {
 private:
@@ -33,7 +33,8 @@ private:
         LOST_GAME
     };
 
-    //NOTE: Need to have 2 enums and then set the actual level/input method after the user clicks the screen because the user can select one button and then unselect it again
+    //NOTE: Need to have 2 enums and then set the actual level/input method after the user clicks
+    // the screen because the user can select one button and then unselect it again
     enum Level { // corresponds to the user-selected level
         EASY = 0,
         MEDIUM,
@@ -46,7 +47,7 @@ private:
     };
 
     // SOUND PATHS
-    std::string kIntroMusicPath_ = "sound_files/intro_music.mp3"; // Default dir = <proj dir>/bin/data
+    std::string kIntroMusicPath_ = "sound_files/intro_music.mp3";
     std::string kPacmanEating_ = "sound_files/eating_sound.mp3";
     std::string kCoinCollection_ = "sound_files/coin_collection.mp3";
     std::string kWilhelmScreamPath_ = "sound_files/wilhelmscream.mp3";
@@ -82,7 +83,9 @@ private:
     // FACIAL DETECTION
     ofxCvHaarFinder facial_detector_; // finds faces
     ofxCvColorImage temp_color_img; // temp color img
-    ofxCvGrayscaleImage grayscale_img_; // need to convert from regular iamge to ofxCvColorImage to ofxCvGrayscaleImage in order to use the haar cascader
+    // need to convert from regular iamge to ofxCvColorImage to ofxCvGrayscaleImage in order to
+        // use the haar cascader
+    ofxCvGrayscaleImage grayscale_img_;
     
     // BUTTONS - using ofxCenteredTrueTypeFont and the bounding rectangle
     std::string default_pacman_message_;
@@ -105,7 +108,7 @@ private:
     int data_button_y_;
     int level_button_y_;
     
-    ofColor default_pacman_button_color_ = ofColor(100, 0, 200, 100); // to make the buttons light up - keep track of color
+    ofColor default_pacman_button_color_ = ofColor(100, 0, 200, 100); // to make buttons light up
     ofColor user_image_pacman_button_color_ = ofColor(100, 0, 200, 100);
     ofColor easy_level_button_color_ = ofColor(100, 0, 200, 100);
     ofColor medium_level_button_color_ = ofColor(100, 0, 200, 100);
@@ -115,7 +118,10 @@ private:
     bool is_level_button_clicked_; // has at least one level button been clicked?
     bool is_data_input_button_clicked_; // has at least one data input button been clicked?
     bool is_user_image_button_clicked_;
-    bool is_pacman_button_clicked_; // keeps track of the buttons that are are clicked - so that the screen only changes after all buttons are clicked  (and shows the highlighted buttons for a brief amount of time)
+    
+    // keeps track of the buttons that are are clicked - so that the screen only changes after
+        // all buttons are clicked  (and shows the highlighted buttons for a brief amount of time)
+    bool is_pacman_button_clicked_;
     bool is_screen_clicked_; // user needs to click a third time to progress to the next screen
     
     void ResetPacmanButtonColors();
@@ -123,7 +129,7 @@ private:
     // BUTTON STUFF ENDS HERE
     
     // OBJECTS
-    Maze maze_; // object that stores the maze, created a class for this to protect the maze from being modified and to allow the other objects to access the maze (to check for valid positions)
+    Maze maze_; // object that stores the maze
     Pacman game_pacman_; // The object that represents the user controlled snake
     std::vector<Ghost> ghosts_;
 
@@ -131,7 +137,9 @@ private:
     int num_ghosts_;
     int num_food_items; // food items to put in map - can change
     int num_coins_; // coins to put in map - can change
-    int one_d_object_size_; // standardized size for all the objects (to prevent the bigger ones from "leaving" the maze). Calculated from window dimensions in setup().
+    int one_d_object_size_; // standardized size for all the objects
+        // (to prevent the bigger ones from "leaving" the maze). Calculated from window dimensions
+        // in setup().
     
     // MULTIPLIERS - convert coordinates on the maze matrix to coordinates on a coordinate plane
     float coord_multiplier_x_;
@@ -150,7 +158,9 @@ private:
     // FOR INTRODUCTIONARY PARTS
     void SetUpGameObjects();
     void SetUpButtons();
-    void SetUpInitialGhostPositions(Ghost& ghost); // Places each ghost at a random position on the maze. Done in ofapp instead of ghost.cpp because the ghost class doesn't have access to the maze.
+    void SetUpInitialGhostPositions(Ghost& ghost); // Places each ghost at a random position on
+        // the maze. Validity checked in ofapp instead of ghost.cpp because the ghost class doesn't
+        // have access to the maze.
     void CalculateDimensions();
 
     // FACIAL PROCESSING
@@ -162,7 +172,8 @@ private:
     bool DoesPacmanEatGhost(Ghost& current_ghost); // interactions between the pacman and the ghost
     
     // CHECK IF THE OBJECT'S NEW POSITION IS VALID
-    ofVec2f FindNewPositionValid(Direction current_direction, ofVec2f& position); // Calculates object's new position if its valid. Returns <-1, -1> if the position is not valid.
+    ofVec2f FindNewPositionValid(Direction current_direction, ofVec2f& position); // Calculates
+        // object's new position if its valid. Returns <-1, -1> if the position is not valid.
 
     // METHODS FOR RENDERING
     void DrawIntroduction();
@@ -179,14 +190,16 @@ private:
     void DrawGamePaused();
     void DrawGameOver();
     
-    // For setting the game based on the user input
-    void SetGameLevel(); // setting the finalized game level (called after the user clicks to move on)
-    void SetInputMethod(); // setting the finalized input method (called after the user clicks to move on)
+    // For setting the game based on the user input - (called after the user clicks to move on)
+    void SetGameLevel(); // setting the finalized game level
+    void SetInputMethod(); // setting the finalized input method
 
     void UpdateHighestScores(); // updates the highest scores after a game ends
     
-    void ManageUserInputtedLevel(int x, int y); // contains code for managing what the user inputs for the level - helper to mousepressed
-    void ManageDataInputChoice(int x, int y); // contains code for managing what the user wants to input as data for the pacman - for settings panel, helper to mousepressed
+    void ManageUserInputtedLevel(int x, int y); // contains code for managing what the user
+        // inputs for the level - helper to mousepressed
+    void ManageDataInputChoice(int x, int y); // contains code for managing what the user wants
+        // to input as data for the pacman - for settings panel, helper to mousepressed
 
     // Checks if pacman won - if it ate every consumable item on the board
     bool DidPacmanWin();
