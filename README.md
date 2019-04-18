@@ -1,8 +1,11 @@
 # README
+NOTE: READ THE ERRATUM SECTION. DON'T USE MY CODE AS A REFERENCE FOR "PERFECT" STYLE.
+
  * Overview 
  * Requirements
  * Installation
  * Citations 
+ * Erratum 
 
 ## Overview 
 I created a version of Pacman that takes a photo of the user and replaces the pacman avatar with the user's face. This verson of Pacman also has a default version, where the pacman is just the default yellow pacman.
@@ -41,3 +44,15 @@ Below are the citations to the images I used. Note that all images (except for t
 * Ghost - http://iconbug.com/detail/icon/2508/floating-ghost/
 * Coin - http://clipart-library.com/a-coin-cliparts.html
 
+## Erratum 
+Disclaimer: I wrote this when I was a freshman. DO NOT use my code as a reference for perfect style. If you have any questions, email me.
+
+Stuff I should've done:
+1. All commit messages should start with an upper case letter
+2. Public blocks (in header files) should be before private blocks, not after. This is because other users care about the public interface rather than the private implementation.
+3. I should've used namespaces for all util methods/enums (ex: direction.h)
+4. Should've added formal "javadoc" style documentation in all header files. Too many line comments clutter up code and make it harder to read, not easier. 
+5. Should've drastically cut down on the # of line comments
+6. Should have used for each whenever possible
+
+I'll update this section if I find anything else noteworthy. 
